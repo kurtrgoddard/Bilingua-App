@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Fix for flex alignment issues */
+  .flex-align-fix {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-align-fix > * {
+    @apply flex-shrink-0;
+  }
+
+  /* Standardized hover effects for buttons and interactive elements */
+  .hover-standard {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .interactive-card {
+    @apply transition-all duration-200 hover:shadow-md hover:border-primary/30;
+  }
+
+  /* Fix for vertical alignment in flex containers */
+  .flex-vertical-fix {
+    @apply flex items-center;
+  }
+
+  .flex-vertical-fix > * {
+    @apply my-auto;
+  }
+
+  /* Accessibility enhancements */
+  .high-contrast-text {
+    @apply text-foreground bg-background;
+  }
+
+  .accessible-primary {
+    @apply text-primary dark:text-primary font-medium;
+  }
+
+  .accessible-muted {
+    @apply text-foreground/90 dark:text-foreground/95;
+  }
+  
+  /* High contrast text styles for better accessibility */
+  .text-high-contrast {
+    @apply text-foreground dark:text-white;
+  }
+  
+  .bg-accessible {
+    @apply bg-background/90 dark:bg-background/95;
+  }
+
+  .a11y-focus {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+
+  /* Improved contrast for common UI patterns */
+  .text-gradient {
+    @apply relative;
+  }
+  
+  /* Create a high-contrast non-transparent fallback for screen readers */
+  .text-gradient::before {
+    @apply content-['Bilingua.app'] absolute text-foreground dark:text-white font-bold tracking-tight;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+  }
+  
+  /* Maintain the visual gradient for sighted users */
+  .text-gradient span {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-800 to-indigo-800 dark:from-blue-600 dark:to-indigo-500 font-bold tracking-tight;
+  }
+
+  /* Skip link enhancements */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-background focus:text-foreground focus:px-4 focus:py-2 focus:rounded focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+  
+  /* Fix common flex alignment issues */
+  .flex-aligned {
+    @apply flex items-center justify-between;
+  }
+  
+  .flex-aligned-center {
+    @apply flex items-center justify-center;
+  }
+  
+  .flex-aligned-start {
+    @apply flex items-center justify-start;
+  }
+  
+  /* Standardized hover effects */
+  .hover-standard {
+    @apply transition-colors duration-200 hover:bg-muted/50;
+  }
+}
