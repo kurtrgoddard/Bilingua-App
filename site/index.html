@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bilingua Quest — an SNES game the size of Fredericton</title>
+<meta name="description" content="Douze ans de français. Une vraie conversation. A cozy SNES-style game set in real Fredericton where you practice French — and real people unlock your levels.">
+<style>
+  :root {
+    --paper: #F8F4EC; --ink: #2A2118; --muted: #6E6357;
+    --acadie: #1F4FA8; --stella: #C89512;
+    --card: #FFFDF8; --line: #E3DACB; --soft: #F0EADD;
+    --navy: #1a2340; --navy2: #232f57; --cream: #f4ead2; --gold: #e8c04a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #211913; --ink: #EFE7DA; --muted: #A79A8A; --acadie: #8FB0E8; --stella: #E0B93F; --card: #2A211A; --line: #3D332A; --soft: #2E251D; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+    font-size: 1.0625rem; line-height: 1.65;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem; }
+  h1, h2, h3 { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; line-height: 1.15; text-wrap: balance; }
+  p { margin-bottom: 1.1rem; }
+  a { color: var(--acadie); }
+
+  /* hero — the game's night-sky world */
+  .hero {
+    background: linear-gradient(180deg, #0b0e1a 0%, #16203a 70%, #1a2340 100%);
+    color: var(--cream); text-align: center;
+    padding: 4.5rem 1.25rem 0;
+    overflow: hidden;
+  }
+  .hero .pixel-title {
+    font-family: 'Courier New', Courier, monospace; font-weight: bold;
+    font-size: clamp(2rem, 7vw, 3.6rem); letter-spacing: 0.04em;
+    color: var(--gold); text-shadow: 3px 3px 0 #0b0e1a, 6px 6px 0 rgba(31,79,168,0.45);
+  }
+  .hero .sub { font-size: clamp(1.05rem, 3vw, 1.35rem); font-style: italic; color: #cfd9f0; margin: 0.8rem 0 0.4rem; }
+  .hero .sub-en { font-size: 0.95rem; color: #8fa3cc; margin-bottom: 2rem; }
+  .play {
+    display: inline-block; margin: 0.6rem 0 1rem;
+    font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.25rem;
+    background: var(--gold); color: #201a08; text-decoration: none;
+    border: 3px solid var(--cream); border-radius: 10px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.45);
+    padding: 0.85rem 2.4rem;
+  }
+  .play:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(0,0,0,0.45); }
+  .hero .note { font-size: 0.8rem; color: #8fa3cc; margin-bottom: 2.4rem; }
+  .hero img { display: block; max-width: min(680px, 100%); margin: 0 auto; border-radius: 10px 10px 0 0; border: 3px solid var(--navy2); border-bottom: none; image-rendering: pixelated; }
+
+  section { padding: 3.2rem 0 0.5rem; }
+  .eyebrow {
+    display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  .eyebrow .fr { font-style: italic; }
+  .moitie { flex: 1; height: 2px; min-width: 3rem; background: linear-gradient(to right, var(--acadie) 50%, var(--stella) 50%); border-radius: 1px; }
+  h2 { font-size: 1.7rem; margin-bottom: 1rem; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 1.6rem 0; }
+  .stat { background: var(--card); padding: 1.1rem 1rem; }
+  .stat .n { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: clamp(1.7rem, 4.5vw, 2.4rem); color: var(--acadie); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 0.82rem; color: var(--muted); margin-top: 0.45rem; line-height: 1.45; }
+  @media (max-width: 560px) { .stats { grid-template-columns: 1fr; } }
+
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.9rem; margin: 1.6rem 0; }
+  .shots figure { margin: 0; }
+  .shots img { width: 100%; border-radius: 8px; border: 3px solid var(--navy); image-rendering: pixelated; display: block; }
+  .shots figcaption { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; text-align: center; font-style: italic; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.6rem 0; }
+  @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 1.1rem 1.2rem; }
+  .step .ico { font-size: 1.6rem; }
+  .step h3 { font-size: 1.05rem; margin: 0.4rem 0 0.3rem; }
+  .step p { font-size: 0.9rem; color: var(--muted); margin: 0; }
+
+  blockquote {
+    margin: 1.8rem 0; padding-left: 1.25rem; border-left: 3px solid var(--stella);
+    font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 1.25rem; line-height: 1.5;
+  }
+  .concept-tag { display: inline-block; font-size: 0.68rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.1em; text-transform: uppercase; border: 1.5px solid var(--stella); color: var(--stella); border-radius: 999px; padding: 0.1rem 0.7rem; vertical-align: middle; margin-left: 0.5rem; }
+
+  .roadmap { display: flex; gap: 0; overflow-x: auto; margin: 1.6rem 0; border: 1px solid var(--line); border-radius: 10px; }
+  .rm { flex: 1; min-width: 150px; background: var(--card); padding: 1rem 1.1rem; border-right: 1px solid var(--line); }
+  .rm:last-child { border-right: none; }
+  .rm .v { font-family: ui-monospace, Menlo, monospace; font-size: 0.68rem; letter-spacing: 0.1em; color: var(--stella); text-transform: uppercase; }
+  .rm h3 { font-size: 0.95rem; margin: 0.3rem 0 0.2rem; }
+  .rm p { font-size: 0.8rem; color: var(--muted); margin: 0; }
+  .rm.now { background: var(--soft); }
+
+  form { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem 1.5rem; margin: 1.6rem 0; }
+  label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.9rem 0 0.25rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; text-transform: uppercase; }
+  input[type="text"], input[type="email"], textarea {
+    width: 100%; font-family: inherit; font-size: 1rem; color: var(--ink);
+    background: var(--paper); border: 1.5px solid var(--line); border-radius: 8px; padding: 0.6rem 0.8rem;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  input:focus, textarea:focus { outline: 2px solid var(--acadie); border-color: var(--acadie); }
+  button[type="submit"] {
+    margin-top: 1.1rem; font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.05rem;
+    background: var(--acadie); color: var(--paper); border: none; border-radius: 8px; padding: 0.7rem 1.8rem; cursor: pointer;
+  }
+  button[type="submit"]:hover { opacity: 0.92; }
+  .hp { position: absolute; left: -9999px; }
+
+  footer { margin-top: 3.5rem; padding: 2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+  footer p { margin-bottom: 0.6rem; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="pixel-title">BILINGUA QUEST</div>
+  <p class="sub">« Douze ans de français. Une vraie conversation. »</p>
+  <p class="sub-en">Twelve years of school French. Time for one real conversation.</p>
+  <a class="play" href="/play/">▶ Jouer / Play</a>
+  <p class="note">Free · plays in your browser · adults 18+ · prototype v0.1</p>
+  <img src="shots/4-world-spawn.png" alt="SNES-style pixel-art view of the Bill Thorpe Walking Bridge crossing the river into downtown Fredericton" width="1024" height="720">
+</div>
+
+<div class="wrap">
+
+  <section>
+    <div class="eyebrow"><span>The idea</span><span class="moitie"></span><span class="fr">L'idée</span></div>
+    <h2>An SNES game the size of Fredericton</h2>
+    <p><strong>Bilingua Quest is a cozy 16-bit game whose map is the real city.</strong> You make a character and walk out onto the Green. The river is the Wolastoq. The bridges are the Westmorland and the old green walking bridge. Queen Street has Wilser's and the Gahan House; King Street has Dolan's and Flippins; the Boyce Market is on George Street where it belongs, and if you cross to the northside you'll find bubble tea on Main. Every venue opens its door, and inside, someone speaks French to you.</p>
+    <p>And here is the whole trick: <strong>every conversation succeeds.</strong> The bravest reply earns the warmest reaction, but « Pouvez-vous répéter plus lentement ? » is always on the menu and always welcomed. In this town, your terrible French is not a problem to fix. It's the game.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>Why</span><span class="moitie"></span><span class="fr">Pourquoi</span></div>
+    <h2>The gap was never French</h2>
+    <div class="stats">
+      <div class="stat"><div class="n">37.3%</div><div class="l">of New Brunswick kids go through French immersion — the highest rate in Canada</div></div>
+      <div class="stat"><div class="n">~16%</div><div class="l">of anglophone New Brunswickers can hold a conversation in French</div></div>
+      <div class="stat"><div class="n">~40%</div><div class="l">of NB adults who did immersion have lost their conversational French to silence</div></div>
+    </div>
+    <p>New Brunswick teaches French better than anywhere in the country — and then provides nowhere safe to <em>speak</em> it. The barrier isn't vocabulary; it's the social cost of speaking badly in front of a real person. Anxiety kills the willingness to open your mouth, and the skill dies of disuse.</p>
+    <blockquote>Language anxiety dies in play. In a game, a wrong attempt is a turn — not a verdict.</blockquote>
+    <p>That's the product: <strong>a state of play</strong>, where the things that hold learners back simply don't exist in the rules. No grades, no failure states, no embarrassment physics. Just a town that's happy to see you try.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>How it works</span><span class="moitie"></span><span class="fr">Comment ça marche</span></div>
+    <h2>Walk. Talk. Be named.</h2>
+    <div class="steps">
+      <div class="step"><span class="ico">🚶</span><h3>Walk the real city</h3><p>Explore downtown and the northside, tile by tile. Real venues, real streets, real bridges — drawn with love, 16 pixels at a time.</p></div>
+      <div class="step"><span class="ico">💬</span><h3>Talk to everyone</h3><p>Short, playful conversations in French with English subtitles. Three choices per turn. All of them work. Confidence — the game's only currency — goes up.</p></div>
+      <div class="step"><span class="ico">⭐</span><h3>Be named by an Hôte</h3><p>Points fill your meter, but only an <strong>Hôte</strong> — a gold-star francophone mentor — can <em>name</em> you to your next level, in a small ceremony. People unlock people.</p></div>
+    </div>
+    <div class="shots">
+      <figure><img src="shots/7-interior-greeting.png" alt="Inside Jonnie Java Roasters, Chantal the Hôte greets the player in French" width="1024" height="720"><figcaption>Chantal ★, Hôte at Jonnie Java Roasters</figcaption></figure>
+      <figure><img src="shots/13-ceremony.png" alt="A recognition ceremony dialogue where an Hôte names the player to their next level" width="1024" height="720"><figcaption>La Reconnaissance — an Hôte names you</figcaption></figure>
+      <figure><img src="shots/1-title.png" alt="Bilingua Quest title screen with the walking bridge silhouette" width="1024" height="720"><figcaption>The title screen</figcaption></figure>
+    </div>
+    <p>Even the map obeys the idea: <strong>the bridges to the northside are closed</strong> until an Hôte has named you « Commandeur·e de café ». Your first level-up literally opens more city.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>Les Hôtes</span><span class="moitie"></span><span class="fr">People unlock people</span></div>
+    <h2>Progression is human</h2>
+    <p>Every language app measures you with an algorithm. Bilingua Quest hands that power to <em>people</em>: francophone mentors — in the game today, real volunteers tomorrow — whose recognition is the only way up. A level granted by Chantal over a real counter means something no XP bar can fake. And being an Hôte is designed as an honour: gold star, your name on the venue, capped seats. Francophones aren't "content" in this game. They're the nobility.</p>
+    <p>The endgame is the real city. Every venue has a <strong>rendez-vous board</strong> — conversation nights, bilingual trivia, concerts, la Fête nationale de l'Acadie at Officers' Square. Today those are samples; the plan is real listings, so the game funnels players to actual tables in actual cafés, safely and in public.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>Next</span><span class="moitie"></span><span class="fr">La suite</span></div>
+    <h2>Bilingua Live <span class="concept-tag">concept</span></h2>
+    <p>The future layer: scheduled, watchable, celebratory live practice — TikTok-live energy where <em>being brave in French is the show</em>. Picture Thursday 7pm at Dolan's, in-game and in-person at once: players cheering a stranger's first full sentence, an Hôte conducting, clips worth sharing. Language practice as an event you'd actually attend.</p>
+    <div class="roadmap">
+      <div class="rm now"><span class="v">v0.1 — now</span><h3>The prototype</h3><p>Playable Fredericton, mentor ceremonies, this page. Tell us everything.</p></div>
+      <div class="rm"><span class="v">v1</span><h3>Real accounts &amp; events</h3><p>Real rendez-vous listings, real Hôte volunteers, RSVP from inside the game.</p></div>
+      <div class="rm"><span class="v">v1.5</span><h3>Real conversations</h3><p>Matched practice with humans behind a safety-first trust ladder; meetups in public venues.</p></div>
+      <div class="rm"><span class="v">v2</span><h3>New Brunswick</h3><p>« When Moncton unlocks… » City by city, a game people visit the province to play.</p></div>
+    </div>
+  </section>
+
+  <section id="feedback">
+    <div class="eyebrow"><span>Your turn</span><span class="moitie"></span><span class="fr">À vous</span></div>
+    <h2>Tell me what you think</h2>
+    <p>This is a prototype and a vision looking for accomplices — players, francophone mentors, café owners, skeptics. What would make you play? What's wrong? What's missing? En français ou en anglais.</p>
+    <form name="feedback" method="POST" action="/merci.html" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="feedback">
+      <p class="hp"><label>Don't fill this out: <input name="bot-field"></label></p>
+      <label for="f-name">Name (optional)</label>
+      <input type="text" id="f-name" name="name" autocomplete="name">
+      <label for="f-email">Email (optional — only if you'd like a reply)</label>
+      <input type="email" id="f-email" name="email" autocomplete="email">
+      <label for="f-msg">Your thoughts *</label>
+      <textarea id="f-msg" name="message" required placeholder="J'ai pensé que… / I think…"></textarea>
+      <button type="submit">Envoyer / Send</button>
+    </form>
+    <p style="font-size:0.85rem; color:var(--muted)">Prefer email? <a href="mailto:kurtrgoddard@gmail.com?subject=Bilingua%20Quest">kurtrgoddard@gmail.com</a></p>
+  </section>
+
+  <footer>
+    <p><strong>Bilingua Quest</strong> is a free civic prototype by Kurt Goddard (Fredericton, NB). Adults 18+. No accounts, no tracking — the game saves on your own device only.</p>
+    <p>Real Fredericton venues appear with affection and without affiliation. Venue owners: if you'd like anything changed (or want a rendez-vous board of your own), <a href="mailto:kurtrgoddard@gmail.com">say the word</a>.</p>
+    <p>Safety, always: real-world meetups belong in public places — tell a friend, trust your instincts.</p>
+  </footer>
+
+</div>
+</body>
+</html>
