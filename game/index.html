@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Bilingua Quest — Fredericton</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕹️</text></svg>">
 <style>
   :root {
     --ui-navy: #1a2340;
@@ -481,6 +482,7 @@ const TL = {
   XWALK: 7, BANK: 8, BRIDGE: 9, TRUSS: 10, PATH: 11, FLOWER: 12, BENCH: 13,
   WALL: 14, ROOF: 15, DOOR: 16, WINDOW: 17, SIGN: 18, STALL: 19, GAZEBO: 20,
   FLOOR: 21, COUNTER: 22, TABLE: 23, BOARD: 24, RUG: 25, SHELF: 26, PLANT: 27,
+  GRATE: 28, PIPE: 29,
 };
 const SOLID = new Set([TL.TREE, TL.WATER, TL.WALL, TL.ROOF, TL.WINDOW, TL.SIGN, TL.STALL,
   TL.COUNTER, TL.TABLE, TL.BOARD, TL.SHELF, TL.BENCH, TL.GAZEBO, TL.PLANT]);
@@ -586,6 +588,8 @@ function buildWorld() {
   });
   /* market stalls outside Boyce */
   put(54, 51, TL.STALL); put(68, 51, TL.STALL);
+  /* the old steam grate — the tunnels are down there, if you know the river's true name */
+  put(34, 44, TL.GRATE);
   /* greenery + south edge */
   [5, 15, 29, 55, 75, 87].forEach(x => { put(x, 53, TL.TREE); put(x + 1, 54, TL.FLOWER); });
   [2, 89].forEach(x => { for (let y = 26; y < 53; y += 3) put(x, y, TL.TREE); });
@@ -876,6 +880,10 @@ function talkToSpecial(sp) {
   if (sp.host) { openMinigame(sp.host, sp.name); return; }
   const met = save.metSpecials[sp.id];
   const pages = met ? [sp.pages[sp.pages.length - 1]] : sp.pages.slice();
+  /* Ti-Louis knows about the grate — the river's name opens more than hearts */
+  if (sp.id === 'pecheur-du-pont' && !met) {
+    pages.push({ fr: 'Ah pis… sous la ville, il y a des tunnels de vapeur. La vieille grille, derrière King Street — elle s’ouvre pour qui dit le vrai nom de la rivière.', en: 'Oh and… under the town there are steam tunnels. The old grate off King Street — it opens for whoever says the river’s true name.' });
+  }
   const dlgPages = pages.map(p => ({ speaker: sp.name, fr: p.fr, en: p.en }));
   startDialogue(dlgPages, () => {});
   if (!met) {
@@ -1018,6 +1026,107 @@ function openMinigame(kind, hostName) {
   }
 }
 
+/* ---- the tunnels under downtown ----
+   Fredericton legend says steam tunnels run from the old physical plant
+   beneath the whole downtown core. In this game, the legend is true —
+   and the door answers only to the river's true name. */
+const TUNNEL_KEEPER = {
+  name: 'Aldéric',
+  pages: [
+    { fr: 'Tiens. Ça fait quarante ans que personne dit le vrai nom en descendant.', en: 'Well now. Forty years since anyone said the true name on the way down.' },
+    { fr: 'J’étais soudeur de vapeur. Ces tuyaux-là chauffaient toute la ville — pis toutes ses jasettes.', en: 'I was a steamfitter. These pipes heated the whole town — and all its conversations.' },
+    { fr: 'En 1969, on a scellé la porte du fond. La même année que le grand carnet. Coïncidence ? Ben voyons.', en: 'In 1969 we sealed the far door. Same year as the great notebook. Coincidence? Come on now.' },
+    { fr: 'La dernière page est restée en bas avec moi. Je la gardais au chaud. Prends-la.', en: 'The last page stayed down here with me. I kept it warm. Take it.' },
+  ]
+};
+function buildTunnel() {
+  const g = [];
+  for (let y = 0; y < ROOM_H; y++) { const r = []; for (let x = 0; x < ROOM_W; x++) r.push(TL.ROAD); g.push(r); }
+  for (let x = 0; x < ROOM_W; x++) { g[0][x] = TL.PIPE; g[ROOM_H - 1][x] = TL.WALL; }
+  for (let y = 0; y < ROOM_H; y++) { g[y][0] = TL.WALL; g[y][ROOM_W - 1] = TL.WALL; }
+  for (let x = 3; x <= 11; x++) g[3][x] = TL.COUNTER;   /* the old valve bank Aldéric leans on */
+  g[1][3] = TL.PIPE; g[1][11] = TL.PIPE; g[6][3] = TL.PIPE; g[6][11] = TL.PIPE;
+  g[ROOM_H - 1][7] = TL.DOOR;
+  return g;
+}
+function tryGrate() {
+  const w = modal(
+    '<h2>' + (LANG === 'fr' ? 'Une vieille grille de vapeur' : 'An old steam grate') + '</h2>' +
+    '<p style="font-size:14px">' + (LANG === 'fr'
+      ? 'Le métal est tiède. Quelque chose respire en dessous. Une inscription à moitié effacée : « DIS LE VRAI NOM DE LA RIVIÈRE. »'
+      : 'The metal is warm. Something breathes underneath. A half-worn inscription: "SAY THE RIVER’S TRUE NAME."') + '</p>' +
+    '<input type="text" id="t-pass" autocomplete="off" spellcheck="false" placeholder="…">' +
+    '<p id="t-err" style="color:#e58a76; font-size:12px; min-height:16px; margin:6px 0 0"></p>' +
+    '<div class="btnrow"><button class="btn" id="t-go">' + (LANG === 'fr' ? 'Dire le nom' : 'Say the name') + '</button>' +
+    '<button class="btn alt" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
+  );
+  const inp = w.querySelector('#t-pass');
+  const submit = () => {
+    if (inp.value.trim().toUpperCase() === 'WOLASTOQ') { closeModal(); enterTunnels(); }
+    else { w.querySelector('#t-err').textContent = LANG === 'fr' ? 'La grille ne bouge pas. (Un pêcheur saurait peut-être…)' : 'The grate doesn’t move. (A fisherman might know…)'; inp.value = ''; inp.focus(); }
+  };
+  w.querySelector('#t-go').addEventListener('click', submit);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+}
+function enterTunnels() {
+  worldPos = { x: 34, y: 45 };
+  interior = {
+    venue: { id: 'tunnels', name: LANG === 'fr' ? 'Les Tunnels de vapeur' : 'The Steam Tunnels', ico: '🕳️', type: 'tunnel' },
+    grid: buildTunnel(),
+    pack: { venueId: 'tunnels', npc: { name: TUNNEL_KEEPER.name, isHote: false, greetingFR: '…', greetingEN: '(a lantern flares in the dark)' } },
+    keeperStyle: HERO_STYLES[4],
+    isTunnel: true
+  };
+  state = 'interior';
+  player.x = 7; player.y = ROOM_H - 2; player.px = player.x * TILE; player.py = player.y * TILE; player.dir = 'up'; player.moving = false;
+  SND.stamp();
+  showBanner('🕳️ ' + interior.venue.name);
+  grantPin('tunnels', 'Sous la ville', 'Under the Town');
+  writeSave();
+}
+function talkTunnelKeeper() {
+  const met = save.metSpecials['tunnels-alderic'];
+  const pages = (met ? [TUNNEL_KEEPER.pages[TUNNEL_KEEPER.pages.length - 1]] : TUNNEL_KEEPER.pages).map(p => ({ speaker: TUNNEL_KEEPER.name, fr: p.fr, en: p.en }));
+  startDialogue(pages);
+  if (!met) {
+    save.metSpecials['tunnels-alderic'] = true;
+    grantPage(7, 'Aldéric');
+    writeSave(); updateHud();
+  }
+}
+
+/* ---- La Carte du Nouveau-Brunswick: the province unlocks city by city ---- */
+const NB_REGIONS = [
+  { id: 'fredericton', name: 'Fredericton', x: 32, y: 62, open: true },
+  { id: 'moncton', name: 'Moncton / Dieppe', x: 72, y: 66, goal: 250 },
+  { id: 'saintjean', name: 'Saint John', x: 40, y: 82, goal: 200 },
+  { id: 'peninsule', name: 'Péninsule acadienne', x: 74, y: 18, goal: 150 },
+  { id: 'miramichi', name: 'Miramichi', x: 60, y: 38, goal: 100 },
+  { id: 'edmundston', name: 'Edmundston', x: 8, y: 14, goal: 100 },
+  { id: 'standrews', name: 'Saint Andrews', x: 22, y: 88, goal: 75 },
+];
+function showProvinceMap() {
+  const dots = NB_REGIONS.map(r =>
+    '<div style="position:absolute; left:' + r.x + '%; top:' + r.y + '%; transform:translate(-50%,-50%); text-align:center">' +
+    '<div style="font-size:' + (r.open ? '20px' : '15px') + '">' + (r.open ? '✶' : '🔒') + '</div>' +
+    '<div style="font-size:10px; font-family:ui-monospace,monospace; background:rgba(26,35,64,0.85); border-radius:6px; padding:1px 6px; white-space:nowrap">' + r.name +
+    (r.open ? '' : '<br>' + (LANG === 'fr' ? 'objectif : ' : 'goal: ') + r.goal + ' 📝') + '</div></div>'
+  ).join('');
+  modal(
+    '<h2>' + (LANG === 'fr' ? 'La Carte du Nouveau-Brunswick' : 'The Map of New Brunswick') + '</h2>' +
+    '<p style="font-size:13px">' + (LANG === 'fr'
+      ? 'Fredericton d’abord — comme Harvard. Chaque région s’ouvre au développement quand assez de gens de là-bas s’inscrivent à la liste d’attente. Les objectifs ci-dessous sont réels et honnêtes : pas de faux compteurs, jamais.'
+      : 'Fredericton first — the Harvard rule. Each region opens for development when enough people from there join the waitlist. The goals below are real and honest: no fake counters, ever.') + '</p>' +
+    '<div style="position:relative; width:100%; aspect-ratio:1.15; background:linear-gradient(160deg,#1c2a4a,#16203a); border:2px solid var(--ui-cream); border-radius:12px; overflow:hidden">' +
+    '<svg viewBox="0 0 100 100" style="position:absolute; inset:0; width:100%; height:100%" aria-hidden="true">' +
+    '<polygon points="6,6 52,2 60,10 82,8 92,22 88,34 78,30 70,44 78,58 88,60 84,78 62,72 52,92 40,96 34,78 18,86 12,70 24,58 18,40 8,30" fill="#2e3f66" stroke="#6fa3e8" stroke-width="1.2"/>' +
+    '<path d="M 10 22 Q 30 40 32 60" stroke="#6fa3e8" stroke-width="1.5" fill="none" opacity="0.7"/>' +
+    '</svg>' + dots + '</div>' +
+    '<p style="font-size:11px; opacity:0.65; margin-top:8px">📝 = ' + (LANG === 'fr' ? 'inscriptions à la liste d’attente de cette région' : 'waitlist signups from that region') + ' · <a href="../#waitlist" style="color:var(--ui-blue)">' + (LANG === 'fr' ? 'la liste d’attente' : 'the waitlist') + '</a></p>' +
+    '<div class="btnrow"><button class="btn" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
+  );
+}
+
 /* ---- the finale: La Grande Jasette ---- */
 function finaleEligible() {
   return save.pages.length >= 6 && save.level >= 2 && save.plotStage !== 'done';
@@ -1086,6 +1195,8 @@ function buildAtlas() {
     paintTile(TL.RUG, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 1, oy + 1, 14, 14, PAL.stall1); px(c, ox, 3, oy + 3, 10, 10, '#d86a6a'); });
     paintTile(TL.SHELF, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 1, oy, 14, 13, PAL.shelf); for (let j = 0; j < 3; j++) { px(c, ox, 2, oy + 1 + j * 4, 12, 3, '#5a3a24'); for (let i = 0; i < 5; i++) px(c, ox, 3 + i * 2, oy + 1 + j * 4, 1, 3, ['#c94f4f', '#e8c04a', '#6fa3e8', '#4d8c47', '#e07b9a'][i]); } });
     paintTile(TL.PLANT, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 5, oy + 9, 6, 5, PAL.stall1); px(c, ox, 4, oy + 2, 8, 7, PAL.leaf2); px(c, ox, 6, oy + 1, 4, 3, PAL.leaf1); });
+    paintTile(TL.GRATE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.path); px(c, ox, 2, oy + 2, 12, 12, '#3a3a40'); for (let i = 0; i < 4; i++) px(c, ox, 4, oy + 4 + i * 3, 8, 1, '#6a6a72'); px(c, ox, 3, oy + 3, 2, 2, '#8a8a92'); });
+    paintTile(TL.PIPE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, '#26221e'); px(c, ox, 0, oy + 4, 16, 6, '#5a5248'); px(c, ox, 0, oy + 5, 16, 1, '#7a7268'); px(c, ox, 4, oy + 2, 2, 12, '#4a443c'); px(c, ox, 11, oy + 10, 3, 3, '#c96a2f'); });
   }
 }
 
@@ -1263,6 +1374,18 @@ function render() {
       }
     }
   }
+  if (state === 'interior' && interior.isTunnel) {
+    /* the dark, and one lantern */
+    cx.fillStyle = 'rgba(4,6,14,0.62)'; cx.fillRect(0, 0, W, H);
+    const lx = player.px - camera.x + 8, ly = player.py - camera.y + 8;
+    const lg = cx.createRadialGradient(lx, ly, 6, lx, ly, 70);
+    lg.addColorStop(0, 'rgba(255,200,110,0.34)'); lg.addColorStop(1, 'rgba(255,200,110,0)');
+    cx.fillStyle = lg; cx.fillRect(lx - 70, ly - 70, 140, 140);
+    const kx = 7.5 * TILE - camera.x, ky = 2.5 * TILE - camera.y;
+    const kg = cx.createRadialGradient(kx, ky, 4, kx, ky, 44);
+    kg.addColorStop(0, 'rgba(255,160,80,0.3)'); kg.addColorStop(1, 'rgba(255,160,80,0)');
+    cx.fillStyle = kg; cx.fillRect(kx - 44, ky - 44, 88, 88);
+  }
   if (state === 'interior') {
     /* keeper behind the counter */
     const k = interior.keeperStyle;
@@ -1310,7 +1433,7 @@ function renderTitle() {
     cx.fillText(t('pressStart'), W / 2, 196);
   }
   cx.font = '9px monospace'; cx.fillStyle = 'rgba(244,234,210,0.6)';
-  cx.fillText('v0.4 « Les Saisons » — ' + t('demoNote'), W / 2, H - 12);
+  cx.fillText('v0.5 « Les Profondeurs » — ' + t('demoNote'), W / 2, H - 12);
   cx.fillStyle = 'rgba(244,234,210,0.5)';
   cx.fillText(LANG === 'fr'
     ? 'Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean).'
@@ -1409,6 +1532,7 @@ function interactTarget() {
     const f = folk.find(f => f.x === fx && f.y === fy);
     if (f) return { kind: 'folk', folk: f, hint: t('talk') };
     const grid = map;
+    if (tileAt(grid, fx, fy) === TL.GRATE) return { kind: 'grate', hint: '???' };
     if (tileAt(grid, fx, fy) === TL.DOOR) { const v = VENUES.find(v => v.doorX === fx && v.doorY === fy); if (v) return { kind: 'door', venue: v, hint: t('enter') }; }
     if (PARK.x <= fx && fx < PARK.x + PARK.w && PARK.y <= fy && fy < PARK.y + PARK.h && tileAt(grid, fx, fy) === TL.GAZEBO) {
       return { kind: 'park', hint: finaleEligible() ? '✶✶✶' : 'Tintamarre !' };
@@ -1436,12 +1560,15 @@ function interact() {
     talkToCat(target.cat);
   } else if (target.kind === 'deer') {
     approachDeer(target.deer);
+  } else if (target.kind === 'grate') {
+    tryGrate();
   } else if (target.kind === 'door') {
     enterVenue(target.venue);
   } else if (target.kind === 'park') {
     if (finaleEligible()) runFinale(); else openMinigame('tintamarre');
   } else if (target.kind === 'keeper') {
-    if (interior.pack.npc.isHote && readyToLevel()) recognitionCeremony();
+    if (interior.isTunnel) talkTunnelKeeper();
+    else if (interior.pack.npc.isHote && readyToLevel()) recognitionCeremony();
     else startEncounter();
   } else if (target.kind === 'board') {
     openEvents(interior.venue);
@@ -1775,9 +1902,22 @@ function showPassport() {
     return '<div class="stamp' + (has ? ' got' : '') + '"><span class="ico">' + (has ? v.ico : '·') + '</span><span>' + v.name + '</span></div>';
   }).join('');
   const safety = t('safetyRules').map(r => '<li>' + r + '</li>').join('');
+  const sheet =
+    '<div style="display:flex; gap:14px; align-items:center; margin-bottom:10px">' +
+    '<canvas id="pp-avatar" width="16" height="20" style="width:64px; height:80px; image-rendering:pixelated; background:var(--ui-navy); border:2px solid var(--ui-cream); border-radius:8px; flex:none"></canvas>' +
+    '<div style="flex:1">' +
+    '<div style="font-family:\'Courier New\',monospace; font-weight:bold; font-size:18px; color:var(--ui-gold)">' + save.name + '</div>' +
+    '<div style="font-size:13px">' + confTitle() + ' · ' + CONSENT_LEVELS[save.correction || 1].ico + '</div>' +
+    '<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-top:6px; font-size:11px; font-family:ui-monospace,monospace; text-align:center">' +
+    '<div>☕<br>' + save.confidence + '</div>' +
+    '<div>📖<br>' + save.trucs.length + '</div>' +
+    '<div>📜<br>' + save.pages.length + '/8</div>' +
+    '<div>✶<br>' + save.pins.length + '</div>' +
+    '</div></div></div>';
   modal(
-    '<h2>' + t('passport') + ' — ' + save.name + '</h2>' +
-    '<p>' + t('confidence') + ': <b>' + save.confidence + '</b> ☕ — <b>' + confTitle() + '</b></p>' +
+    '<h2>' + t('passport') + '</h2>' + sheet +
+    '<div class="btnrow" style="margin:0 0 10px"><button class="btn alt" id="pp-map" style="font-size:12px">🗺️ ' + (LANG === 'fr' ? 'La Carte du N.-B.' : 'The NB Map') + '</button></div>' +
+    '<p>' + t('confidence') + ': <b>' + save.confidence + '</b> ☕</p>' +
     '<div class="meter"><div style="width:' + pct + '%"></div></div>' +
     '<h3>' + t('stamps') + ' (' + got + '/' + total + ')</h3><div class="stamps">' + stamps + '</div>' +
     (save.recognizedBy && save.recognizedBy.length
@@ -1804,7 +1944,12 @@ function showPassport() {
       : '') +
     '<h3>' + t('safety') + '</h3><ul>' + safety + '</ul>' +
     '<div class="btnrow"><button class="btn" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
-  ).querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
+  );
+  const av = document.getElementById('pp-avatar');
+  if (av) { const c2 = av.getContext('2d'); c2.imageSmoothingEnabled = false; drawChar(c2, 0, 0, HERO_STYLES[save.styleIdx || 0], 'down', 0, {}); }
+  const mapBtn = document.getElementById('pp-map');
+  if (mapBtn) mapBtn.addEventListener('click', () => { closeModal(); showProvinceMap(); });
+  modalRoot.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
     const codeText = b.dataset.copy + (LANG === 'fr'
       ? ' — ton invitation à Bilingua Quest, de la part de ' + save.name
       : ' — your invitation to Bilingua Quest, from ' + save.name);
