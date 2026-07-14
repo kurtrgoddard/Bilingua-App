@@ -1,0 +1,2139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Bilingua Quest — Fredericton</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕹️</text></svg>">
+<style>
+  :root {
+    --ui-navy: #1a2340;
+    --ui-navy2: #232f57;
+    --ui-gold: #e8c04a;
+    --ui-cream: #f4ead2;
+    --ui-blue: #6fa3e8;
+    --ui-red: #c94f4f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #0b0e1a; overflow: hidden; touch-action: none; }
+  body { font-family: 'Courier New', Courier, monospace; color: var(--ui-cream); }
+
+  #stage {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #0b0e1a;
+  }
+
+  /* ---------- SNES window chrome ---------- */
+  .win {
+    background: linear-gradient(180deg, var(--ui-navy2), var(--ui-navy));
+    border: 3px solid var(--ui-cream);
+    border-radius: 8px;
+    box-shadow: 0 0 0 3px var(--ui-navy), 0 6px 0 3px rgba(0,0,0,0.4);
+    color: var(--ui-cream);
+    padding: 14px 16px;
+    line-height: 1.45;
+  }
+  .hidden { display: none !important; }
+
+  #dlg {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: min(640px, calc(100vw - 20px));
+    min-height: 108px;
+    z-index: 30;
+    font-size: 15px;
+  }
+  #dlg .speaker {
+    display: inline-block;
+    background: var(--ui-navy);
+    border: 2px solid var(--ui-cream);
+    border-radius: 6px;
+    padding: 1px 10px;
+    margin-top: -26px;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+  }
+  #dlg .speaker .star { color: var(--ui-gold); }
+  #dlg-text { min-height: 44px; white-space: pre-wrap; }
+  #dlg-text .fr { display: block; }
+  #dlg-text .en { display: block; font-size: 12px; opacity: 0.75; font-style: italic; margin-top: 4px; }
+  #dlg .next { position: absolute; right: 14px; bottom: 8px; animation: bob 0.8s infinite; color: var(--ui-gold); }
+  @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(3px);} }
+  @media (prefers-reduced-motion: reduce) { #dlg .next { animation: none; } }
+
+  #choices { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .choice {
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--ui-navy);
+    color: var(--ui-cream);
+    border: 2px solid var(--ui-cream);
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .choice:hover, .choice:focus-visible { background: var(--ui-navy2); border-color: var(--ui-gold); outline: none; }
+  .choice .en { display: block; font-size: 11px; opacity: 0.7; font-style: italic; }
+  .choice .cursor { color: var(--ui-gold); margin-right: 6px; }
+
+  /* ---------- modal ---------- */
+  .modal {
+    position: fixed; inset: 0; z-index: 40;
+    background: rgba(5, 8, 18, 0.72);
+    display: flex; align-items: center; justify-content: center;
+    padding: 14px;
+  }
+  .modal .win { width: min(560px, 100%); max-height: 86vh; overflow-y: auto; }
+  .modal h2 { font-size: 17px; color: var(--ui-gold); margin-bottom: 10px; letter-spacing: 0.04em; }
+  .modal h3 { font-size: 14px; color: var(--ui-blue); margin: 12px 0 4px; }
+  .modal p, .modal li { font-size: 13px; }
+  .modal ul { padding-left: 18px; }
+  .btnrow { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .btn {
+    font-family: inherit; font-size: 14px; font-weight: bold;
+    background: var(--ui-gold); color: #201a08;
+    border: 2px solid var(--ui-cream); border-radius: 6px;
+    padding: 8px 18px; cursor: pointer;
+  }
+  .btn.alt { background: var(--ui-navy); color: var(--ui-cream); font-weight: normal; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn:focus-visible { outline: 3px solid var(--ui-blue); }
+  input[type="text"] {
+    font-family: inherit; font-size: 15px;
+    background: #101730; color: var(--ui-cream);
+    border: 2px solid var(--ui-cream); border-radius: 6px;
+    padding: 8px 10px; width: 100%;
+  }
+  label.check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; margin: 10px 0; cursor: pointer; }
+  input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--ui-gold); flex: none; margin-top: 1px; }
+
+  /* passport stamps */
+  .stamps { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin: 8px 0; }
+  .stamp {
+    border: 2px dashed rgba(244, 234, 210, 0.35); border-radius: 8px;
+    padding: 8px 6px; text-align: center; font-size: 11px; min-height: 58px;
+    display: flex; flex-direction: column; justify-content: center; gap: 3px;
+  }
+  .stamp.got { border: 2px solid var(--ui-gold); background: rgba(232, 192, 74, 0.12); }
+  .stamp .ico { font-size: 17px; }
+  .meter { height: 12px; border: 2px solid var(--ui-cream); border-radius: 999px; overflow: hidden; background: #101730; }
+  .meter > div { height: 100%; background: linear-gradient(90deg, var(--ui-blue), var(--ui-gold)); transition: width 0.4s; }
+  .evt { border: 2px solid rgba(244,234,210,0.3); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+  .evt .when { color: var(--ui-gold); font-size: 11px; letter-spacing: 0.05em; }
+  .evt .fr { font-size: 12px; opacity: 0.8; font-style: italic; }
+  .tag { display: inline-block; font-size: 10px; border: 1px solid var(--ui-blue); color: var(--ui-blue); border-radius: 999px; padding: 0 8px; margin-left: 6px; vertical-align: middle; }
+
+  /* HUD */
+  #hud {
+    position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
+    z-index: 20; display: flex; gap: 8px; align-items: center;
+    font-size: 12px; pointer-events: none;
+  }
+  #hud .pill {
+    background: rgba(26, 35, 64, 0.88); border: 2px solid var(--ui-cream);
+    border-radius: 999px; padding: 3px 12px; pointer-events: auto;
+  }
+  #hud button.pill { cursor: pointer; color: var(--ui-cream); font-family: inherit; font-size: 12px; }
+  #loc-banner {
+    position: fixed; top: 44px; left: 50%; transform: translateX(-50%);
+    z-index: 19; font-size: 13px; letter-spacing: 0.08em; color: var(--ui-cream);
+    background: rgba(26,35,64,0.85); border: 2px solid var(--ui-gold); border-radius: 6px;
+    padding: 3px 14px; opacity: 0; transition: opacity 0.5s; pointer-events: none;
+  }
+
+  /* touch controls */
+  #touch { position: fixed; inset: 0; z-index: 25; pointer-events: none; display: none; }
+  body.touch #touch { display: block; }
+  #dpad {
+    position: absolute; left: 14px; bottom: max(120px, calc(env(safe-area-inset-bottom) + 120px));
+    width: 132px; height: 132px; pointer-events: auto;
+  }
+  #dpad button {
+    position: absolute; width: 44px; height: 44px;
+    background: rgba(26,35,64,0.85); border: 2px solid var(--ui-cream); border-radius: 8px;
+    color: var(--ui-cream); font-size: 16px; font-family: inherit;
+  }
+  #dpad .up { left: 44px; top: 0; } #dpad .down { left: 44px; bottom: 0; }
+  #dpad .left { left: 0; top: 44px; } #dpad .right { right: 0; top: 44px; }
+  #abtn {
+    position: absolute; right: 18px; bottom: max(130px, calc(env(safe-area-inset-bottom) + 130px));
+    width: 62px; height: 62px; border-radius: 50%;
+    background: rgba(232,192,74,0.92); border: 3px solid var(--ui-cream);
+    color: #201a08; font-size: 20px; font-weight: bold; font-family: inherit;
+    pointer-events: auto;
+  }
+
+  /* accessibility modes */
+  body.dlg-large #dlg { font-size: 18px; }
+  body.dlg-large #dlg-text .en { font-size: 15px; }
+  body.dlg-large .choice { font-size: 17px; }
+  body.dlg-large .choice .en { font-size: 13px; }
+  body.dlg-contrast #dlg, body.dlg-contrast .modal .win {
+    background: #000; border-color: #fff;
+    box-shadow: 0 0 0 3px #000;
+  }
+  body.dlg-contrast #dlg-text .en { opacity: 1; color: #ffd94a; }
+  body.dlg-contrast .choice { background: #000; border-color: #fff; }
+  body.dlg-contrast .choice:hover, body.dlg-contrast .choice:focus-visible { border-color: #ffd94a; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="game" width="480" height="320" aria-label="Bilingua Quest game world"></canvas></div>
+
+<a id="vision-link" href="../" style="position:fixed; right:14px; top:12px; z-index:22; font-size:12px; color:var(--ui-gold); background:rgba(26,35,64,0.88); border:2px solid var(--ui-cream); border-radius:999px; padding:3px 12px; text-decoration:none; font-family:inherit;">La vision →</a>
+
+<div id="hud" class="hidden">
+  <span class="pill" id="hud-conf">☕ 0</span>
+  <button class="pill" id="hud-passport" type="button">Passeport [P]</button>
+  <button class="pill" id="hud-exp" type="button">Expédition</button>
+  <button class="pill" id="hud-lang" type="button">FR/EN</button>
+  <button class="pill" id="hud-snd" type="button">♪ off</button>
+  <button class="pill" id="hud-set" type="button" aria-label="Settings">⚙</button>
+</div>
+<div id="loc-banner"></div>
+
+<div id="dlg" class="win hidden" role="dialog" aria-live="polite">
+  <span class="speaker" id="dlg-speaker"></span>
+  <div id="dlg-text"></div>
+  <div id="choices"></div>
+  <span class="next" id="dlg-next">▼</span>
+</div>
+
+<div id="modal-root"></div>
+
+<div id="touch">
+  <div id="dpad">
+    <button class="up" data-dir="up" type="button" aria-label="Up">▲</button>
+    <button class="down" data-dir="down" type="button" aria-label="Down">▼</button>
+    <button class="left" data-dir="left" type="button" aria-label="Left">◀</button>
+    <button class="right" data-dir="right" type="button" aria-label="Right">▶</button>
+  </div>
+  <button id="abtn" type="button" aria-label="Interact">A</button>
+</div>
+
+<script>
+'use strict';
+/* =====================================================================
+   BILINGUA QUEST — Fredericton  (v0 prototype)
+   A cozy SNES-style walk around real downtown Fredericton + the northside,
+   where every conversation in French succeeds charmingly.
+   Single file, no dependencies. Map geometry from TomTom (see game/data/).
+   ===================================================================== */
+
+/* ---------------- i18n (UI chrome) ---------------- */
+let LANG = localStorage.getItem('bq_lang') || 'en';
+const T = {
+  title:      { en: 'BILINGUA QUEST', fr: 'BILINGUA QUEST' },
+  subtitle:   { en: 'Fredericton', fr: 'Fredericton' },
+  pressStart: { en: 'PRESS ENTER / TAP', fr: 'APPUYEZ SUR ENTRÉE / TOUCHEZ' },
+  newGame:    { en: 'New game', fr: 'Nouvelle partie' },
+  continueG:  { en: 'Continue', fr: 'Continuer' },
+  gateTitle:  { en: 'Before you play', fr: 'Avant de jouer' },
+  gateBody:   { en: 'Bilingua Quest is for adults (18+). Real venues appear in the game; real-world meetups follow the safety rules in your Passeport: public places only, tell a friend, trust your instincts.', fr: 'Bilingua Quest est réservé aux adultes (18+). De vrais commerces apparaissent dans le jeu; les rencontres réelles suivent les règles de sécurité de votre Passeport : lieux publics seulement, avertissez un ami, fiez-vous à votre instinct.' },
+  gateCheck:  { en: 'I am 18 or older', fr: 'J’ai 18 ans ou plus' },
+  gateName:   { en: 'Your name, traveller?', fr: 'Votre nom, voyageur·euse ?' },
+  gateGo:     { en: 'Enter Fredericton', fr: 'Entrer à Fredericton' },
+  createT:    { en: 'Choose your traveller', fr: 'Choisissez votre voyageur·euse' },
+  confQ:      { en: 'How is your French right now? (Honest answers earn bonus charm.)', fr: 'Comment va votre français en ce moment ? (L’honnêteté a du charme.)' },
+  conf1:      { en: 'Twelve years of school French… buried somewhere', fr: 'Douze ans de français scolaire… enfoui quelque part' },
+  conf2:      { en: 'I can order a coffee if nobody watches', fr: 'Je peux commander un café si personne ne regarde' },
+  conf3:      { en: 'Pretty good — I want real conversations', fr: 'Assez bon — je veux de vraies conversations' },
+  begin:      { en: 'Begin', fr: 'Commencer' },
+  passport:   { en: 'PASSEPORT', fr: 'PASSEPORT' },
+  confidence: { en: 'Confidence', fr: 'Confiance' },
+  stamps:     { en: 'Venue stamps', fr: 'Timbres des lieux' },
+  events:     { en: 'Rendez-vous board', fr: 'Babillard des rendez-vous' },
+  safety:     { en: 'Safety card', fr: 'Carte de sécurité' },
+  safetyRules:{ en: ['Meet in public places — cafés, pubs, the market.', 'Tell a friend where you’re going.', 'Trust your instincts. Leaving early is always fine.', 'Look for the gold star: Hôtes host French practice.'], fr: ['Rencontrez-vous dans des lieux publics — cafés, pubs, marché.', 'Dites à un ami où vous allez.', 'Fiez-vous à votre instinct. Partir tôt, c’est toujours correct.', 'Cherchez l’étoile dorée : les Hôtes animent la pratique du français.'] },
+  close:      { en: 'Close', fr: 'Fermer' },
+  sample:     { en: 'Sample data — real listings arrive with v1', fr: 'Données d’exemple — les vraies annonces arrivent avec la v1' },
+  talk:       { en: 'talk', fr: 'parler' },
+  enter:      { en: 'enter', fr: 'entrer' },
+  read:       { en: 'read', fr: 'lire' },
+  exit:       { en: 'exit', fr: 'sortir' },
+  stampGot:   { en: 'STAMP EARNED!', fr: 'TIMBRE OBTENU !' },
+  confUp:     { en: 'Confidence +', fr: 'Confiance +' },
+  demoNote:   { en: 'v0 prototype — demo sign-in, saves on this device only', fr: 'Prototype v0 — connexion démo, sauvegarde locale seulement' },
+};
+const t = (k) => (T[k] ? (T[k][LANG] !== undefined ? T[k][LANG] : T[k].en) : k);
+
+/* ---------------- invitations ----------------
+   Fredericton is invitation-only — like any good dinner party.
+   v0.2 validates codes client-side (a ritual, not a lock; v1 moves
+   this server-side). Codes: WORD-WORD-NN over a local word list. */
+const INVITE_WORDS = ['VIOLET','WOLASTOQ','FOUGERE','ACADIE','STELLA','POUTINE','RIVIERE','PONT','CAFE','VELO','HARVEST','FROSTIVAL','TINTAMARRE','MARIGOLD','CHICKADEE','MOITIE','BRUME','HOMARD','SIROP','CANOT','LILAS','PICNIC','AURORE','SENTIER'];
+function inviteChecksum(w1, w2) {
+  const s = (w1 + '-' + w2).toUpperCase();
+  let v = 0;
+  for (let i = 0; i < s.length; i++) v = (v * 31 + s.charCodeAt(i)) % 1000000;
+  return 10 + (v % 89);
+}
+function validateInvite(raw) {
+  const parts = String(raw || '').trim().toUpperCase().replace(/\s+/g, '-').split('-').filter(Boolean);
+  if (parts.length !== 3) return false;
+  const [w1, w2, nn] = parts;
+  if (!INVITE_WORDS.includes(w1) || !INVITE_WORDS.includes(w2) || w1 === w2) return false;
+  return parseInt(nn, 10) === inviteChecksum(w1, w2);
+}
+function makeInvite() {
+  const i = Math.floor(Math.random() * INVITE_WORDS.length);
+  let j = Math.floor(Math.random() * INVITE_WORDS.length);
+  if (j === i) j = (j + 1) % INVITE_WORDS.length;
+  const w1 = INVITE_WORDS[i], w2 = INVITE_WORDS[j];
+  return w1 + '-' + w2 + '-' + inviteChecksum(w1, w2);
+}
+
+/* ---------------- save ---------------- */
+const SAVE_KEY = 'bq_save_v1';
+let save = null;
+function loadSave() {
+  try { save = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { save = null; }
+  if (save && save.level === undefined) { save.level = 0; save.recognizedBy = []; }  /* migrate v0 saves */
+  if (save && save.myCodes === undefined) { save.myCodes = []; save.codeUsed = null; save.invitedBy = null; }  /* migrate v0.1 saves */
+  if (save && save.pages === undefined) { save.pages = []; save.trucs = []; save.pins = []; save.metSpecials = {}; save.minigamesWon = {}; save.plotStage = null; }  /* migrate v0.2 saves */
+  if (save && save.correction === undefined) save.correction = 1;  /* migrate v0.3 saves */
+}
+function writeSave() { if (save) localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
+loadSave();
+
+/* ---------------- audio (tiny chip bleeps, off by default) ---------------- */
+const SND = {
+  on: false, ctx: null,
+  ensure() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+  blip(freq, dur, type, vol) {
+    if (!this.on) return;
+    try {
+      this.ensure();
+      const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+      o.type = type || 'square'; o.frequency.value = freq;
+      g.gain.setValueAtTime(vol || 0.04, this.ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + (dur || 0.07));
+      o.connect(g); g.connect(this.ctx.destination);
+      o.start(); o.stop(this.ctx.currentTime + (dur || 0.07));
+    } catch (e) {}
+  },
+  text() { this.blip(720 + Math.floor(Math.random() * 60), 0.03, 'square', 0.02); },
+  confirm() { this.blip(660, 0.06); this.blip(880, 0.09); },
+  stamp() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => this.blip(f, 0.12, 'triangle', 0.06), i * 90)); },
+  step() { this.blip(180, 0.02, 'triangle', 0.012); }
+};
+
+/* ---------------- reduced motion ---------------- */
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- options (accessibility & preferences) ---------------- */
+let OPTS = { instantText: false, largeText: false, highContrast: false };
+try { OPTS = Object.assign(OPTS, JSON.parse(localStorage.getItem('bq_opts')) || {}); } catch (e) {}
+function writeOpts() {
+  localStorage.setItem('bq_opts', JSON.stringify(OPTS));
+  document.body.classList.toggle('dlg-large', !!OPTS.largeText);
+  document.body.classList.toggle('dlg-contrast', !!OPTS.highContrast);
+}
+
+/* ---------------- the clock & the seasons ----------------
+   The town keeps Fredericton time: dawn is dawn, snow is snow.
+   No weather API — the calendar and the clock are honest enough. */
+const CLOCK = { hour: new Date().getHours(), month: new Date().getMonth() };
+function DEBUG_setClock(hour, month) { CLOCK.hour = hour; CLOCK.month = month; initParticles(); }
+function seasonOf() {
+  const m = CLOCK.month;
+  if (m === 11 || m <= 1) return 'winter';
+  if (m <= 4) return 'spring';
+  if (m <= 7) return 'summer';
+  return 'fall';
+}
+function dayPhase() {
+  const h = CLOCK.hour;
+  if (h >= 5 && h < 8) return 'dawn';
+  if (h >= 8 && h < 17) return 'day';
+  if (h >= 17 && h < 21) return 'dusk';
+  return 'night';
+}
+/* weather particles: snow, rain, leaves, fireflies */
+let particles = [];
+function initParticles() {
+  particles = [];
+  if (REDUCED) return;
+  const s = seasonOf(), n = 42;
+  for (let i = 0; i < n; i++) {
+    particles.push({
+      x: Math.random() * 480, y: Math.random() * 320,
+      vx: s === 'fall' ? 0.3 + Math.random() * 0.5 : (Math.random() - 0.5) * 0.3,
+      vy: s === 'winter' ? 0.25 + Math.random() * 0.4 : s === 'spring' ? 2.2 + Math.random() * 1.4 : 0.2 + Math.random() * 0.4,
+      ph: Math.random() * Math.PI * 2
+    });
+  }
+}
+function drawWeather() {
+  const s = seasonOf(), phase = dayPhase();
+  /* seasonal particles (screen space) */
+  if (!REDUCED) {
+    particles.forEach(p => {
+      p.ph += 0.03;
+      p.x += p.vx + (s === 'winter' ? Math.sin(p.ph) * 0.3 : 0);
+      p.y += p.vy;
+      if (p.y > 322) { p.y = -4; p.x = Math.random() * 480; }
+      if (p.x > 482) p.x = -2; if (p.x < -4) p.x = 482;
+      if (s === 'winter') { cx.fillStyle = 'rgba(255,255,255,0.85)'; cx.fillRect(p.x, p.y, 2, 2); }
+      else if (s === 'spring') { if (Math.floor(frameCount / 300) % 3 === 0) { cx.fillStyle = 'rgba(160,200,255,0.5)'; cx.fillRect(p.x, p.y, 1, 5); } }
+      else if (s === 'fall') { cx.fillStyle = ['#c96a2f', '#d98a2f', '#a8542f'][Math.floor(p.ph) % 3]; cx.fillRect(p.x, p.y, 2, 2); }
+      else if (s === 'summer' && phase === 'night') { const a = 0.3 + 0.7 * Math.abs(Math.sin(p.ph)); cx.fillStyle = 'rgba(240,230,120,' + a * 0.8 + ')'; cx.fillRect(p.x, p.y % 200 + 60, 2, 2); }
+    });
+  }
+  /* time-of-day tint */
+  if (phase === 'dawn') { cx.fillStyle = 'rgba(255,180,120,0.13)'; cx.fillRect(0, 0, 480, 320); }
+  else if (phase === 'dusk') { cx.fillStyle = 'rgba(255,130,70,0.18)'; cx.fillRect(0, 0, 480, 320); }
+  else if (phase === 'night') {
+    cx.fillStyle = 'rgba(10,16,48,0.42)'; cx.fillRect(0, 0, 480, 320);
+    /* streetlamps at the downtown intersections */
+    if (state === 'world') {
+      [[10, 29], [22, 29], [36, 29], [48, 29], [64, 29], [80, 29], [10, 37], [36, 37], [64, 37], [22, 45], [48, 45], [80, 45]].forEach(([lx, ly]) => {
+        const sx = lx * TILE - camera.x + 8, sy = ly * TILE - camera.y + 8;
+        if (sx < -40 || sx > 520 || sy < -40 || sy > 360) return;
+        const g = cx.createRadialGradient(sx, sy, 2, sx, sy, 26);
+        g.addColorStop(0, 'rgba(255,220,140,0.35)'); g.addColorStop(1, 'rgba(255,220,140,0)');
+        cx.fillStyle = g; cx.fillRect(sx - 26, sy - 26, 52, 52);
+      });
+    }
+  }
+}
+
+/* ---------------- cheat codes (playground lore) ---------------- */
+let cheatBuffer = '';
+const CHEATS = { active: {} };
+let tornado = null;
+function applyFilterCheats() {
+  const f = [];
+  if (CHEATS.active['1969']) f.push('sepia(0.75) contrast(0.92)');
+  cv.style.filter = f.join(' ');
+}
+function toggleCheat(code) {
+  const on = !CHEATS.active[code];
+  CHEATS.active[code] = on;
+  const names = { DISCO: 'Mode disco', 1969: 'Frédéricton, 1969', TORNADE: 'Tornade !', CHIAC: 'Mode chiac', MOITIE: 'Moitié-moitié' };
+  if (code === 'MOITIE') { LANG = LANG === 'en' ? 'fr' : 'en'; localStorage.setItem('bq_lang', LANG); if (save) updateHud(); }
+  if (code === 'TORNADE') { tornado = { x: -20, y: 12 + Math.random() * 30, t: 0 }; CHEATS.active.TORNADE = false; }
+  if (code === '1969') applyFilterCheats();
+  if (code === 'DISCO' && on) SND.on = true;
+  showBanner('✶ ' + (names[code] || code) + (code === 'TORNADE' ? '' : (on ? ' : ON' : ' : OFF')));
+  SND.stamp();
+}
+function updateCheatFx() {
+  if (CHEATS.active.DISCO) {
+    cv.style.filter = 'hue-rotate(' + ((frameCount * 4) % 360) + 'deg)' + (CHEATS.active['1969'] ? ' sepia(0.75)' : '');
+    if (frameCount % 20 === 0) SND.blip([262, 330, 392, 523][Math.floor(frameCount / 20) % 4], 0.09, 'square', 0.03);
+  } else if (!CHEATS.active['1969']) { if (cv.style.filter) cv.style.filter = ''; }
+  if (tornado) {
+    tornado.t++; tornado.x += 1.2; tornado.y += Math.sin(tornado.t / 12) * 0.8;
+    /* scatter squirrels and leaves in its path — nobody is harmed; the deer have seen worse */
+    animals.forEach(a => { if (a.kind === 'squirrel' && Math.abs(a.x - tornado.x) < 5 && Math.abs(a.y - tornado.y) < 5) { a.x = Math.max(a.minX, Math.min(a.maxX, a.x + Math.floor(Math.random() * 9 - 4))); } });
+    if (tornado.x > MAP_W + 4) tornado = null;
+  }
+}
+function drawTornado() {
+  if (!tornado || state !== 'world') return;
+  const sx = tornado.x * TILE - camera.x, sy = tornado.y * TILE - camera.y;
+  for (let i = 0; i < 6; i++) {
+    const w = 8 + i * 5, off = Math.sin(frameCount / 3 + i) * (3 + i);
+    cx.fillStyle = 'rgba(120,110,100,' + (0.55 - i * 0.06) + ')';
+    cx.fillRect(sx - w / 2 + off, sy - i * 8, w, 7);
+  }
+  for (let i = 0; i < 5; i++) {
+    cx.fillStyle = '#c96a2f';
+    cx.fillRect(sx + Math.sin(frameCount / 4 + i * 2) * 22, sy - 20 + Math.cos(frameCount / 5 + i) * 16, 2, 2);
+  }
+}
+document.addEventListener('keydown', (e) => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  if (!/^[a-zA-Z0-9]$/.test(e.key)) return;
+  cheatBuffer = (cheatBuffer + e.key.toUpperCase()).slice(-10);
+  ['DISCO', '1969', 'TORNADE', 'CHIAC', 'MOITIE'].forEach(c => {
+    if (cheatBuffer.endsWith(c)) { cheatBuffer = ''; toggleCheat(c); }
+  });
+});
+/* chiac mode: a light sprinkle on displayed French */
+function chiacify(s) {
+  if (!CHEATS.active.CHIAC || !s) return s;
+  if (s.includes('right là')) return s;
+  if (Math.random() < 0.3 && s.endsWith('!')) return s.slice(0, -1) + ', right là !';
+  if (Math.random() < 0.15 && s.endsWith('.')) return s.slice(0, -1) + ', faque voilà.';
+  return s;
+}
+
+/* =====================================================================
+   MAP — real Fredericton geometry, stylized.
+   Grid 92 x 56, 16px tiles. North at top. The Saint John River
+   (Wolastoq) crosses the middle; Westmorland St Bridge (west, vehicles)
+   and the green Bill Thorpe Walking Bridge (east) connect the sides.
+   ===================================================================== */
+const TILE = 16, MAP_W = 92, MAP_H = 56;
+
+/* tile ids */
+const TL = {
+  GRASS: 0, GRASS2: 1, TREE: 2, WATER: 3, ROAD: 4, ROADLINE: 5, SIDE: 6,
+  XWALK: 7, BANK: 8, BRIDGE: 9, TRUSS: 10, PATH: 11, FLOWER: 12, BENCH: 13,
+  WALL: 14, ROOF: 15, DOOR: 16, WINDOW: 17, SIGN: 18, STALL: 19, GAZEBO: 20,
+  FLOOR: 21, COUNTER: 22, TABLE: 23, BOARD: 24, RUG: 25, SHELF: 26, PLANT: 27,
+  GRATE: 28, PIPE: 29,
+};
+const SOLID = new Set([TL.TREE, TL.WATER, TL.WALL, TL.ROOF, TL.WINDOW, TL.SIGN, TL.STALL,
+  TL.COUNTER, TL.TABLE, TL.BOARD, TL.SHELF, TL.BENCH, TL.GAZEBO, TL.PLANT]);
+
+let map = [];
+function fillMap() {
+  map = [];
+  for (let y = 0; y < MAP_H; y++) {
+    const row = [];
+    for (let x = 0; x < MAP_W; x++) row.push(((x * 7 + y * 13) % 11 === 0) ? TL.GRASS2 : TL.GRASS);
+    map.push(row);
+  }
+}
+const put = (x, y, t) => { if (x >= 0 && y >= 0 && x < MAP_W && y < MAP_H) map[y][x] = t; };
+const rectT = (x, y, w, h, t) => { for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) put(x + i, y + j, t); };
+const hRoad = (y, x0, x1) => { for (let x = x0; x <= x1; x++) { put(x, y - 1, TL.SIDE); put(x, y, TL.ROAD); put(x, y + 1, x % 6 === 3 ? TL.ROADLINE : TL.ROAD); put(x, y + 2, TL.SIDE); } };
+const vRoad = (x, y0, y1) => { for (let y = y0; y <= y1; y++) { put(x - 1, y, TL.SIDE); put(x, y, TL.ROAD); put(x + 1, y, TL.ROAD); put(x + 2, y, TL.SIDE); } };
+
+/* Venue table: real venues, positions derived from TomTom coords
+   (west→east by longitude; street placement true to address). */
+/* Row plan (north→south):
+   0-1 woods · 2-4 northside buildings (door row 4) · 5-8 Main St
+   9-13 grass · 14 bank · 15-21 river · 22 bank · 23-24 the Green
+   25 green trees/benches · 26-28 Queen-north buildings (door 28)
+   29-32 Queen St · 33-35 mid-block buildings (door 35) · 36 alley
+   37-40 King St · 41-43 King-south buildings (door 43) · 44 alley
+   45-48 Brunswick St · 49-52 Boyce market (door 52) · 53-55 south grass
+   Cross streets x=10 Smythe, 22 Westmorland, 36 York, 48 Carleton,
+   64 Regent, 80 Church (occupy x-1..x+2). */
+const VENUES = [
+  /* northside — Main Street (Nashwaaksis), west→east true to addresses */
+  { id: 'fancybites', name: 'Fancy Bites By Nancy', type: 'restaurant', x: 26, y: 2, w: 6, h: 3, ico: '🍽️' },
+  { id: 'shuyi', name: 'Shuyi Tealicious', type: 'teacafe', x: 36, y: 2, w: 5, h: 3, ico: '🧋' },
+  { id: 'timsmain', name: 'Tim Hortons', type: 'coffeeshop', x: 46, y: 2, w: 6, h: 3, ico: '☕' },
+  /* Queen-north (river side), rows 26-28 */
+  { id: 'wilsers', name: "Wilser's Room", type: 'musicbar', x: 41, y: 26, w: 5, h: 3, ico: '🎸' },
+  { id: 'brokenrecord', name: 'Broken Record Bar', type: 'musicbar', x: 52, y: 26, w: 5, h: 3, ico: '🎵' },
+  { id: 'gahan', name: 'Gahan House Riverside', type: 'pub', x: 57, y: 26, w: 6, h: 3, ico: '🍻' },
+  /* mid-block between Queen & King, rows 33-35, west→east by longitude */
+  { id: 'graystone', name: 'Graystone Brewing', type: 'taproom', x: 30, y: 33, w: 5, h: 3, ico: '🍺' },
+  { id: 'jonnie', name: 'Jonnie Java Roasters', type: 'cafe', x: 39, y: 33, w: 5, h: 3, ico: '☕' },
+  { id: 'library', name: 'Fredericton Public Library', type: 'library', x: 51, y: 33, w: 5, h: 3, ico: '📚' },
+  { id: 'chesspiece', name: 'Chess Piece Pâtisserie', type: 'cafe', x: 57, y: 33, w: 5, h: 3, ico: '🥐' },
+  { id: 'dolans', name: "Dolan's Pub", type: 'pub', x: 67, y: 33, w: 5, h: 3, ico: '🎻' },
+  { id: 'flippins', name: 'Flippins Bar/Arcade', type: 'arcadebar', x: 73, y: 33, w: 5, h: 3, ico: '🕹️' },
+  { id: 'playhouse', name: 'Fredericton Playhouse', type: 'theatre', x: 83, y: 33, w: 7, h: 3, ico: '🎭' },
+  /* King-south, rows 41-43 */
+  { id: 'cafeloka', name: 'Cafe Loka & Bistro', type: 'cafe', x: 30, y: 41, w: 5, h: 3, ico: '🥞' },
+  { id: 'tipsymuse', name: 'The Tipsy Muse Cafe', type: 'cafe', x: 57, y: 41, w: 5, h: 3, ico: '🎨' },
+  { id: 'happybaker', name: 'The Happy Baker', type: 'bakery', x: 67, y: 41, w: 5, h: 3, ico: '🥖' },
+  /* south of Brunswick — George Street */
+  { id: 'boyce', name: 'Boyce Farmers Market', type: 'market', x: 56, y: 49, w: 10, h: 4, ico: '🥬' },
+];
+/* Officers' Square is an open park between the Green and Queen St */
+const PARK = { id: 'officers', name: "Officers' Square", x: 68, y: 25, w: 11, h: 4, ico: '⛲' };
+
+function buildWorld() {
+  fillMap();
+  /* --- northside --- */
+  rectT(0, 0, MAP_W, 2, TL.TREE);                    /* back woods */
+  hRoad(6, 2, 89);                                   /* Main Street: side 5, road 6-7, side 8 */
+  for (let x = 4; x < 90; x += 7) put(x, 11, TL.TREE);
+  /* --- river (Wolastoq / Saint John) --- */
+  for (let x = 0; x < MAP_W; x++) { put(x, 14, TL.BANK); for (let y = 15; y <= 21; y++) put(x, y, TL.WATER); put(x, 22, TL.BANK); }
+  /* --- the Green (riverside path, south bank) --- */
+  for (let x = 1; x < MAP_W - 1; x++) { put(x, 23, TL.PATH); put(x, 24, TL.PATH); }
+  [8, 18, 34, 44, 56, 76, 86].forEach(x => put(x, 25, TL.TREE));
+  [14, 40, 82].forEach(x => put(x, 25, TL.BENCH));
+  /* --- downtown streets --- */
+  hRoad(30, 2, 89);   /* Queen St: 29-32 */
+  hRoad(38, 2, 89);   /* King St: 37-40 */
+  hRoad(46, 2, 89);   /* Brunswick St: 45-48 */
+  vRoad(10, 29, 48);  /* Smythe */
+  vRoad(22, 29, 48);  /* Westmorland */
+  vRoad(36, 29, 48);  /* York */
+  vRoad(48, 29, 48);  /* Carleton */
+  vRoad(64, 29, 48);  /* Regent */
+  vRoad(80, 29, 48);  /* Church */
+  /* alleys between blocks so every door is reachable */
+  for (let x = 2; x < 90; x++) { put(x, 36, TL.PATH); put(x, 44, TL.PATH); }
+  /* crosswalks at each intersection */
+  [10, 22, 36, 48, 64, 80].forEach(x => [30, 31, 38, 39, 46, 47].forEach(y => { put(x, y, TL.XWALK); put(x + 1, y, TL.XWALK); }));
+  /* --- Westmorland Street Bridge (vehicles, west) --- */
+  vRoad(22, 9, 13);
+  for (let y = 14; y <= 22; y++) { put(20, y, TL.TRUSS); put(21, y, TL.BRIDGE); put(22, y, TL.BRIDGE); put(23, y, TL.BRIDGE); put(24, y, TL.TRUSS); }
+  vRoad(22, 23, 28);
+  /* --- Bill Thorpe Walking Bridge (green truss, east) --- */
+  for (let y = 9; y <= 12; y++) put(61, y, TL.PATH);
+  for (let y = 13; y <= 22; y++) { put(60, y, TL.TRUSS); put(61, y, TL.BRIDGE); put(62, y, TL.TRUSS); }
+  /* --- Officers' Square park --- */
+  rectT(PARK.x, PARK.y, PARK.w, PARK.h, TL.GRASS);
+  for (let i = 0; i < PARK.w; i += 2) put(PARK.x + i, PARK.y, TL.FLOWER);
+  put(PARK.x + 5, PARK.y + 1, TL.GAZEBO); put(PARK.x + 6, PARK.y + 1, TL.GAZEBO);
+  put(PARK.x + 2, PARK.y + 2, TL.BENCH); put(PARK.x + 8, PARK.y + 2, TL.BENCH);
+  /* --- venue buildings --- */
+  VENUES.forEach(v => {
+    rectT(v.x, v.y, v.w, 1, TL.ROOF);
+    rectT(v.x, v.y + 1, v.w, v.h - 1, TL.WALL);
+    for (let i = 1; i < v.w; i += 2) put(v.x + i, v.y + 1, TL.WINDOW);
+    v.doorX = v.x + Math.floor(v.w / 2); v.doorY = v.y + v.h - 1;
+    put(v.doorX, v.doorY, TL.DOOR);
+    put(v.doorX - 1, v.doorY, TL.SIGN);
+  });
+  /* market stalls outside Boyce */
+  put(54, 51, TL.STALL); put(68, 51, TL.STALL);
+  /* the old steam grate — the tunnels are down there, if you know the river's true name */
+  put(34, 44, TL.GRATE);
+  /* greenery + south edge */
+  [5, 15, 29, 55, 75, 87].forEach(x => { put(x, 53, TL.TREE); put(x + 1, 54, TL.FLOWER); });
+  [2, 89].forEach(x => { for (let y = 26; y < 53; y += 3) put(x, y, TL.TREE); });
+}
+
+/* ---------------- interiors ---------------- */
+const ROOM_W = 15, ROOM_H = 10;
+function buildInterior(venue) {
+  const g = [];
+  for (let y = 0; y < ROOM_H; y++) { const r = []; for (let x = 0; x < ROOM_W; x++) r.push(TL.FLOOR); g.push(r); }
+  for (let x = 0; x < ROOM_W; x++) { g[0][x] = TL.WALL; g[1][x] = (x % 3 === 1) ? TL.WINDOW : TL.WALL; }
+  for (let y = 0; y < ROOM_H; y++) { g[y][0] = TL.WALL; g[y][ROOM_W - 1] = TL.WALL; }
+  for (let x = 0; x < ROOM_W; x++) g[ROOM_H - 1][x] = TL.WALL;
+  g[ROOM_H - 1][7] = TL.DOOR;                                   /* exit at bottom */
+  for (let x = 4; x <= 10; x++) g[3][x] = TL.COUNTER;           /* counter */
+  g[5][3] = TL.TABLE; g[5][11] = TL.TABLE; g[7][5] = TL.TABLE; g[7][9] = TL.TABLE;
+  g[2][12] = TL.PLANT; g[2][2] = (venue.type === 'library') ? TL.SHELF : TL.PLANT;
+  if (venue.type === 'library') { g[5][3] = TL.SHELF; g[5][11] = TL.SHELF; }
+  if (venue.type === 'market') { g[5][3] = TL.STALL; g[5][11] = TL.STALL; g[7][5] = TL.STALL; g[7][9] = TL.STALL; }
+  g[2][13] = TL.BOARD;                                          /* rendez-vous board — wait, row1 is wall; use row2 col13 */
+  return g;
+}
+
+/* =====================================================================
+   CONTENT — venue packs (generated by the content swarm; fallback
+   generator below guarantees the game never breaks without them).
+   ===================================================================== */
+const PACKS = [{"encounter":{"turns":[{"npcFR":"Alors, un café allongé ou un espresso ?","npcEN":"So, a long coffee or an espresso?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr ! Prenez votre temps.","reactionEN":"Of course! Take your time.","warmth":1},{"fr":"Un café allongé, s'il vous plaît.","en":"A long coffee, please.","reactionFR":"Excellent choix, ça arrive !","reactionEN":"Excellent choice, coming right up!","warmth":2},{"fr":"Je vais essayer votre espresso maison.","en":"I'll try your house espresso.","reactionFR":"Ah, vous connaissez vos affaires !","reactionEN":"Ah, you know your stuff!","warmth":3}]},{"npcFR":"Vous êtes du coin, ou juste de passage ?","npcEN":"Are you from around here, or just passing through?","choices":[{"fr":"Désolé, je ne comprends pas très bien.","en":"Sorry, I don't understand very well.","reactionFR":"Pas grave, on va se comprendre !","reactionEN":"No worries, we'll understand each other!","warmth":1},{"fr":"Je suis de passage à Fredericton.","en":"I'm just passing through Fredericton.","reactionFR":"Bienvenue chez nous, alors !","reactionEN":"Welcome to our city, then!","warmth":2},{"fr":"J'apprends le français, je pratique ici !","en":"I'm learning French, I'm practising here!","reactionFR":"Ben là, c'est formidable, bravo !","reactionEN":"Well now, that's wonderful, bravo!","warmth":3}]},{"npcFR":"On jase en français ici le jeudi soir, tu viendras ?","npcEN":"We chat in French here Thursday evenings, will you come?","choices":[{"fr":"Peux-tu répéter l'heure, s'il te plaît ?","en":"Could you repeat the time, please?","reactionFR":"Certainement, c'est vers dix-neuf heures.","reactionEN":"Certainly, it's around seven o'clock.","warmth":1},{"fr":"Oui, ça m'intéresse beaucoup !","en":"Yes, that interests me a lot!","reactionFR":"Super, on va t'attendre alors !","reactionEN":"Great, we'll be waiting for you then!","warmth":2},{"fr":"J'y serai, avec plaisir, à jeudi !","en":"I'll be there, gladly, see you Thursday!","reactionFR":"Tu te débrouilles très bien, à jeudi !","reactionEN":"You're doing so well, see you Thursday!","warmth":3}]}]},"npc":{"name":"Chantal","role":"barista","greetingFR":"Bienvenue chez Jonnie ! Un p'tit café ?","greetingEN":"Welcome to Jonnie's! A little coffee?","isHote":true},"quest":{"titleFR":"Le rendez-vous du jeudi","titleEN":"The Thursday Meetup","goalFR":"Discutez avec Chantal et acceptez son invitation au café-jasette.","goalEN":"Chat with Chantal and accept her invite to the French chat night."},"venueId":"jonnie"},{"venueId":"tipsymuse","npc":{"name":"Chantal Levesque","role":"barista","greetingFR":"Bonjour! Bienvenue au Tipsy Muse. Un café, un thé?","greetingEN":"Hello! Welcome to the Tipsy Muse. Coffee, tea?","isHote":false},"encounter":{"turns":[{"npcFR":"Alors, qu'est-ce que je vous sers aujourd'hui?","npcEN":"So, what can I get you today?","choices":[{"fr":"Pouvez-vous répéter plus lentement?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr! Pas de souci du tout.","reactionEN":"Of course! No worries at all.","warmth":1},{"fr":"Un café, s'il vous plaît.","en":"A coffee, please.","reactionFR":"Parfait, un café tout de suite!","reactionEN":"Perfect, one coffee coming right up!","warmth":2},{"fr":"Je prendrais un thé chaud, merci.","en":"I'll have a hot tea, thanks.","reactionFR":"Excellent choix, bien joué!","reactionEN":"Excellent choice, well done!","warmth":3}]},{"npcFR":"Vous prenez ça ici ou pour emporter?","npcEN":"Are you having that here or to go?","choices":[{"fr":"Pour emporter, merci.","en":"To go, thanks.","reactionFR":"Pas de problème, ça arrive vite!","reactionEN":"No problem, coming up fast!","warmth":1},{"fr":"Sur place, je vais m'asseoir là-bas.","en":"For here, I'll sit over there.","reactionFR":"Bon choix, cette table est confortable!","reactionEN":"Good choice, that table's comfy!","warmth":2},{"fr":"Sur place! J'aime bien l'ambiance ici.","en":"For here! I like the vibe here.","reactionFR":"Ça me touche, merci beaucoup!","reactionEN":"That's so nice, thank you so much!","warmth":3}]},{"npcFR":"Et votre journée, ça se passe bien?","npcEN":"And your day, is it going well?","choices":[{"fr":"Comment dit-on « busy » en français?","en":"How do you say 'busy' in French?","reactionFR":"On dit « occupée », très bonne question!","reactionEN":"You say 'occupée', great question!","warmth":1},{"fr":"Oui, plutôt tranquille aujourd'hui.","en":"Yes, fairly quiet today.","reactionFR":"Tant mieux, profitez-en bien!","reactionEN":"Great, enjoy it!","warmth":2},{"fr":"Pas pire, je découvre le centre-ville!","en":"Not bad, I'm exploring downtown!","reactionFR":"Vous vous débrouillez très bien, bravo!","reactionEN":"You're doing so well, well done!","warmth":3}]}]},"quest":{"titleFR":"Le café des artistes","titleEN":"The Artists' Café","goalFR":"Commandez une boisson et jasez de votre journée avec Chantal.","goalEN":"Order a drink and chat about your day with Chantal."}},{"venueId":"chesspiece","npc":{"name":"Marie-Claude","role":"pâtissière","greetingFR":"Bonjour ! Bienvenue chez Chess Piece, chère amie.","greetingEN":"Hello! Welcome to Chess Piece, dear friend.","isHote":true},"encounter":{"turns":[{"npcFR":"Alors, un café ou un thé pour commencer ?","npcEN":"So, a coffee or tea to start?","choices":[{"fr":"Pouvez-vous répéter plus lentement, s'il vous plaît ?","en":"Could you repeat that more slowly, please?","reactionFR":"Bien sûr, pas de souci du tout !","reactionEN":"Of course, no worries at all!","warmth":1},{"fr":"Un café, s'il vous plaît.","en":"A coffee, please.","reactionFR":"Excellent choix, ça arrive !","reactionEN":"Excellent choice, coming right up!","warmth":2},{"fr":"Un café allongé, si possible.","en":"A long black coffee, if possible.","reactionFR":"Ah, vous connaissez vos cafés ! Bravo.","reactionEN":"Ah, you know your coffee! Well done.","warmth":3}]},{"npcFR":"Et pour manger ? Il y a tellement de jolis choix, non ?","npcEN":"And to eat? So many pretty choices, right?","choices":[{"fr":"Je ne sais pas encore, désolée.","en":"I don't know yet, sorry.","reactionFR":"Prenez votre temps, chère amie.","reactionEN":"Take your time, dear friend.","warmth":1},{"fr":"Qu'est-ce que vous recommandez ?","en":"What do you recommend?","reactionFR":"Le chausson aux pommes, sans hésiter !","reactionEN":"The apple turnover, without a doubt!","warmth":2},{"fr":"Je vais essayer le mille-feuille aujourd'hui.","en":"I'll try the mille-feuille today.","reactionFR":"Quel beau choix, il est délicieux !","reactionEN":"What a great choice, it's delicious!","warmth":3}]},{"npcFR":"Vous venez pratiquer votre français ici souvent, j'espère ?","npcEN":"You come practice your French here often, I hope?","choices":[{"fr":"J'apprends encore, merci pour votre patience.","en":"I'm still learning, thanks for your patience.","reactionFR":"Vous vous débrouillez très bien, franchement.","reactionEN":"You're doing very well, honestly.","warmth":1},{"fr":"Oui, chaque semaine si possible !","en":"Yes, every week if possible!","reactionFR":"Ça me fait tellement plaisir à entendre !","reactionEN":"That makes me so happy to hear!","warmth":2},{"fr":"Absolument, c'est mon café préféré pour ça.","en":"Absolutely, it's my favourite café for that.","reactionFR":"Vous êtes chez vous ici, toujours.","reactionEN":"You're always welcome here, always.","warmth":3}]}]},"quest":{"titleFR":"Les Indécis du Comptoir","titleEN":"The Undecided at the Counter","goalFR":"Commandez une pâtisserie sans pointer du doigt !","goalEN":"Order a pastry without just pointing at it!"}},{"venueId":"happybaker","npc":{"name":"Chantal","role":"boulangère","greetingFR":"Bonjour ! Ça sent bon à matin, hein ?","greetingEN":"Good morning! Smells great in here, huh?","isHote":false},"encounter":{"turns":[{"npcFR":"Qu'est-ce que je vous sers aujourd'hui ?","npcEN":"What can I get you today?","choices":[{"fr":"Pouvez-vous répéter plus lentement, s'il vous plaît ?","en":"Could you repeat that more slowly, please?","reactionFR":"Bien sûr, pas de problème !","reactionEN":"Of course, no problem!","warmth":1},{"fr":"Je voudrais un croissant, s'il vous plaît.","en":"I'd like a croissant, please.","reactionFR":"Excellent choix, il est encore chaud !","reactionEN":"Excellent choice, it's still warm!","warmth":2},{"fr":"Un pain au chocolat, ça va être parfait.","en":"A pain au chocolat, that'll be perfect.","reactionFR":"Ah, vous parlez comme une vraie Frédericktonienne !","reactionEN":"Ah, you talk like a true Frederictonian!","warmth":3}]},{"npcFR":"Vous voulez autre chose avec ça ?","npcEN":"Would you like anything else with that?","choices":[{"fr":"Non merci, c'est tout.","en":"No thanks, that's all.","reactionFR":"Parfait, ça fait trois piastres alors.","reactionEN":"Perfect, that's three bucks then.","warmth":1},{"fr":"Oui, un café aussi, s'il vous plaît.","en":"Yes, a coffee too, please.","reactionFR":"Bonne idée, il est frais fait !","reactionEN":"Good idea, it's freshly made!","warmth":2},{"fr":"Un café allongé, et je reviendrai demain !","en":"A long coffee, and I'll be back tomorrow!","reactionFR":"Ben là, on vous attend avec plaisir !","reactionEN":"Well then, we'll be happy to have you!","warmth":3}]},{"npcFR":"Alors, vous aimez notre petite boulangerie ?","npcEN":"So, do you like our little bakery?","choices":[{"fr":"Je ne comprends pas très bien, désolée.","en":"I don't understand very well, sorry.","reactionFR":"C'est correct, vous apprenez, c'est ça qui compte !","reactionEN":"That's okay, you're learning, that's what counts!","warmth":1},{"fr":"Oui, j'aime beaucoup, c'est délicieux !","en":"Yes, I like it a lot, it's delicious!","reactionFR":"Ça me touche vraiment, merci beaucoup !","reactionEN":"That really touches me, thank you so much!","warmth":2},{"fr":"C'est ma boulangerie préférée à Fredericton, honnêtement.","en":"It's my favourite bakery in Fredericton, honestly.","reactionFR":"Vous vous débrouillez très bien, ça me réchauffe le cœur !","reactionEN":"You're doing great, that warms my heart!","warmth":3}]}]},"quest":{"titleFR":"Le pain de tous les matins","titleEN":"The Everyday Bread","goalFR":"Commandez une pâtisserie et un café en français.","goalEN":"Order a pastry and a coffee in French."}},{"venueId":"cafeloka","npc":{"name":"Chantal Basque","role":"cafe server","greetingFR":"Bonjour ! Bienvenue chez Loka, installez-vous.","greetingEN":"Hello! Welcome to Loka, have a seat.","isHote":false},"quest":{"titleFR":"Le brunch parfait","titleEN":"The Perfect Brunch","goalFR":"Commandez votre brunch en français chez Loka.","goalEN":"Order your brunch in French at Loka."},"encounter":{"turns":[{"npcFR":"Vous voulez un café ou un thé ce matin ?","npcEN":"Would you like coffee or tea this morning?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr, pas de problème du tout !","reactionEN":"Of course, no problem at all!","warmth":1},{"fr":"Un café, s'il vous plaît.","en":"A coffee, please.","reactionFR":"Parfait, un café qui s'en vient !","reactionEN":"Perfect, one coffee coming up!","warmth":2},{"fr":"Un thé vert, ce serait bien.","en":"A green tea would be nice.","reactionFR":"Excellent choix, vous vous débrouillez très bien !","reactionEN":"Excellent choice, you're doing great!","warmth":3}]},{"npcFR":"Notre brunch est délicieux, vous avez déjà choisi ?","npcEN":"Our brunch is delicious, have you decided yet?","choices":[{"fr":"Qu'est-ce que vous recommandez ?","en":"What do you recommend?","reactionFR":"Ben là, les crêpes sont populaires !","reactionEN":"Well, the crepes are popular!","warmth":1},{"fr":"Je prends les œufs bénédictine.","en":"I'll have the eggs benedict.","reactionFR":"Excellent choix, on vous l'apporte bientôt !","reactionEN":"Excellent choice, we'll bring it soon!","warmth":2},{"fr":"J'aimerais essayer quelque chose de nouveau.","en":"I'd like to try something new.","reactionFR":"J'adore votre curiosité, laissez-moi vous surprendre !","reactionEN":"I love your curiosity, let me surprise you!","warmth":3}]},{"npcFR":"Vous préférez manger à l'intérieur ou dehors sur la terrasse ?","npcEN":"Would you rather eat inside or outside on the patio?","choices":[{"fr":"Pouvez-vous répéter la question ?","en":"Could you repeat the question?","reactionFR":"Avec plaisir, prenez votre temps !","reactionEN":"Happily, take your time!","warmth":1},{"fr":"Ici, c'est très confortable.","en":"Here, it's very comfortable.","reactionFR":"Bon choix, c'est confortable en dedans !","reactionEN":"Good choice, it's cozy inside!","warmth":2},{"fr":"La terrasse, s'il fait beau.","en":"The patio, if the weather's nice.","reactionFR":"Superbe idée, vous parlez comme une vraie habituée !","reactionEN":"Great idea, you sound like a regular!","warmth":3}]}]}},{"venueId":"dolans","npc":{"name":"Réjean","role":"publican","greetingFR":"Ben là, salut ! Bienvenue chez Dolan's, mon ami !","greetingEN":"Well hey, welcome to Dolan's, my friend!","isHote":true},"encounter":{"turns":[{"npcFR":"Qu'est-ce que je te sers ce soir ?","npcEN":"What can I get you this evening?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Could you repeat that more slowly?","reactionFR":"Ben sûr ! Pas de problème, mon ami.","reactionEN":"Of course! No problem, my friend.","warmth":1},{"fr":"Une pinte, s'il vous plaît.","en":"A pint, please.","reactionFR":"Une bonne pinte, ça s'en vient !","reactionEN":"One good pint, coming right up!","warmth":2},{"fr":"Qu'est-ce que vous recommandez ce soir ?","en":"What do you recommend tonight?","reactionFR":"Ah, tu poses la bonne question, toi !","reactionEN":"Ah, you're asking the right question!","warmth":3}]},{"npcFR":"T'entends le violon ? On joue fort à soir !","npcEN":"You hear the fiddle? We're playing loud tonight!","choices":[{"fr":"Oui, c'est très joli.","en":"Yes, it's very pretty.","reactionFR":"N'est-ce pas ? J'adore ça, moi aussi.","reactionEN":"Isn't it? I love it too.","warmth":1},{"fr":"J'aime beaucoup la musique celtique.","en":"I really like Celtic music.","reactionFR":"Nous aussi ! Ça vient du cœur.","reactionEN":"Us too! It comes from the heart.","warmth":2},{"fr":"Est-ce qu'il y a de la danse plus tard ?","en":"Is there dancing later on?","reactionFR":"Ah oui, ça va bouger, garanti !","reactionEN":"Oh yes, it'll get lively, guaranteed!","warmth":3}]},{"npcFR":"Tu parles bien français, toi ! Où c'est que t'as appris ?","npcEN":"You speak French well! Where'd you learn?","choices":[{"fr":"Je pratique un peu chaque jour.","en":"I practice a little every day.","reactionFR":"Bravo, ça paraît vraiment, mon ami !","reactionEN":"Bravo, it really shows, my friend!","warmth":1},{"fr":"Je viens ici pour pratiquer avec toi.","en":"I come here to practice with you.","reactionFR":"Ben là, c'est exactement pour ça qu'on est ici !","reactionEN":"Well, that's exactly what we're here for!","warmth":2},{"fr":"J'espère parler couramment un jour, comme toi.","en":"I hope to speak fluently one day, like you.","reactionFR":"Tu y arriveras, j'en suis certain, mon ami !","reactionEN":"You'll get there, I'm sure of it, my friend!","warmth":3}]}]},"quest":{"titleFR":"Une pinte et un violon","titleEN":"A Pint and a Fiddle","goalFR":"Commande une pinte et jase de musique avec Réjean.","goalEN":"Order a pint and chat about music with Réjean."}},{"encounter":{"turns":[{"npcFR":"Tu connais le groupe qui joue ce soir ?","npcEN":"Do you know the band playing tonight?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr ! Pas de problème du tout.","reactionEN":"Of course! No problem at all.","warmth":1},{"fr":"Non, c'est ma première fois ici.","en":"No, it's my first time here.","reactionFR":"Ah, bienvenue chez nous alors !","reactionEN":"Ah, welcome to our place then!","warmth":2},{"fr":"Non, mais j'ai hâte de les entendre !","en":"No, but I can't wait to hear them!","reactionFR":"J'adore ton énergie, ça va être bon !","reactionEN":"I love your energy, it's gonna be good!","warmth":3}]},{"npcFR":"Tu préfères le rock ou quelque chose de plus tranquille, comme le folk ?","npcEN":"Do you prefer rock or something quieter, like folk?","choices":[{"fr":"Je ne sais pas trop, en fait.","en":"I'm not too sure, actually.","reactionFR":"C'est correct, on va te trouver ton style.","reactionEN":"That's fine, we'll find your style.","warmth":1},{"fr":"Le rock, j'aime ça fort et rapide.","en":"Rock, I like it loud and fast.","reactionFR":"Ben là, t'es à la bonne place !","reactionEN":"Well then, you're in the right place!","warmth":2},{"fr":"Un peu des deux, ça dépend du soir.","en":"A bit of both, depends on the night.","reactionFR":"Sage réponse ! Tu vas te sentir chez toi.","reactionEN":"Wise answer! You'll feel right at home.","warmth":3}]},{"npcFR":"Tu reviens la semaine prochaine pour le prochain show ?","npcEN":"Are you coming back next week for the next show?","choices":[{"fr":"Peut-être, je vais y penser.","en":"Maybe, I'll think about it.","reactionFR":"Pas de pression, on sera toujours ici !","reactionEN":"No pressure, we'll always be here!","warmth":1},{"fr":"Oui, gardez-moi une place proche de la scène.","en":"Yes, save me a spot near the stage.","reactionFR":"C'est comme si c'était fait, mon ami !","reactionEN":"Consider it done, my friend!","warmth":2},{"fr":"Certain ! J'amène mes amis la prochaine fois.","en":"For sure! I'm bringing my friends next time.","reactionFR":"Wow, tu vas remplir la salle, toi !","reactionEN":"Wow, you're gonna fill the room, you!","warmth":3}]}]},"venueId":"wilsers","npc":{"name":"Réjean","role":"sound guy / doorman","greetingFR":"Hé, salut ! Le groupe commence bientôt.","greetingEN":"Hey, hi! The band starts soon.","isHote":false},"quest":{"titleFR":"Le carnet de shows","titleEN":"The Gig Notebook","goalFR":"Discute avec Réjean pour découvrir le groupe de ce soir.","goalEN":"Chat with Réjean to find out about tonight's band."}},{"venueId":"gahan","npc":{"name":"Kevin Doiron","role":"brewpub server","greetingFR":"Bienvenue chez Gahan House ! T'as faim, ben là ?","greetingEN":"Welcome to Gahan House! You hungry, eh?","isHote":false},"encounter":{"turns":[{"npcFR":"Salut ! Une table pour combien, ce soir ?","npcEN":"Hi! A table for how many tonight?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Pas de problème ! Une table pour combien ?","reactionEN":"No problem at all! A table for how many?","warmth":1},{"fr":"Une table pour deux, s'il vous plaît.","en":"A table for two, please.","reactionFR":"Parfait, suivez-moi !","reactionEN":"Perfect, follow me!","warmth":2},{"fr":"On aimerait une table sur la terrasse.","en":"We'd like a table on the patio.","reactionFR":"Excellent choix, la vue sur la rivière est belle !","reactionEN":"Excellent choice, the river view is lovely!","warmth":3}]},{"npcFR":"Voici le menu. Vous voulez un flight de bières ?","npcEN":"Here's the menu. Want a beer flight?","choices":[{"fr":"Je ne comprends pas, désolé.","en":"I don't understand, sorry.","reactionFR":"T'en fais pas, je peux t'expliquer !","reactionEN":"Don't worry, I can explain it to you!","warmth":1},{"fr":"Oui, un flight, s'il vous plaît.","en":"Yes, a flight please.","reactionFR":"Bon choix, quatre petites bières pour goûter !","reactionEN":"Good choice, four little beers to try!","warmth":2},{"fr":"J'aimerais goûter quelque chose de fruité.","en":"I'd like to try something fruity.","reactionFR":"Ah, notre bière aux bleuets va te plaire !","reactionEN":"Ah, you'll love our blueberry beer!","warmth":3}]},{"npcFR":"Et pour manger ? Le fish and chips est populaire.","npcEN":"And to eat? The fish and chips is popular.","choices":[{"fr":"Je vais prendre ça, merci.","en":"I'll have that, thanks.","reactionFR":"Excellent choix, ça s'en vient bientôt !","reactionEN":"Excellent choice, coming right up!","warmth":1},{"fr":"Qu'est-ce que vous recommandez ?","en":"What do you recommend?","reactionFR":"Le fish and chips, sans hésiter, ben là !","reactionEN":"The fish and chips, no question, for sure!","warmth":2},{"fr":"C'est croustillant et pas trop salé, j'espère ?","en":"It's crispy and not too salty, I hope?","reactionFR":"Exactement ça, tu vas te régaler !","reactionEN":"Exactly that, you're going to love it!","warmth":3}]}]},"quest":{"titleFR":"Flight et fish and chips","titleEN":"Flight and Fish and Chips","goalFR":"Commande un flight de bières et un plat en français.","goalEN":"Order a beer flight and a meal in French."}},{"venueId":"flippins","npc":{"name":"Kevin","role":"arcade attendant","greetingFR":"Hé, salut ! Prêt à battre un record ce soir ?","greetingEN":"Hey, hi! Ready to break a record tonight?","isHote":false},"encounter":{"turns":[{"npcFR":"Regarde mon score au flipper. Pas mal, non ?","npcEN":"Check out my pinball score. Not bad, huh?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr, pas de problème !","reactionEN":"Of course, no problem!","warmth":1},{"fr":"Wow, c'est un bon score !","en":"Wow, that's a good score!","reactionFR":"Merci ! Ça m'a pris des heures.","reactionEN":"Thanks! That took me hours.","warmth":2},{"fr":"Je peux faire mieux que ça !","en":"I can do better than that!","reactionFR":"Ah, on verra ça ! J'aime le défi.","reactionEN":"Ah, we'll see about that! I like a challenge.","warmth":3}]},{"npcFR":"Combien de parties veux-tu jouer ce soir ?","npcEN":"How many games do you want to play tonight?","choices":[{"fr":"Une partie, s'il vous plaît.","en":"One game, please.","reactionFR":"Parfait, une seule ça marche !","reactionEN":"Perfect, just one works!","warmth":1},{"fr":"Trois parties, je pense.","en":"Three games, I think.","reactionFR":"Bon choix, ça te réchauffe bien !","reactionEN":"Good choice, that'll warm you up!","warmth":2},{"fr":"Autant qu'il faut pour gagner !","en":"As many as it takes to win!","reactionFR":"Ha ! J'aime ton attitude, mon ami.","reactionEN":"Ha! I like your attitude, my friend.","warmth":3}]},{"npcFR":"Si tu gagnes, ton nom monte au tableau !","npcEN":"If you win, your name goes on the board!","choices":[{"fr":"Comment on fait pour avoir son nom sur le tableau ?","en":"How do you get your name on the board?","reactionFR":"Bonne question ! Je vais te montrer.","reactionEN":"Good question! I'll show you.","warmth":1},{"fr":"J'espère être numéro un !","en":"I hope to be number one!","reactionFR":"Vise haut, ça me plaît beaucoup !","reactionEN":"Aim high, I really like that!","warmth":2},{"fr":"Prépare-toi, je vais tout dominer ce soir !","en":"Get ready, I'm dominating everything tonight!","reactionFR":"Ben là ! Le champion arrive, on dirait !","reactionEN":"Well now! Looks like the champ has arrived!","warmth":3}]}]},"quest":{"titleFR":"Le tableau des scores","titleEN":"The High-Score Board","goalFR":"Défie Kevin et grimpe le tableau des meilleurs scores.","goalEN":"Challenge Kevin and climb the high-score board."}},{"venueId":"brokenrecord","npc":{"name":"Réjean Doucet","role":"vinyl-slinging barkeep","greetingFR":"Hé, salut ! Bienvenue au Broken Record.","greetingEN":"Hey, welcome to the Broken Record.","isHote":false},"encounter":{"turns":[{"npcFR":"T'aimes quel genre de musique, toi ?","npcEN":"What kind of music do you like?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr, pas de trouble !","reactionEN":"Of course, no worries at all!","warmth":1},{"fr":"J'aime le rock, un peu.","en":"I like rock, a little.","reactionFR":"Ah, un classique, j'adore ça !","reactionEN":"Ah, a classic, I love that!","warmth":2},{"fr":"J'écoute surtout du jazz le soir.","en":"I mostly listen to jazz at night.","reactionFR":"Bon goût ! On a du vinyle pour ça.","reactionEN":"Good taste! We've got vinyl for that.","warmth":3}]},{"npcFR":"J'ai un vieux disque plein de souvenirs.","npcEN":"I've got an old record full of memories.","choices":[{"fr":"Un souvenir, c'est-à-dire ?","en":"A memory, like what?","reactionFR":"Bonne question ! Assis-toi, je raconte.","reactionEN":"Good question! Sit down, I'll tell you.","warmth":1},{"fr":"Racontez-moi cette histoire.","en":"Tell me that story.","reactionFR":"Avec plaisir, ça me touche encore.","reactionEN":"Gladly, it still moves me.","warmth":2},{"fr":"Ça me rappelle une chanson de mon enfance.","en":"That reminds me of a song from my childhood.","reactionFR":"Ben là, on a ça en commun !","reactionEN":"Well now, we've got that in common!","warmth":3}]},{"npcFR":"Choisis une chanson, je la mets tout de suite.","npcEN":"Pick a song, I'll put it on right now.","choices":[{"fr":"N'importe quoi, surprenez-moi.","en":"Anything, surprise me.","reactionFR":"J'aime les esprits aventureux !","reactionEN":"I like an adventurous spirit!","warmth":1},{"fr":"Quelque chose de doux, s'il vous plaît.","en":"Something soft, please.","reactionFR":"Parfait, je connais juste la chose.","reactionEN":"Perfect, I know just the thing.","warmth":2},{"fr":"Mettez-moi votre chanson préférée d'ici.","en":"Play me your favourite local song.","reactionFR":"Vous vous débrouillez très bien, ça me touche !","reactionEN":"You're doing so well, that means a lot!","warmth":3}]}]},"quest":{"titleFR":"Le disque perdu","titleEN":"The Lost Record","goalFR":"Aide Réjean à retrouver le nom d'une vieille chanson oubliée.","goalEN":"Help Réjean recall the name of a forgotten old song."}},{"encounter":{"turns":[{"npcFR":"Tu préfères une bière blonde ou plus foncée ?","npcEN":"Do you prefer a blonde beer or a darker one?","choices":[{"fr":"Peux-tu répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr ! Blonde ou foncée, laquelle ?","reactionEN":"Of course! Blonde or dark, which one?","warmth":1},{"fr":"Une blonde, s'il te plaît.","en":"A blonde one, please.","reactionFR":"Bon choix, elle est légère et rafraîchissante !","reactionEN":"Good choice, it's light and refreshing!","warmth":2},{"fr":"Je préfère quelque chose de foncé et corsé.","en":"I prefer something dark and bold.","reactionFR":"Ah, tu vas aimer notre stout, ben là !","reactionEN":"Ah, you'll love our stout, right on!","warmth":3}]},{"npcFR":"Cette bière a des notes d'agrumes et de miel.","npcEN":"This beer has notes of citrus and honey.","choices":[{"fr":"Ça sent bon !","en":"That smells good!","reactionFR":"N'est-ce pas ? Attends de goûter !","reactionEN":"Isn't it? Wait until you taste it!","warmth":1},{"fr":"J'aime beaucoup les saveurs fruitées.","en":"I really like fruity flavours.","reactionFR":"Parfait, celle-ci va te plaire alors !","reactionEN":"Perfect, you'll love this one then!","warmth":2},{"fr":"Est-ce qu'elle est amère ou plutôt douce ?","en":"Is it bitter or more on the sweet side?","reactionFR":"Bonne question ! Plutôt douce, avec juste un peu d'amertume.","reactionEN":"Good question! More on the sweet side, with just a little bitterness.","warmth":3}]},{"npcFR":"Veux-tu essayer un échantillon avant de commander ?","npcEN":"Want to try a sample before you order?","choices":[{"fr":"Oui, un petit échantillon, merci.","en":"Yes, a small sample, thanks.","reactionFR":"Voilà ! Dis-moi ce que tu en penses.","reactionEN":"Here you go! Tell me what you think.","warmth":1},{"fr":"Je vais faire confiance à tes recommandations.","en":"I'll trust your recommendations.","reactionFR":"J'adore ça ! Je vais bien m'occuper de toi.","reactionEN":"I love that! I'll take good care of you.","warmth":2},{"fr":"Peux-tu me surprendre avec ta meilleure suggestion ?","en":"Can you surprise me with your best suggestion?","reactionFR":"Ben là, ça c'est parler comme un vrai habitué !","reactionEN":"Well now, that's talking like a real regular!","warmth":3}]}]},"npc":{"name":"Marie-Claude","role":"taproom keeper","greetingFR":"Salut ! Bienvenue chez Graystone, viens goûter quelque chose !","greetingEN":"Hi! Welcome to Graystone, come taste something!","isHote":false},"quest":{"titleFR":"La tournée des saveurs","titleEN":"The Flavour Tour","goalFR":"Décris tes goûts et choisis une bière avec Marie-Claude.","goalEN":"Describe your tastes and choose a beer with Marie-Claude."},"venueId":"graystone"},{"venueId":"boyce","npc":{"name":"Marie-Claude","role":"vendeuse de légumes (produce vendor)","greetingFR":"Allô ! Belles têtes-de-violon à matin, ben fraîches !","greetingEN":"Hello! Beautiful fiddleheads this morning, real fresh!","isHote":true},"encounter":{"turns":[{"npcFR":"Ça vous prend combien de livres, mon coeur ?","npcEN":"How many pounds do you need, dear?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat more slowly?","reactionFR":"Ben sûr ! Pas de problème, prenez votre temps.","reactionEN":"Of course! No problem, take your time.","warmth":1},{"fr":"Une livre, s'il vous plaît.","en":"One pound, please.","reactionFR":"Parfait, une livre pour vous !","reactionEN":"Perfect, one pound for you!","warmth":2},{"fr":"Donnez-moi deux livres, s'il vous plaît.","en":"Give me two pounds, please.","reactionFR":"Voilà, deux belles livres ! Bon choix.","reactionEN":"There you go, two nice pounds! Good choice.","warmth":3}]},{"npcFR":"Ça fait sept piastres pour le sac.","npcEN":"That's seven dollars for the bag.","choices":[{"fr":"D'accord, sept piastres.","en":"Okay, seven dollars.","reactionFR":"Merci beaucoup, c'est fin de votre part !","reactionEN":"Thank you very much, that's kind of you!","warmth":1},{"fr":"Avez-vous un prix pour deux sacs ?","en":"Do you have a price for two bags?","reactionFR":"Ah, pour vous, disons douze piastres !","reactionEN":"Ah, for you, let's say twelve dollars!","warmth":2},{"fr":"C'est un peu cher, non ? Un petit rabais ?","en":"That's a bit pricey, no? A small discount?","reactionFR":"Ha ! Vous négociez ben ! Six piastres, d'abord.","reactionEN":"Ha! You bargain well! Six dollars, then.","warmth":3}]},{"npcFR":"Vous venez souvent au marché, vous ?","npcEN":"Do you come to the market often?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat more slowly?","reactionFR":"Mais oui, avec plaisir !","reactionEN":"But of course, gladly!","warmth":1},{"fr":"C'est ma première fois ici.","en":"It's my first time here.","reactionFR":"Bienvenue chez nous, alors !","reactionEN":"Welcome to our place, then!","warmth":2},{"fr":"J'aimerais venir chaque samedi, comme vous.","en":"I'd like to come every Saturday, like you.","reactionFR":"Vous vous débrouillez très bien ! Venez pratiquer votre français !","reactionEN":"You're doing really well! Come practice your French again!","warmth":3}]}]},"quest":{"titleFR":"Le sac de têtes-de-violon","titleEN":"The Bag of Fiddleheads","goalFR":"Achetez deux livres de têtes-de-violon et négociez un bon prix.","goalEN":"Buy two pounds of fiddleheads and negotiate a good price."}},{"encounter":{"turns":[{"npcFR":"Bonsoir ! Vous cherchez un billet pour la pièce ?","npcEN":"Good evening! Looking for a ticket to the play?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr, pas de souci ! Je vous répète ça.","reactionEN":"Of course, no worries! I'll say it again.","warmth":1},{"fr":"Oui, un billet, s'il vous plaît.","en":"Yes, one ticket, please.","reactionFR":"Parfait, un billet pour vous alors !","reactionEN":"Perfect, one ticket for you then!","warmth":2},{"fr":"Oui, avez-vous des places au balcon ?","en":"Yes, do you have balcony seats?","reactionFR":"Ah, bon choix ! J'en ai justement deux.","reactionEN":"Ah, good choice! I have exactly two.","warmth":3}]},{"npcFR":"C'est votre première fois au Playhouse, non ?","npcEN":"This is your first time at the Playhouse, right?","choices":[{"fr":"Oui, c'est ma première fois ici.","en":"Yes, it's my first time here.","reactionFR":"Bienvenue alors ! Vous allez adorer la salle.","reactionEN":"Welcome then! You'll love the theatre.","warmth":1},{"fr":"Oui, la salle est très belle.","en":"Yes, the theatre is very beautiful.","reactionFR":"Merci ! On en est très fiers.","reactionEN":"Thank you! We're very proud of it.","warmth":2},{"fr":"Oui, on m'a dit que la pièce est excellente.","en":"Yes, I heard the play is excellent.","reactionFR":"Ben là, on ne vous a pas menti !","reactionEN":"Well, they weren't lying to you!","warmth":3}]},{"npcFR":"Alors, qu'avez-vous pensé du spectacle ce soir ?","npcEN":"So, what did you think of tonight's show?","choices":[{"fr":"J'ai bien aimé, merci.","en":"I liked it a lot, thanks.","reactionFR":"Ça me fait plaisir à entendre, merci !","reactionEN":"That's lovely to hear, thank you!","warmth":1},{"fr":"C'était vraiment émouvant.","en":"It was really moving.","reactionFR":"Oui, hein ? Le dernier acte m'a touchée aussi.","reactionEN":"Right? The final act moved me too.","warmth":2},{"fr":"Les acteurs étaient remarquables ce soir.","en":"The actors were remarkable tonight.","reactionFR":"Quelle belle façon de le dire, merci beaucoup !","reactionEN":"What a lovely way to put it, thank you!","warmth":3}]}]},"npc":{"name":"Marie-Claude","role":"ouvreuse (usher)","greetingFR":"Bonsoir ! Bienvenue au Playhouse. Un billet ce soir ?","greetingEN":"Good evening! Welcome to the Playhouse. One ticket tonight?","isHote":false},"quest":{"titleFR":"Une soirée au théâtre","titleEN":"A Night at the Theatre","goalFR":"Achetez un billet et discutez du spectacle avec Marie-Claude.","goalEN":"Buy a ticket and chat about the show with Marie-Claude."},"venueId":"playhouse"},{"encounter":{"turns":[{"npcFR":"Vous attendez le concert de ce soir ?","npcEN":"Are you waiting for tonight's concert?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr ! Pas de problème du tout.","reactionEN":"Of course! No problem at all.","warmth":1},{"fr":"Oui, j'aime la musique ici.","en":"Yes, I like the music here.","reactionFR":"Moi aussi, c'est ma soirée préférée !","reactionEN":"Me too, it's my favourite evening!","warmth":2},{"fr":"Oui, ça va être formidable, j'ai hâte !","en":"Yes, it's going to be great, I can't wait!","reactionFR":"Ben là, votre français est déjà super !","reactionEN":"Wow, your French is already great!","warmth":3}]},{"npcFR":"Il y a beaucoup de festivals ici en été.","npcEN":"There are lots of festivals here in summer.","choices":[{"fr":"Quel est votre festival préféré ?","en":"What is your favourite festival?","reactionFR":"Bonne question ! J'adore le festival d'été.","reactionEN":"Good question! I love the summer festival.","warmth":1},{"fr":"J'aime beaucoup l'ambiance du parc.","en":"I really like the atmosphere of the park.","reactionFR":"C'est vrai, c'est un endroit spécial pour nous.","reactionEN":"It's true, it's a special place for us.","warmth":2},{"fr":"Ce square a une belle histoire, je trouve.","en":"This square has a nice history, I find.","reactionFR":"Exactement ! Vous connaissez bien notre ville.","reactionEN":"Exactly! You know our city well.","warmth":3}]},{"npcFR":"En hiver, on patine juste là, vous savez.","npcEN":"In winter, we skate right there, you know.","choices":[{"fr":"Vraiment ? C'est amusant, ça.","en":"Really? That's fun.","reactionFR":"Oui, venez essayer l'hiver prochain !","reactionEN":"Yes, come try it next winter!","warmth":1},{"fr":"J'aimerais patiner ici un jour.","en":"I would like to skate here one day.","reactionFR":"Ça me ferait plaisir de vous voir ici !","reactionEN":"It would make me happy to see you here!","warmth":2},{"fr":"Ce square change avec chaque saison, hein ?","en":"This square changes with every season, doesn't it?","reactionFR":"Parfaitement dit ! Vous êtes presque frédérictonien.","reactionEN":"Perfectly said! You're almost a Frederictonian.","warmth":3}]}]},"npc":{"name":"Gilles Thériault","role":"park guide","greetingFR":"Bienvenue à la place Officers' Square ! Belle journée, non ?","greetingEN":"Welcome to Officers' Square! Beautiful day, isn't it?","isHote":false},"quest":{"titleFR":"Les quatre saisons du square","titleEN":"The Four Seasons of the Square","goalFR":"Discutez avec Gilles des festivals et des saisons du parc.","goalEN":"Chat with Gilles about the park's festivals and seasons."},"venueId":"officers"},{"encounter":{"turns":[{"npcFR":"Vous cherchez un livre en particulier aujourd'hui ?","npcEN":"Are you looking for a particular book today?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Could you repeat that more slowly?","reactionFR":"Bien sûr, pas de souci du tout !","reactionEN":"Of course, no problem at all!","warmth":1},{"fr":"Je cherche un roman facile à lire.","en":"I'm looking for an easy novel.","reactionFR":"Parfait, j'ai plein d'idées pour vous !","reactionEN":"Perfect, I have plenty of ideas for you!","warmth":2},{"fr":"Avez-vous des suggestions pour un débutant ?","en":"Do you have suggestions for a beginner?","reactionFR":"Vous vous débrouillez très bien ! Suivez-moi.","reactionEN":"You're doing really well! Follow me.","warmth":3}]},{"npcFR":"Notre cercle de conversation française commence bientôt.","npcEN":"Our French conversation circle starts soon.","choices":[{"fr":"C'est où, s'il vous plaît ?","en":"Where is it, please?","reactionFR":"Juste là-bas, près des fenêtres !","reactionEN":"Right over there, near the windows!","warmth":1},{"fr":"Est-ce que je peux me joindre au groupe ?","en":"Can I join the group?","reactionFR":"Mais oui, venez vous asseoir avec nous !","reactionEN":"Of course, come sit with us!","warmth":2},{"fr":"J'aimerais pratiquer mon français avec vous.","en":"I'd like to practice my French with you.","reactionFR":"Ben là, quelle belle attitude ! Bienvenue.","reactionEN":"Well now, what a great attitude! Welcome.","warmth":3}]},{"npcFR":"Alors, ce roman vous a plu ou non ?","npcEN":"So, did you like that novel or not?","choices":[{"fr":"Je ne sais pas encore, désolé.","en":"I don't know yet, sorry.","reactionFR":"C'est correct, prenez votre temps !","reactionEN":"That's fine, take your time!","warmth":1},{"fr":"Oui, j'ai bien aimé l'histoire.","en":"Yes, I really liked the story.","reactionFR":"Ah, je suis contente de l'entendre !","reactionEN":"Ah, I'm happy to hear that!","warmth":2},{"fr":"Franchement, la fin m'a surpris !","en":"Honestly, the ending surprised me!","reactionFR":"Vous vous exprimez comme une vraie lectrice !","reactionEN":"You sound like a real reader now!","warmth":3}]}]},"npc":{"name":"Marie-Claude","role":"librarian","greetingFR":"Bonjour ! Bienvenue à la bibliothèque publique de Fredericton.","greetingEN":"Hello! Welcome to the Fredericton Public Library.","isHote":true},"quest":{"titleFR":"Le cercle de lecture","titleEN":"The Reading Circle","goalFR":"Trouvez un livre et joignez-vous au cercle de conversation.","goalEN":"Find a book and join the conversation circle."},"venueId":"library"},{"venueId":"shuyi","npc":{"name":"Chantal","role":"barista","greetingFR":"Bienvenue chez Shuyi ! Qu'est-ce que je te sers aujourd'hui ?","greetingEN":"Welcome to Shuyi! What can I get you today?","isHote":false},"encounter":{"turns":[{"npcFR":"Quelle grosseur veux-tu : moyen ou grand ?","npcEN":"What size do you want: medium or large?","choices":[{"fr":"Pouvez-vous répéter plus lentement ?","en":"Can you repeat that more slowly?","reactionFR":"Bien sûr, pas de problème du tout !","reactionEN":"Of course, no problem at all!","warmth":1},{"fr":"Grand, s'il vous plaît.","en":"Large, please.","reactionFR":"Grand, excellent choix !","reactionEN":"Large, excellent choice!","warmth":2},{"fr":"Moyen, c'est parfait pour moi.","en":"Medium is perfect for me.","reactionFR":"Ben là, moyen c'est bien raisonnable !","reactionEN":"Well now, medium is nice and reasonable!","warmth":3}]},{"npcFR":"Et pour le sucre, quel pourcentage veux-tu ?","npcEN":"And for the sugar, what percentage would you like?","choices":[{"fr":"Je ne comprends pas, désolé.","en":"I don't understand, sorry.","reactionFR":"Pas grave, on va y aller ensemble.","reactionEN":"No worries, we'll figure it out together.","warmth":1},{"fr":"Cinquante pourcent, s'il vous plaît.","en":"Fifty percent, please.","reactionFR":"Parfait, un bel équilibre !","reactionEN":"Perfect, a nice balance!","warmth":2},{"fr":"Moins sucré, si possible.","en":"Less sweet, if possible.","reactionFR":"Tu te débrouilles très bien, bon choix !","reactionEN":"You're doing great, good choice!","warmth":3}]},{"npcFR":"Quelles perles ou garnitures veux-tu ajouter ?","npcEN":"Which pearls or toppings would you like to add?","choices":[{"fr":"Des perles noires, s'il vous plaît.","en":"Black pearls, please.","reactionFR":"Un classique, toujours délicieux !","reactionEN":"A classic, always delicious!","warmth":1},{"fr":"Je voudrais de la gelée de fruits.","en":"I'd like fruit jelly.","reactionFR":"Excellent choix, c'est très rafraîchissant !","reactionEN":"Excellent choice, so refreshing!","warmth":2},{"fr":"Surprenez-moi avec votre garniture préférée !","en":"Surprise me with your favourite topping!","reactionFR":"Ha ! J'adore ça, tu vas te régaler !","reactionEN":"Ha! I love that, you'll love it!","warmth":3}]}]},"quest":{"titleFR":"La quête du thé parfait","titleEN":"The Quest for the Perfect Tea","goalFR":"Commande un thé aux perles personnalisé chez Shuyi.","goalEN":"Order a fully customized bubble tea at Shuyi."}},{"venueId":"fancybites","npc":{"name":"Nancy LeBlanc","role":"chef-propriétaire","greetingFR":"Ben là, entrez, entrez ! Vous mangez avec nous ?","greetingEN":"Well now, come in, come in! Are you eating with us today?","isHote":true},"encounter":{"turns":[{"npcFR":"Bienvenue ! Une table pour combien de personnes ?","npcEN":"Welcome! A table for how many people?","choices":[{"fr":"Pouvez-vous répéter plus lentement, s'il vous plaît ?","en":"Could you repeat that more slowly, please?","reactionFR":"Bien sûr, pas de trouble ! Une table pour combien ?","reactionEN":"Of course, no trouble at all! A table for how many?","warmth":1},{"fr":"Une table pour un, s'il vous plaît.","en":"A table for one, please.","reactionFR":"Parfait ! Suivez-moi, j'ai la place idéale.","reactionEN":"Perfect! Follow me, I have the ideal spot.","warmth":2},{"fr":"Juste moi aujourd'hui, près de la fenêtre si possible.","en":"Just me today, by the window if possible.","reactionFR":"Ah, vous connaissez la meilleure place ! Par ici.","reactionEN":"Ah, you know the best spot! Right this way.","warmth":3}]},{"npcFR":"Notre plat du jour, c'est le poulet à la crème.","npcEN":"Today's special is the chicken in cream sauce.","choices":[{"fr":"Qu'est-ce que c'est, exactement ?","en":"What exactly is that?","reactionFR":"Bonne question ! C'est du poulet avec de la crème et des fines herbes.","reactionEN":"Good question! It's chicken with cream and herbs.","warmth":1},{"fr":"Je vais prendre le plat du jour, merci.","en":"I'll have the special, thank you.","reactionFR":"Excellent choix, vous allez vous régaler !","reactionEN":"Excellent choice, you're going to love it!","warmth":2},{"fr":"Ça sent tellement bon, je le prends sans hésiter !","en":"It smells so good, I'll take it without a second thought!","reactionFR":"Ha ! J'adore votre enthousiasme, ma belle recette vous attend.","reactionEN":"Ha! I love your enthusiasm, my special recipe awaits you.","warmth":3}]},{"npcFR":"Et voilà ! Alors, ça vous plaît, le repas ?","npcEN":"There you go! So, are you enjoying the meal?","choices":[{"fr":"Oui, c'est bon, merci.","en":"Yes, it's good, thank you.","reactionFR":"Ça me fait plaisir de l'entendre, merci à vous !","reactionEN":"That's lovely to hear, thank you!","warmth":1},{"fr":"C'est délicieux, vous cuisinez très bien.","en":"It's delicious, you cook very well.","reactionFR":"Ah, merci beaucoup ! Ça vient droit du cœur.","reactionEN":"Ah, thank you so much! It comes straight from the heart.","warmth":2},{"fr":"Mes compliments à la cheffe, c'est le meilleur repas du quartier !","en":"My compliments to the chef, best meal in the neighbourhood!","reactionFR":"Vous vous débrouillez très bien, et vous me gâtez aussi !","reactionEN":"You're doing great, and you're spoiling me too!","warmth":3}]}]},"quest":{"titleFR":"Un repas chez Nancy","titleEN":"A Meal at Nancy's","goalFR":"Commandez le plat du jour et complimentez la cheffe Nancy.","goalEN":"Order the daily special and compliment chef Nancy."}},{"venueId":"timsmain","npc":{"name":"Kevin Doiron","role":"barista","greetingFR":"Salut! Prêt pour ton double-double à matin?","greetingEN":"Hey there! Ready for your double-double this morning?","isHote":false},"encounter":{"turns":[{"npcFR":"Bonjour! Qu'est-ce que je te sers aujourd'hui?","npcEN":"Morning! What can I get you today?","choices":[{"fr":"Pouvez-vous répéter plus lentement, s'il vous plaît?","en":"Could you repeat that more slowly, please?","reactionFR":"Ben oui, pas de problème!","reactionEN":"Sure thing, no problem at all!","warmth":1},{"fr":"Un café, s'il vous plaît.","en":"A coffee, please.","reactionFR":"Un café, ça s'en vient!","reactionEN":"One coffee, coming right up!","warmth":2},{"fr":"Un double-double, s'il vous plaît.","en":"A double-double, please.","reactionFR":"Ah, tu connais déjà nos affaires!","reactionEN":"Ah, you already know how we do things here!","warmth":3}]},{"npcFR":"Petit, moyen ou grand aujourd'hui?","npcEN":"Small, medium, or large today?","choices":[{"fr":"Petit, s'il vous plaît.","en":"Small, please.","reactionFR":"Petit café, parfait!","reactionEN":"Small coffee, perfect!","warmth":1},{"fr":"Moyen, merci.","en":"Medium, thanks.","reactionFR":"Bon choix, ça va te réchauffer!","reactionEN":"Good choice, that'll warm you right up!","warmth":2},{"fr":"Un grand, ben là, il fait frette dehors!","en":"A large — man, it's freezing out!","reactionFR":"Ha! T'as ben raison, un grand ça s'impose!","reactionEN":"Ha! You're so right, a large is definitely called for!","warmth":3}]},{"npcFR":"Autre chose? Un Timbit avec ça?","npcEN":"Anything else? A Timbit with that?","choices":[{"fr":"Non merci, c'est tout.","en":"No thanks, that's all.","reactionFR":"Pas de trouble, v'là ton café!","reactionEN":"No worries, here's your coffee!","warmth":1},{"fr":"Oui, un beigne au chocolat aussi.","en":"Yes, a chocolate donut too.","reactionFR":"Excellent choix, ça s'en vient tout de suite!","reactionEN":"Excellent choice, coming right up!","warmth":2},{"fr":"Donnez-moi une douzaine de Timbits, on va faire la fête!","en":"Give me a dozen Timbits, we're celebrating!","reactionFR":"Wow, toute une fête! Tu parles comme un vrai régulier!","reactionEN":"Wow, quite a party! You sound like a true regular!","warmth":3}]}]},"quest":{"titleFR":"Le rituel sacré du double-double","titleEN":"The Sacred Double-Double Ritual","goalFR":"Commande un café comme un vrai Néo-Brunswickois du matin.","goalEN":"Order a coffee like a true New Brunswicker on a morning run."}}];
+const TOWNSFOLK_DATA = {"npcs":[{"name":"Réjean","district":"downtown","lineFR":"Bonjour ! Belle journée pour se promener sur la rue Queen, non ?","lineEN":"Hello! Nice day for a walk on Queen Street, isn't it?"},{"name":"Tammy","district":"downtown","lineFR":"Mon chien s'appelle Biscuit. Il adore le pont piétonnier !","lineEN":"My dog's name is Biscuit. He loves the walking bridge!","tipFR":"Le pont est magnifique au coucher du soleil.","tipEN":"The bridge is gorgeous at sunset."},{"name":"Marie-Claude","district":"downtown","lineFR":"J'ai enseigné l'immersion pendant trente ans. Vous apprenez vite !","lineEN":"I taught immersion for thirty years. You're a fast learner!"},{"name":"Kevin","district":"downtown","lineFR":"Je joue de la guitare ici devant le Playhouse chaque samedi.","lineEN":"I play guitar here outside the Playhouse every Saturday."},{"name":"Chantal","district":"downtown","lineFR":"Le marché est plein de monde le samedi matin, ben là !","lineEN":"The market is packed on Saturday mornings, you know!","tipFR":"Arrivez tôt pour les meilleurs fromages.","tipEN":"Arrive early for the best cheeses."},{"name":"Gilles","district":"downtown","lineFR":"Assis sur ce banc, je pratique mes verbes chaque midi.","lineEN":"Sitting on this bench, I practice my verbs every noon."},{"name":"Sophie","district":"downtown","lineFR":"Étudiante à l'UNB, je révise mon français ici entre les cours.","lineEN":"UNB student, I review my French here between classes."},{"name":"Denis","district":"downtown","lineFR":"Officers' Square est tranquille le matin, parfait pour jaser.","lineEN":"Officers' Square is quiet in the morning, perfect for chatting."},{"name":"Lucille","district":"downtown","lineFR":"Vous vous débrouillez très bien ! Continuez comme ça.","lineEN":"You're doing really well! Keep it up."},{"name":"Pierre","district":"downtown","lineFR":"Le pub est plus animé le jeudi soir, à part ça.","lineEN":"The pub's livelier on Thursday nights, by the way.","tipFR":"Le pub est plus animé le jeudi soir.","tipEN":"The pub is livelier on Thursdays."},{"name":"Odette","district":"downtown","lineFR":"Pouvez-vous répéter plus lentement ? C'est tout à fait normal ici.","lineEN":"Could you repeat that more slowly? That's totally fine here."},{"name":"Réal","district":"northside","lineFR":"La rue Main est calme, mais j'aime ça comme ça.","lineEN":"Main Street is quiet, but I like it that way."},{"name":"Brigitte","district":"northside","lineFR":"Les Hôtes portent une étoile dorée, faciles à repérer !","lineEN":"The Hosts wear a gold star, easy to spot!","tipFR":"Cherchez l'étoile dorée pour trouver un Hôte.","tipEN":"Look for the gold star to find a Host."},{"name":"Wayne","district":"northside","lineFR":"J'habite Nashwaaksis depuis toujours. Bienvenue chez nous !","lineEN":"I've lived in Nashwaaksis forever. Welcome to our neighbourhood!"},{"name":"Yvette","district":"northside","lineFR":"Ma petite épicerie vend des piastres de bonheur, ha ha !","lineEN":"My little grocery sells happiness for cheap, ha ha!"},{"name":"Maurice","district":"northside","lineFR":"J'apprends l'anglais et vous, le français. On s'entraide !","lineEN":"I'm learning English and you're learning French. We help each other!"},{"name":"Diane","district":"northside","lineFR":"Le traversier n'est pas loin, une belle vue sur la rivière.","lineEN":"The ferry isn't far, a lovely view of the river.","tipFR":"La vue est magnifique près du traversier au coucher du soleil.","tipEN":"The view is stunning near the ferry at sunset."}]};
+const EVENTS_DATA = {"events":[{"titleFR":"Soirée de conversation française","titleEN":"French Conversation Night","venueId":"tipsymuse","when":"Tuesdays 7pm","descFR":"Rejoignez le cercle chaque mardi pour jaser en français, tout niveau bienvenu.","descEN":"Join the weekly circle to chat in French, every level welcome.","kind":"conversation-night"},{"titleFR":"Café-jasette du mercredi","titleEN":"Wednesday Coffee Chat","venueId":"cafeloka","when":"Wednesdays 10am","descFR":"Un café, un croissant, et du français tranquille avant le dîner.","descEN":"Coffee, a croissant, and easygoing French before lunch.","kind":"conversation-night"},{"titleFR":"Fête nationale de l'Acadie","titleEN":"National Acadian Day","venueId":"officers","when":"August 15","descFR":"Musique, drapeaux et tintamarre pour célébrer l'Acadie au parc.","descEN":"Music, flags, and a joyful tintamarre celebrating Acadie.","kind":"festival"},{"titleFR":"Festival des récoltes","titleEN":"Harvest Music Festival","venueId":"wilsers","when":"September 20-21","descFR":"Artistes francophones et anglophones sur scène pour un weekend d'automne.","descEN":"Francophone and anglophone artists share the stage this fall weekend.","kind":"festival"},{"titleFR":"Festival d'hiver FROSTival","titleEN":"FROSTival Winter Festival","venueId":"officers","when":"February 6-14","descFR":"Sculptures de glace, chocolat chaud et festivités bilingues en plein air.","descEN":"Ice sculptures, hot cocoa, and outdoor bilingual festivities.","kind":"festival"},{"titleFR":"Heure du marché Boyce","titleEN":"Boyce Market Hour","venueId":"boyce","when":"Saturdays 9am","descFR":"Pratiquez vos achats en français parmi les kiosques du samedi matin.","descEN":"Practice shopping in French among the Saturday morning stalls.","kind":"market-hour"},{"titleFR":"Trivia bilingue au pub","titleEN":"Bilingual Pub Trivia","venueId":"dolans","when":"Thursdays 8pm","descFR":"Questions moitié anglais, moitié français — les équipes mixtes gagnent souvent.","descEN":"Half-English, half-French questions — mixed teams often win.","kind":"trivia"},{"titleFR":"Vendredis musique sur la Broken Record","titleEN":"Friday Tunes at Broken Record","venueId":"brokenrecord","when":"Fridays 6pm","descFR":"Vinyles et vieilles chansons françaises pour finir la semaine.","descEN":"Vinyl and old French songs to wrap up the week.","kind":"concert"}]};
+
+function fallbackPack(v) {
+  return {
+    venueId: v.id,
+    npc: { name: 'Camille', role: 'keeper', isHote: false,
+      greetingFR: 'Bonjour ! Bienvenue chez ' + v.name + ' !',
+      greetingEN: 'Hello! Welcome to ' + v.name + '!' },
+    encounter: { turns: [
+      { npcFR: 'Qu’est-ce que je peux faire pour vous ?', npcEN: 'What can I do for you?',
+        choices: [
+          { fr: 'Je voudrais essayer quelque chose, s’il vous plaît.', en: 'I’d like to try something, please.', reactionFR: 'Excellente idée !', reactionEN: 'Excellent idea!', warmth: 2 },
+          { fr: 'Qu’est-ce que vous recommandez ?', en: 'What do you recommend?', reactionFR: 'J’ai exactement ce qu’il vous faut.', reactionEN: 'I have just the thing.', warmth: 3 },
+          { fr: 'Pouvez-vous répéter plus lentement ?', en: 'Can you repeat more slowly?', reactionFR: 'Bien sûr ! Pas de problème.', reactionEN: 'Of course! No problem.', warmth: 1 }
+        ] },
+      { npcFR: 'Vous venez souvent dans le coin ?', npcEN: 'Do you come around here often?',
+        choices: [
+          { fr: 'Oui, j’adore ce quartier.', en: 'Yes, I love this neighbourhood.', reactionFR: 'Nous aussi !', reactionEN: 'So do we!', warmth: 2 },
+          { fr: 'C’est ma première visite.', en: 'It’s my first visit.', reactionFR: 'Alors bienvenue !', reactionEN: 'Then welcome!', warmth: 2 },
+          { fr: 'Pouvez-vous répéter plus lentement ?', en: 'Can you repeat more slowly?', reactionFR: 'Avec plaisir.', reactionEN: 'With pleasure.', warmth: 1 }
+        ] },
+      { npcFR: 'Votre français est en train de revenir, non ?', npcEN: 'Your French is coming back, isn’t it?',
+        choices: [
+          { fr: 'Petit à petit !', en: 'Little by little!', reactionFR: 'C’est comme ça qu’on fait !', reactionEN: 'That’s how it’s done!', warmth: 3 },
+          { fr: 'J’essaie, en tout cas.', en: 'I’m trying, anyway.', reactionFR: 'Et ça se voit. Bravo.', reactionEN: 'And it shows. Bravo.', warmth: 2 },
+          { fr: 'Merci pour votre patience.', en: 'Thanks for your patience.', reactionFR: 'C’est un plaisir, franchement.', reactionEN: 'Honestly, it’s a pleasure.', warmth: 1 }
+        ] }
+    ] },
+    quest: { titleFR: 'Une visite chez ' + v.name, titleEN: 'A visit to ' + v.name,
+      goalFR: 'Terminez une conversation ici.', goalEN: 'Finish a conversation here.' }
+  };
+}
+function packFor(v) {
+  if (PACKS) { const p = PACKS.find(p => p && p.venueId === v.id); if (p) return p; }
+  return fallbackPack(v);
+}
+const FALLBACK_TOWNSFOLK = [
+  { name: 'Marielle', district: 'downtown', lineFR: 'Belle journée pour pratiquer, non ?', lineEN: 'Nice day to practice, eh?' },
+  { name: 'Gord', district: 'downtown', lineFR: 'Les Hôtes portent une étoile dorée.', lineEN: 'The Hôtes wear a gold star.', tipFR: 'Cherchez l’étoile !', tipEN: 'Look for the star!' },
+  { name: 'Chantal', district: 'northside', lineFR: 'Le pont piétonnier, c’est ma promenade préférée.', lineEN: 'The walking bridge is my favourite stroll.' },
+];
+const FALLBACK_EVENTS = [
+  { titleFR: 'Soirée de conversation', titleEN: 'Conversation night', venueId: 'jonnie', when: 'Thursdays 7pm', descFR: 'Moitié français, moitié anglais.', descEN: 'Half French, half English.', kind: 'conversation-night' },
+  { titleFR: 'Fête nationale de l’Acadie', titleEN: 'Acadian Day', venueId: 'officers', when: 'August 15', descFR: 'Tintamarre au carré des Officiers !', descEN: 'Tintamarre at Officers’ Square!', kind: 'festival' },
+];
+const townsfolkData = () => (TOWNSFOLK_DATA && TOWNSFOLK_DATA.npcs) ? TOWNSFOLK_DATA.npcs : FALLBACK_TOWNSFOLK;
+const eventsData = () => (EVENTS_DATA && EVENTS_DATA.events) ? EVENTS_DATA.events : FALLBACK_EVENTS;
+
+/* ---- living-town content (swarm-generated; fallbacks keep the game safe) ---- */
+const SPECIALS_DATA = [{"id":"vieux-du-pont","name":"Le Vieux du Pont","pages":[{"fr":"Toi. Approche. Tu pars sans rien, et ça, ça ne marche pas.","en":"You there. Come here. Heading out with nothing? That won't do."},{"fr":"« C'est dangereux de parler seul. » Prends ça, ça vaut plus qu'une épée.","en":"\"It's dangerous to speak alone.\" Take this — worth more than a sword."},{"fr":"« Comment on dit… ? » Trois mots. Dis-les, et tout étranger devient ton prof.","en":"\"How do you say...?\" Three words. Say them, and any stranger becomes your teacher."},{"fr":"En 1969, la plus belle jasette de Fredericton fut écrite dans un carnet — le Carnet de la Grande Jasette.","en":"In 1969, Fredericton's greatest conversation was written into a notebook — the Carnet de la Grande Jasette."},{"fr":"Le vent a éparpillé ses pages partout en ville. Ramène-les, et la ville rejasera.","en":"The wind scattered its pages across town. Bring them back, and the town will talk again."}],"truc":{"titleFR":"Le moteur du « comment on dit »","titleEN":"The 'How Do You Say' Engine","ruleFR":"Bloqué sur un mot ? Demande « Comment on dit… ? » et pointe.","ruleEN":"Stuck on a word? Ask \"How do you say...?\" and point.","exampleFR":"Au marché Boyce : « Comment on dit ce fromage-là, en français ? »","exampleEN":"At the Boyce Market: \"How do you say that cheese, in French?\""},"grantsPage":false},{"id":"mime-celeste","name":"Célèste","pages":[{"fr":"...","en":"(she freezes, one hand pressed to an invisible wall)"},{"fr":"...","en":"(she mimes an enormous fish, arms stretched wide, nearly toppling)"},{"fr":"...","en":"(she points at you, then at her ear, then gives two big thumbs up)"},{"fr":"Tu vois? Pas un seul mot.","en":"See? Not a single word."},{"fr":"T'as compris pareil. Le français, t'en sais déjà plus que tu penses.","en":"You understood anyway. You already know more French than you think."}],"truc":null,"grantsPage":true},{"id":"jumelles-boyce","name":"Les jumelles du marché","pages":[{"fr":"Deux jumelles identiques te bloquent le chemin du marché Boyce.","en":"Two identical twins block your path to Boyce Market."},{"fr":"« CHOCOLATINE. » « NON. PAIN AU CHOCOLAT. » Elles se tournent vers toi.","en":"\"CHOCOLATINE.\" \"NO. PAIN AU CHOCOLAT.\" They both turn to you."},{"fr":"« Toi. Tranche. Chocolatine ou pain au chocolat? Défends ton choix! »","en":"\"You. Decide. Chocolatine or pain au chocolat? Defend it!\""},{"fr":"Tu argumentes en français, maladroitement, avec passion. Elles hurlent de joie.","en":"You argue in clumsy, passionate French. They shriek with delight."},{"fr":"« Peu importe le mot — tu as DÉBATTU en français! C'est ça, la vraie victoire. »","en":"\"The word doesn't matter — you DEBATED in French! That's the real win.\""}],"truc":null,"grantsPage":true},{"id":"capitaine-chiac","name":"Capitaine Chiac","pages":[{"fr":"Ben là! Un touriste de la south side! Bienvenue sur Main Street, mon chum!","en":"Well there! A tourist from the south side! Welcome to Main Street, my friend!"},{"fr":"Chu de Shediac, faque, euh... j'parle un p'tit peu différent, right là. Ça t'dérange?","en":"I'm from Shediac, so, uh... I talk a little different, right there. Does that bother you?"},{"fr":"Le monde pense que 'euh' pis 'ben' c'est des erreurs. Non non! C'est la musique, faque!","en":"People think 'uh' and 'well' are mistakes. No, no! That's the music, so there!"},{"fr":"Apprends trois mots comme ça pis, ben, tu geleras pu jamais devant le monde, right là!","en":"Learn three words like that and, well, you'll never freeze up in front of people again!"},{"fr":"Faque vas-y, essaye! Ben, euh, là... tu vois? T'es déjà un Acadien, mon chum!","en":"So go on, try it! Well, uh, there... you see? You're already an Acadian, my friend!"}],"truc":{"titleFR":"Le moteur à c'est","titleEN":"The Filler Engine","ruleFR":"Ben, là, faque, euh: ça meuble le silence pendant que tu penses.","ruleEN":"Well, there, so, uh: they fill the silence while your brain catches up.","exampleFR":"« Euh... ben, j'pense que... faque, oui! » — pis personne remarque le blanc.","exampleEN":"\"Uh... well, I think... so, yes!\" — and nobody notices the pause."},"grantsPage":false},{"id":"prof-fougere","name":"Madame Fougère","pages":[{"fr":"Chut... les mésanges reviennent si on ne bouge pas. Assieds-toi une minute.","en":"Shh... the chickadees come back if we sit still. Join me a minute."},{"fr":"J'ai enseigné le français ici quarante ans. Je me souviens de chaque élève, tu sais.","en":"I taught French here forty years. I remember every single student."},{"fr":"Tu crois ne pas connaître de français? Tu en connais des milliers de mots, mon cœur.","en":"Think you know no French? You already know thousands of words, dear heart."},{"fr":"Nation, question, situation... change le son, garde les lettres. C'est presque de la triche!","en":"Nation, question, situation... change the sound, keep the letters. It's almost cheating!"},{"fr":"Reviens me voir sur le banc. Les mésanges et moi, on t'attend.","en":"Come find me on the bench again. The chickadees and I will be waiting."}],"truc":{"titleFR":"Le moteur à -tion","titleEN":"The -tion Engine","ruleFR":"Un mot anglais en -tion? Prononce-le à la française, souvent c'est déjà bon.","ruleEN":"English word ending in -tion? Say it the French way — often already right.","exampleFR":"« Information » en anglais devient « information » en français, dit autrement.","exampleEN":"English \"information\" becomes French \"information,\" just said differently."},"grantsPage":false},{"grantsPage":false,"id":"dj-vinyle","name":"DJ Vinyle","pages":[{"fr":"Ho, salut toi. T'écoutes du vinyle ou tu magasines des mots?","en":"Hey, you. You here for vinyl, or shopping for words?"},{"fr":"Le français, c'est comme un bon riff : deux accords pis ça marche.","en":"French is like a good riff: two chords and it just works."},{"fr":"« C'est bon. » « C'est fou. » « C'est ça. » Trois mots, toujours propre.","en":"'C'est bon.' 'C'est fou.' 'C'est ça.' Three words, always clean."},{"fr":"Mets n'importe quel adjectif après « c'est », pis t'as une toune complète.","en":"Drop any adjective after 'c'est' and you've got a whole track."},{"fr":"Reviens me voir sur le Green, pratique ta ligne de basse française.","en":"Come see me on the Green, and practice your French bassline."}],"truc":{"titleFR":"Le moteur à « c'est »","titleEN":"The C'est Engine","ruleFR":"« C'est » + adjectif = phrase correcte, complète, cool.","ruleEN":"'C'est' + adjective = correct, complete, cool sentence.","exampleFR":"Le pont piétonnier au coucher du soleil? C'est magique.","exampleEN":"The walking bridge at sunset? That's magic."}},{"grantsPage":false,"id":"jardiniere-violette","name":"Violette, Fleuriste du Square","pages":[{"fr":"Ah, un promeneur! Tiens la terre, respire — la violette pousse mieux avec de la compagnie.","en":"Ah, a wanderer! Hold the soil, breathe — violets grow better with company."},{"fr":"« La violette », féminin. « Le jardinage », masculin. Coïncidence? Non — c'est dans la graine!","en":"'La violette,' feminine. 'Le jardinage,' masculine. Coincidence? No — it's in the seed!"},{"fr":"-tion, -ette, -ure : presque toujours féminins. Regarde la fin du mot, pas son cœur.","en":"-tion, -ette, -ure: almost always feminine. Look at the word's ending, not its heart."},{"fr":"-age, -eau, -ment : masculins la plupart du temps. Le jardinage, le chapeau, le moment.","en":"-age, -eau, -ment: mostly masculine. Le jardinage, le chapeau, le moment."},{"fr":"N'apprends pas chaque fleur par cœur, mon ami. Apprends à lire les graines, et le jardin s'ouvre.","en":"Don't memorize every flower, my friend. Learn to read the seeds, and the garden opens up."}],"truc":{"titleFR":"Le moteur des finales","titleEN":"The Ending Engine","ruleFR":"Regarde la fin du mot : -tion/-ette féminin, -age/-eau masculin.","ruleEN":"Check the word's ending: -tion/-ette feminine, -age/-eau masculine.","exampleFR":"La violette (féminin) pousse près du jardinage (masculin) du Square.","exampleEN":"La violette (feminine) grows beside le jardinage (masculine) of the Square."}},{"id":"pecheur-du-pont","name":"Ti-Louis le Pêcheur","pages":[{"fr":"Pas une touche depuis six ans. La meilleure pêche de ma vie.","en":"Not a bite in six years. Best fishing of my life."},{"fr":"Toi, t'as peur du silence. Le poisson, lui, il adore ça.","en":"You're scared of silence. The fish, though? Loves it."},{"fr":"Dis « euh… », arrête-toi, regarde l'eau. C'est déjà du français, ça.","en":"Say \"euh…\", stop, look at the water. That's French too."},{"fr":"Une phrase pas finie, c'est une ligne à l'eau. Attends un peu.","en":"An unfinished sentence is a line in the water. Just wait."},{"fr":"Un jour j'attraperai quelque chose. En attendant, j'attrape le temps.","en":"One day I'll catch something. Meanwhile, I catch the time."}],"truc":{"titleFR":"Le moteur à « euh »","titleEN":"The \"euh\" Engine","ruleFR":"Un « euh… » et une pause, c'est encore parler français.","ruleEN":"An \"euh…\" and a pause still count as speaking French.","exampleFR":"« Je voudrais... euh... » Ti-Louis hoche la tête : « Continue, j'ai tout mon temps. »","exampleEN":"\"I'd like... euh...\" Ti-Louis nods: \"Go on, I've got all day.\""},"grantsPage":true},{"id":"facteur-presse","name":"Gaston Vite-Fait","pages":[{"fr":"Facteur Gaston, en retard, TOUJOURS en retard ! Le courrier attend pas, mon ami !","en":"Postman Gaston, late, ALWAYS late! The mail doesn't wait, my friend!"},{"fr":"J'ai couru la rue Queen dix fois aujourd'hui. Mes bottines fument, regarde !","en":"I've run down Queen Street ten times today. My boots are smoking, look!"},{"fr":"Dis-moi : « Pouvez-vous parler plus lentement ? » Vas-y, essaie, ça coûte rien !","en":"Tell me: \"Could you speak more slowly?\" Go on, try it, it costs nothing!"},{"fr":"Ah, tu vois ? Ça fait chaud au cœur, ça. Un vrai cadeau, cette phrase.","en":"Ah, see? That warms the heart. That sentence is a real gift."},{"fr":"Moi, ralentir ? Impossible, le pont piétonnier m'appelle ! Bonne journée, cours vite !","en":"Me, slow down? Impossible, the walking bridge is calling! Have a good day, run fast!"}],"truc":{"titleFR":"Le cadeau de la lenteur","titleEN":"The Gift of Slowness","ruleFR":"Demander à ralentir, c'est offrir ton attention à l'autre.","ruleEN":"Asking someone to slow down is offering them your attention.","exampleFR":"« Plus lentement, s'il vous plaît ? » et Gaston sourit, même pressé.","exampleEN":"\"Slower, please?\" and Gaston smiles, even while rushing."},"grantsPage":false}];
+const CARNET_DATA = {"pages":[{"fr":"Le fleuve ne parle qu'une langue, mais il écoute les deux.","en":"The river speaks one tongue, but it listens to both."},{"fr":"Sur le pont piétonnier, personne ne reste étranger bien longtemps.","en":"On the walking bridge, no one stays a stranger for long."},{"fr":"Un café renversé, un mot mal dit — les deux se pardonnent vite.","en":"A spilled coffee, a fumbled word — both forgive quickly."},{"fr":"Au Boyce Market, on troque des tomates et des syllabes.","en":"At the Boyce Market, we trade tomatoes and syllables."},{"fr":"Le silence avant de parler français, c'est juste de la place pour le courage.","en":"The silence before speaking French is just room for courage."},{"fr":"De Devon à Fredericton, le pont ne choisit pas de côté.","en":"From Devon to Fredericton, the bridge picks no side."},{"fr":"Sur le Green, en 1969, deux langues se sont assises sur le même banc.","en":"On the Green, in 1969, two languages sat on the same bench."},{"fr":"La neige tombe pareil sur les deux langues — personne n'est mieux habillé.","en":"Snow falls the same on both languages — nobody's better dressed for it."}]};
+const MINI_DATA = {"marketItems":[{"fr":"des fraises","en":"strawberries","emoji":"🍓"},{"fr":"des têtes de violon","en":"fiddleheads","emoji":"🌿"},{"fr":"du sirop d'érable","en":"maple syrup","emoji":"🍁"},{"fr":"des samosas","en":"samosas","emoji":"🥟"},{"fr":"un homard","en":"a lobster","emoji":"🦞"},{"fr":"du fromage en grains","en":"cheese curds","emoji":"🧀"},{"fr":"une tarte au sucre","en":"a sugar pie","emoji":"🥧"},{"fr":"du miel","en":"honey","emoji":"🍯"},{"fr":"des pains chauds","en":"warm loaves of bread","emoji":"🍞"},{"fr":"des cornichons à l'aneth","en":"dill pickles","emoji":"🥒"},{"fr":"du café","en":"coffee","emoji":"☕"},{"fr":"des fleurs coupées","en":"cut flowers","emoji":"💐"},{"fr":"des confitures maison","en":"homemade jam","emoji":"🫙"},{"fr":"du cidre de pomme","en":"apple cider","emoji":"🍎"}],"simonRounds":[{"fr":"Jacques dit : à gauche !","en":"Simon says: left!","dir":"left","simonSays":true},{"fr":"À droite !","en":"Right!","dir":"right","simonSays":false},{"fr":"Jacques dit : en haut !","en":"Simon says: up!","dir":"up","simonSays":true},{"fr":"Jacques dit : en bas !","en":"Simon says: down!","dir":"down","simonSays":true},{"fr":"En haut !","en":"Up!","dir":"up","simonSays":false},{"fr":"Jacques dit : à droite !","en":"Simon says: right!","dir":"right","simonSays":true},{"fr":"Jacques dit : en bas !","en":"Simon says: down!","dir":"down","simonSays":true},{"fr":"À gauche !","en":"Left!","dir":"left","simonSays":false},{"fr":"Jacques dit : en haut !","en":"Simon says: up!","dir":"up","simonSays":true},{"fr":"Jacques dit : à gauche !","en":"Simon says: left!","dir":"left","simonSays":true}],"tintamarreLines":[{"fr":"On est encore là !","en":"We're still here!"},{"fr":"Fais du bruit, on existe !","en":"Make noise, we exist!"},{"fr":"Sors tes chaudrons, cousin !","en":"Grab your pots, cousin!"},{"fr":"Vive l'Acadie, ensemble on chante !","en":"Long live Acadie, together we sing!"}],"catLines":[{"fr":"Ronron. Rester, c'est déjà réussir.","en":"Purr. Staying is already succeeding."},{"fr":"T'inquiète pas pour l'accent, gratte plus fort.","en":"Don't worry about the accent, scratch harder."},{"fr":"Un café, une caresse, une phrase à la fois.","en":"One coffee, one pet, one sentence at a time."}],"deerLesson":{"fr":"Reste immobile. Le cerf approche seulement quand plus rien ne presse.","en":"Stay still. The deer only comes close when nothing is rushing."}};
+const FINALE_DATA = {"pages":[{"speaker":"BILINGUA","fr":"Le kiosque. Le vrai monde. Tout le monde t'a suivi jusqu'ici.","en":"The gazebo. The real world. Everyone followed you here."},{"speaker":"Le Vieux du Pont","fr":"Ah, te v'là! Le carnet est presque plein, mon ami.","en":"There you are! The notebook's nearly full, my friend."},{"speaker":"Chantal ★","fr":"J'ai fermé le kiosque plus tôt juste pour ça. Ça vaut la peine.","en":"I closed my stand early just for this. Worth it."},{"speaker":"La Ville","fr":"Chaque pont, chaque banc, chaque marché — ça jasait déjà avant toi.","en":"Every bridge, every bench, every market — it was already talking before you."},{"speaker":"Le Vieux du Pont","fr":"On pensait que la jasette s'était tue. Non. Elle attendait.","en":"We thought the conversation had gone quiet. No. It was waiting."},{"speaker":"Le Vieux du Pont","fr":"Elle attendait quelqu'un d'assez brave pour dire « bonjour » pareil.","en":"Waiting for someone brave enough to say 'hello' anyway."},{"speaker":"La Ville","fr":"Colle la dernière page. Là. Regarde comme le carnet respire.","en":"Stick in the last page. There. Watch the notebook breathe."},{"speaker":"Chantal ★","fr":"T'es nommé, astheure. Pas juste un joueur — un voisin.","en":"You're named now. Not just a player — a neighbour."},{"speaker":"Le Vieux du Pont","fr":"La suite arrive pas dans un jeu. Elle arrive à une vraie table.","en":"The sequel doesn't happen in a game. It happens at a real table."},{"speaker":"BILINGUA","fr":"Regarde le babillard des rendez-vous. Prends tes trois invitations. On jase.","en":"Check the rendez-vous board. Grab your three invitations. Let's talk."}]};
+
+const FALLBACK_SPECIALS = [
+  { id: 'vieux-du-pont', name: 'Le Vieux du Pont', grantsPage: false,
+    pages: [
+      { fr: 'C’est dangereux de jaser seul ! Prends ça.', en: 'It’s dangerous to chat alone! Take this.' },
+      { fr: 'En 1969, la plus grande jasette de Fredericton fut écrite dans un carnet…', en: 'In 1969, Fredericton’s greatest conversation was written in a notebook…' },
+      { fr: 'Ses pages sont éparpillées dans la ville. Trouve-les, et la ville jasera encore.', en: 'Its pages are scattered across town. Find them, and the town will talk again.' }
+    ],
+    truc: { titleFR: '« Comment on dit… ? »', titleEN: '"How do you say…?"', ruleFR: 'La phrase qui transforme chaque inconnu en prof.', ruleEN: 'The phrase that turns every stranger into a teacher.', exampleFR: 'Comment on dit « fiddlehead » ? — Tête de violon !', exampleEN: 'How do you say "fiddlehead"? — Tête de violon!' } },
+];
+const FALLBACK_CARNET = { pages: [
+  { fr: 'Deux langues, une rivière.', en: 'Two languages, one river.' },
+  { fr: 'Le courage, c’est une phrase à la fois.', en: 'Courage is one sentence at a time.' },
+  { fr: 'Personne n’a jamais regretté d’avoir dit bonjour.', en: 'No one ever regretted saying hello.' },
+  { fr: 'Le silence aussi fait partie de la conversation.', en: 'Silence is part of the conversation too.' },
+  { fr: 'On apprend une langue comme on traverse un pont.', en: 'You learn a language the way you cross a bridge.' },
+  { fr: 'Chaque erreur est une porte ouverte.', en: 'Every mistake is an open door.' },
+  { fr: 'La ville parle à ceux qui écoutent.', en: 'The town speaks to those who listen.' },
+  { fr: 'La grande jasette n’a jamais fini. Elle attendait.', en: 'The great conversation never ended. It was waiting.' }
+] };
+const FALLBACK_MINI = {
+  marketItems: [
+    { fr: 'des fraises', en: 'strawberries', emoji: '🍓' }, { fr: 'des têtes de violon', en: 'fiddleheads', emoji: '🌿' },
+    { fr: 'du sirop d’érable', en: 'maple syrup', emoji: '🍁' }, { fr: 'un homard', en: 'a lobster', emoji: '🦞' },
+    { fr: 'du pain', en: 'bread', emoji: '🥖' }, { fr: 'des pommes', en: 'apples', emoji: '🍎' },
+    { fr: 'du fromage', en: 'cheese', emoji: '🧀' }, { fr: 'des carottes', en: 'carrots', emoji: '🥕' },
+    { fr: 'un samosa', en: 'a samosa', emoji: '🥟' }, { fr: 'du miel', en: 'honey', emoji: '🍯' },
+    { fr: 'des bleuets', en: 'blueberries', emoji: '🫐' }, { fr: 'du maïs', en: 'corn', emoji: '🌽' },
+    { fr: 'des fleurs', en: 'flowers', emoji: '💐' }, { fr: 'un café', en: 'a coffee', emoji: '☕' }
+  ],
+  simonRounds: [
+    { fr: 'Jacques dit : à gauche !', en: 'Jacques says: left!', dir: 'left', simonSays: true },
+    { fr: 'Jacques dit : en haut !', en: 'Jacques says: up!', dir: 'up', simonSays: true },
+    { fr: 'À droite !', en: 'Right!', dir: 'right', simonSays: false },
+    { fr: 'Jacques dit : en bas !', en: 'Jacques says: down!', dir: 'down', simonSays: true },
+    { fr: 'Jacques dit : à droite !', en: 'Jacques says: right!', dir: 'right', simonSays: true },
+    { fr: 'En haut !', en: 'Up!', dir: 'up', simonSays: false },
+    { fr: 'Jacques dit : à gauche !', en: 'Jacques says: left!', dir: 'left', simonSays: true },
+    { fr: 'Jacques dit : en haut !', en: 'Jacques says: up!', dir: 'up', simonSays: true },
+    { fr: 'En bas !', en: 'Down!', dir: 'down', simonSays: false },
+    { fr: 'Jacques dit : en bas !', en: 'Jacques says: down!', dir: 'down', simonSays: true }
+  ],
+  tintamarreLines: [
+    { fr: 'Fais du bruit pour l’Acadie !', en: 'Make noise for Acadie!' },
+    { fr: 'Plus fort ! La rivière doit t’entendre !', en: 'Louder! The river has to hear you!' },
+    { fr: 'Les casseroles chantent !', en: 'The pots are singing!' },
+    { fr: 'C’est ça, le tintamarre !', en: 'THAT’s the tintamarre!' }
+  ],
+  catLines: [
+    { fr: 'Rrrron… tu parles bien, toi.', en: 'Purrrr… you speak well, you.' },
+    { fr: 'Miaou. (C’est du français, ça aussi.)', en: 'Meow. (That’s French too.)' },
+    { fr: 'Rrrron… reste encore un peu.', en: 'Purrrr… stay a little longer.' }
+  ],
+  deerLesson: { fr: 'Tu n’as pas bougé. Alors elle est venue. Les gens gênés, c’est pareil.', en: 'You didn’t move. So she came. Shy people are the same.' }
+};
+const FALLBACK_FINALE = { pages: [
+  { speaker: 'Le Vieux du Pont', fr: 'Regarde-les. Tout le monde est venu.', en: 'Look at them. Everyone came.' },
+  { speaker: 'Le Vieux du Pont', fr: 'Le carnet est complet. La grande jasette peut reprendre.', en: 'The notebook is whole. The great conversation can resume.' },
+  { speaker: 'La Ville', fr: 'Elle n’avait jamais fini. Elle t’attendait.', en: 'It never ended. It was waiting for you.' },
+  { speaker: 'BILINGUA', fr: 'La suite se passe à une vraie table. Apporte tes trois invitations.', en: 'The sequel happens at a real table. Bring your three invitations.' }
+] };
+const specialsData = () => (SPECIALS_DATA && SPECIALS_DATA.length) ? SPECIALS_DATA : FALLBACK_SPECIALS;
+const carnetData = () => (CARNET_DATA && CARNET_DATA.pages) ? CARNET_DATA.pages : FALLBACK_CARNET.pages;
+const miniData = () => MINI_DATA || FALLBACK_MINI;
+const finaleData = () => (FINALE_DATA && FINALE_DATA.pages) ? FINALE_DATA.pages : FALLBACK_FINALE.pages;
+
+/* where the legends stand (id → map position + sprite palette index) */
+const SPECIAL_SPOTS = {
+  'vieux-du-pont': { x: 60, y: 23, style: 4 },
+  'mime-celeste': { x: 81, y: 32, style: 5 },
+  'jumelles-boyce': { x: 54, y: 48, style: 1 },
+  'capitaine-chiac': { x: 55, y: 8, style: 0 },
+  'prof-fougere': { x: 39, y: 25, style: 3 },
+  'dj-vinyle': { x: 53, y: 29, style: 2 },
+  'jardiniere-violette': { x: 70, y: 26, style: 5 },
+  'pecheur-du-pont': { x: 60, y: 12, style: 2 },
+  'facteur-presse': { x: 30, y: 29, style: 0 },
+};
+/* minigame hosts (activity spots) */
+const HOSTS = [
+  { id: 'busker', game: 'simon', name: 'Jacques le busker', x: 79, y: 36, style: 3 },
+  { id: 'crieuse', game: 'criee', name: 'La Crieuse', x: 56, y: 51, style: 1 },
+];
+
+/* =====================================================================
+   THE LIVING TOWN — animals, legends, mini-games, the Carnet, the finale
+   ===================================================================== */
+let stillFrames = 0;            /* how long the player has stood still — the deer are watching */
+let animals = [];
+let specials = [];              /* placed legendary NPCs */
+let finaleCrowd = false;
+
+function placeLivingTown() {
+  /* legends */
+  specials = [];
+  specialsData().forEach(sd => {
+    const spot = SPECIAL_SPOTS[sd.id];
+    if (spot) specials.push({ ...sd, x: spot.x, y: spot.y, style: HERO_STYLES[spot.style] });
+  });
+  HOSTS.forEach(h => specials.push({ id: h.id, name: h.name, host: h.game, x: h.x, y: h.y, style: HERO_STYLES[h.style], pages: [], grantsPage: false, truc: null }));
+  /* animals: deer in the Devon woods (northside east), squirrels on the Green,
+     ducks on the river, and Baguette the cat outside Jonnie Java */
+  animals = [
+    { kind: 'deer', x: 74, y: 11, minX: 66, maxX: 88, minY: 9, maxY: 12, state: 'wary', cd: 0 },
+    { kind: 'deer', x: 80, y: 10, minX: 66, maxX: 88, minY: 9, maxY: 12, state: 'wary', cd: 0 },
+    { kind: 'deer', x: 85, y: 12, minX: 66, maxX: 88, minY: 9, maxY: 12, state: 'wary', cd: 0 },
+    { kind: 'squirrel', x: 20, y: 24, minX: 4, maxX: 88, minY: 23, maxY: 24, cd: 0 },
+    { kind: 'squirrel', x: 48, y: 23, minX: 4, maxX: 88, minY: 23, maxY: 24, cd: 0 },
+    { kind: 'squirrel', x: 72, y: 24, minX: 4, maxX: 88, minY: 23, maxY: 24, cd: 0 },
+    { kind: 'duck', x: 12, y: 17, minX: 2, maxX: 89, minY: 16, maxY: 20, dirX: 1, cd: 0 },
+    { kind: 'duck', x: 40, y: 19, minX: 2, maxX: 89, minY: 16, maxY: 20, dirX: -1, cd: 0 },
+    { kind: 'duck', x: 70, y: 16, minX: 2, maxX: 89, minY: 16, maxY: 20, dirX: 1, cd: 0 },
+    { kind: 'cat', x: 40, y: 36, name: 'Baguette' },
+  ];
+}
+function animalWalkable(a, x, y) {
+  if (x < a.minX || x > a.maxX || y < a.minY || y > a.maxY) return false;
+  const id = map[y] && map[y][x];
+  if (a.kind === 'duck') return id === TL.WATER;
+  return id === TL.GRASS || id === TL.GRASS2 || id === TL.PATH || id === TL.FLOWER;
+}
+function updateAnimals() {
+  if (state !== 'world' || dialogueActive || finaleCrowd) return;
+  animals.forEach(a => {
+    a.cd = Math.max(0, a.cd - 1);
+    const dist = Math.abs(a.x - player.x) + Math.abs(a.y - player.y);
+    if (a.kind === 'deer' && a.state !== 'friend') {
+      if (dist <= 5 && stillFrames < 90 && a.cd === 0) {
+        /* flee: step directly away from sudden movement */
+        const dx = Math.sign(a.x - player.x) || (Math.random() < 0.5 ? 1 : -1);
+        const dy = Math.sign(a.y - player.y);
+        if (animalWalkable(a, a.x + dx, a.y)) a.x += dx;
+        else if (animalWalkable(a, a.x, a.y + dy)) a.y += dy;
+        a.state = 'wary'; a.cd = 18;
+      } else if (dist > 1 && dist <= 5 && stillFrames > 240 && a.cd === 0) {
+        /* patience: it comes to you */
+        a.state = 'approaching';
+        const dx = Math.sign(player.x - a.x), dy = Math.sign(player.y - a.y);
+        if (dx && animalWalkable(a, a.x + dx, a.y)) a.x += dx;
+        else if (dy && animalWalkable(a, a.x, a.y + dy)) a.y += dy;
+        a.cd = 55;
+      }
+    }
+    if (a.kind === 'squirrel' && dist <= 2 && a.cd === 0) {
+      const dx = Math.sign(a.x - player.x) || 1;
+      for (let hop = 3; hop > 0; hop--) if (animalWalkable(a, a.x + dx * hop, a.y)) { a.x += dx * hop; break; }
+      a.cd = 30;
+    }
+    if (a.kind === 'duck' && a.cd === 0) {
+      if (!animalWalkable(a, a.x + a.dirX, a.y)) a.dirX *= -1;
+      else a.x += a.dirX;
+      a.cd = 46;
+    }
+  });
+}
+function drawAnimal(a, sx, sy, f) {
+  if (a.kind === 'deer') {
+    cx.fillStyle = '#8a5f3c'; cx.fillRect(sx + 2, sy + 6, 11, 6);           /* body */
+    cx.fillRect(sx + 11, sy + 2, 4, 5);                                     /* head */
+    cx.fillStyle = '#6d4a2e'; cx.fillRect(sx + 3, sy + 12, 2, 4); cx.fillRect(sx + 10, sy + 12, 2, 4);
+    cx.fillRect(sx + 12, sy + (f ? 0 : 1), 1, 2); cx.fillRect(sx + 14, sy + (f ? 1 : 0), 1, 2); /* ears/antlers */
+    cx.fillStyle = '#f4ead2'; cx.fillRect(sx + 1, sy + 6, 2, 3);            /* tail */
+    cx.fillStyle = '#26180e'; cx.fillRect(sx + 13, sy + 4, 1, 1);
+    if (a.state === 'approaching') { cx.fillStyle = '#ffd94a'; cx.fillRect(sx + 6, sy - 4, 2, 2); }
+  } else if (a.kind === 'squirrel') {
+    cx.fillStyle = '#26180e'; cx.fillRect(sx + 4, sy + 9, 7, 5); cx.fillRect(sx + 9, sy + 6, 4, 4);
+    cx.beginPath(); cx.fillRect(sx + 2, sy + 4, 3, 8);                       /* the famous tail */
+    cx.fillStyle = '#f4ead2'; cx.fillRect(sx + 11, sy + 7, 1, 1);
+  } else if (a.kind === 'duck') {
+    cx.fillStyle = '#5a4a2e'; cx.fillRect(sx + 4, sy + 7 + (f ? 1 : 0), 8, 5);
+    cx.fillRect(sx + 10, sy + 3 + (f ? 1 : 0), 4, 5);
+    cx.fillStyle = '#e8c04a'; cx.fillRect(sx + 13, sy + 5 + (f ? 1 : 0), 3, 2);
+  } else if (a.kind === 'cat') {
+    cx.fillStyle = '#c8875f'; cx.fillRect(sx + 3, sy + 8, 9, 6); cx.fillRect(sx + 9, sy + 4, 5, 5);
+    cx.fillStyle = '#a8654a'; cx.fillRect(sx + 9, sy + 2, 2, 3); cx.fillRect(sx + 13, sy + 2, 1, 3);
+    cx.fillRect(sx + 1, sy + 6 + (f ? 1 : 0), 3, 2);                         /* tail sway */
+    cx.fillStyle = '#26180e'; cx.fillRect(sx + 10, sy + 6, 1, 1); cx.fillRect(sx + 13, sy + 6, 1, 1);
+  }
+}
+
+/* ---- grants: the Carnet, the Trucs, the pins ---- */
+function grantPage(idx, sourceLabel) {
+  if (save.pages.includes(idx)) return false;
+  save.pages.push(idx); writeSave();
+  const pg = carnetData()[idx] || { fr: '…', en: '…' };
+  dlgQueue.push({ speaker: 'LE CARNET', fr: '✶ PAGE ' + save.pages.length + ' — « ' + pg.fr + ' »', en: '"' + pg.en + '" (' + sourceLabel + ')' });
+  SND.stamp();
+  return true;
+}
+function grantTruc(truc) {
+  if (!truc || save.trucs.some(t => t.titleFR === truc.titleFR)) return false;
+  save.trucs.push(truc); writeSave();
+  dlgQueue.push({ speaker: 'TRUC APPRIS !', fr: '✶ ' + truc.titleFR + ' — ' + truc.ruleFR, en: truc.titleEN + ' — ' + truc.ruleEN });
+  SND.stamp();
+  return true;
+}
+function grantPin(id, labelFR, labelEN) {
+  if (save.pins.some(p => p.id === id)) return false;
+  save.pins.push({ id, fr: labelFR, en: labelEN }); writeSave();
+  return true;
+}
+
+/* ---- special NPC dialogue ---- */
+const PAGE_SOURCES = { simon: 0, criee: 1, tintamarre: 2, deer: 3, 'mime-celeste': 4, 'jumelles-boyce': 5, 'pecheur-du-pont': 6 };
+function talkToSpecial(sp) {
+  if (sp.host) { openMinigame(sp.host, sp.name); return; }
+  const met = save.metSpecials[sp.id];
+  const pages = met ? [sp.pages[sp.pages.length - 1]] : sp.pages.slice();
+  /* Ti-Louis knows about the grate — the river's name opens more than hearts */
+  if (sp.id === 'pecheur-du-pont' && !met) {
+    pages.push({ fr: 'Ah pis… sous la ville, il y a des tunnels de vapeur. La vieille grille, derrière King Street — elle s’ouvre pour qui dit le vrai nom de la rivière.', en: 'Oh and… under the town there are steam tunnels. The old grate off King Street — it opens for whoever says the river’s true name.' });
+  }
+  const dlgPages = pages.map(p => ({ speaker: sp.name, fr: p.fr, en: p.en }));
+  startDialogue(dlgPages, () => {});
+  if (!met) {
+    save.metSpecials[sp.id] = true;
+    if (sp.truc) grantTruc(sp.truc);
+    if (sp.grantsPage && PAGE_SOURCES[sp.id] !== undefined) grantPage(PAGE_SOURCES[sp.id], sp.name);
+    writeSave(); updateHud();
+  }
+}
+function talkToCat(cat) {
+  const lines = miniData().catLines;
+  const l = lines[Math.floor(Math.random() * lines.length)];
+  startDialogue([{ speaker: cat.name + ' 🐈', fr: l.fr, en: l.en }]);
+  if (grantPin('cat', 'Ami·e de Baguette', 'Friend of Baguette')) {
+    dlgQueue.push({ speaker: 'BILINGUA', fr: '✶ Épinglette : Ami·e de Baguette', en: 'Pin earned: Friend of Baguette' });
+  }
+  SND.confirm();
+}
+function approachDeer(deer) {
+  deer.state = 'friend';
+  const l = miniData().deerLesson;
+  startDialogue([
+    { speaker: LANG === 'fr' ? 'Le chevreuil de Devon' : 'The Devon deer', fr: l.fr, en: l.en },
+  ]);
+  grantPin('deer', 'La Patience du chevreuil', 'The Patience of the Deer');
+  grantPage(PAGE_SOURCES.deer, LANG === 'fr' ? 'le chevreuil' : 'the deer');
+  updateHud();
+}
+
+/* ---- mini-games (DOM modals, SNES chrome; no fail states, only laughs) ---- */
+function miniReward(kind, scoreLine) {
+  const first = !save.minigamesWon[kind];
+  save.minigamesWon[kind] = (save.minigamesWon[kind] || 0) + 1;
+  save.confidence += first ? 3 : 1;
+  writeSave(); updateHud();
+  closeModal();
+  const pages = [{ speaker: 'BILINGUA', fr: scoreLine + '  ·  ' + t('confUp') + (first ? 3 : 1) + ' ☕', en: '' }];
+  startDialogue(pages);
+  if (first && PAGE_SOURCES[kind] !== undefined) grantPage(PAGE_SOURCES[kind], kind);
+}
+function openMinigame(kind, hostName) {
+  if (kind === 'simon') {
+    const rounds = miniData().simonRounds.slice().sort(() => Math.random() - 0.5).slice(0, 8);
+    let i = 0, score = 0, timer = null, resolved = false;
+    const w = modal('<h2>Jacques dit… <span style="font-size:12px; opacity:0.6">(Simon says, en français)</span></h2>' +
+      '<p style="font-size:12px; opacity:0.7">' + (LANG === 'fr' ? 'Bouge seulement si Jacques le dit !' : 'Only move if Jacques says so!') + '</p>' +
+      '<p id="sd-call" style="font-family:\'Iowan Old Style\',Palatino,serif; font-size:22px; min-height:60px"></p>' +
+      '<p id="sd-en" style="font-size:12px; font-style:italic; opacity:0.7; min-height:18px"></p>' +
+      '<div class="btnrow" style="justify-content:center">' +
+      ['up', 'left', 'down', 'right'].map(d => '<button class="btn alt" data-d="' + d + '" style="font-size:18px; width:52px">' + ({ up: '▲', down: '▼', left: '◀', right: '▶' }[d]) + '</button>').join('') + '</div>' +
+      '<p id="sd-score" style="margin-top:10px; font-family:ui-monospace,monospace; font-size:13px"></p>');
+    const call = w.querySelector('#sd-call'), en = w.querySelector('#sd-en'), sc = w.querySelector('#sd-score');
+    function endGame() {
+      document.removeEventListener('keydown', keyH, true);
+      miniReward('simon', (LANG === 'fr' ? 'Score : ' : 'Score: ') + score + '/8 — ' + (score >= 6 ? 'Jacques est fier !' : 'Jacques rit de bon cœur !'));
+    }
+    function next() {
+      resolved = false;
+      if (i >= rounds.length) { endGame(); return; }
+      const r = rounds[i];
+      call.textContent = r.fr; en.textContent = r.en;
+      sc.textContent = (LANG === 'fr' ? 'Manche ' : 'Round ') + (i + 1) + '/8 · ' + score + ' pts';
+      clearTimeout(timer);
+      timer = setTimeout(() => { if (!resolved) { resolved = true; if (!r.simonSays) { score++; flash('Bien vu !', '#7bb466'); } else flash(LANG === 'fr' ? 'Trop tard — pas grave !' : 'Too late — no matter!', '#e8c04a'); i++; setTimeout(next, 700); } }, 2600);
+    }
+    function flash(msg, color) { call.textContent = msg; call.style.color = color; setTimeout(() => { call.style.color = ''; }, 650); SND.confirm(); }
+    function press(d) {
+      if (resolved || i >= rounds.length) return;
+      resolved = true; clearTimeout(timer);
+      const r = rounds[i];
+      if (r.simonSays && d === r.dir) { score++; flash(LANG === 'fr' ? 'Oui !' : 'Yes!', '#7bb466'); }
+      else if (!r.simonSays) flash(LANG === 'fr' ? 'Jacques n’a rien dit ! Ha !' : 'Jacques didn’t say! Ha!', '#e58a76');
+      else flash(LANG === 'fr' ? 'Presque !' : 'Almost!', '#e8c04a');
+      i++; setTimeout(next, 750);
+    }
+    w.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => press(b.dataset.d)));
+    const keyH = (e) => {
+      const m = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' }[e.key];
+      if (m) { e.preventDefault(); e.stopPropagation(); press(m); }
+    };
+    document.addEventListener('keydown', keyH, true);
+    next();
+  } else if (kind === 'criee') {
+    const items = miniData().marketItems.slice().sort(() => Math.random() - 0.5);
+    let i = 0, score = 0;
+    const w = modal('<h2>La Criée du marché</h2>' +
+      '<p style="font-size:12px; opacity:0.7">' + (LANG === 'fr' ? 'Trouve ce que la crieuse annonce !' : 'Find what the caller shouts!') + '</p>' +
+      '<p id="cr-call" style="font-family:\'Iowan Old Style\',Palatino,serif; font-size:24px; min-height:40px"></p>' +
+      '<div class="btnrow" id="cr-opts" style="justify-content:center"></div>' +
+      '<p id="cr-score" style="margin-top:10px; font-family:ui-monospace,monospace; font-size:13px"></p>');
+    const call = w.querySelector('#cr-call'), opts = w.querySelector('#cr-opts'), sc = w.querySelector('#cr-score');
+    function next() {
+      if (i >= 8) { miniReward('criee', (LANG === 'fr' ? 'Panier : ' : 'Basket: ') + score + '/8 — ' + (score >= 6 ? 'La crieuse t’embauche !' : 'Bon appétit quand même !')); return; }
+      const target = items[i];
+      const wrong = items.filter(it => it !== target).sort(() => Math.random() - 0.5).slice(0, 2);
+      const shuffled = [target, ...wrong].sort(() => Math.random() - 0.5);
+      call.textContent = '« ' + target.fr + ' ! »';
+      sc.textContent = (i + 1) + '/8 · ' + score + ' pts';
+      opts.innerHTML = '';
+      shuffled.forEach(it => {
+        const b = document.createElement('button');
+        b.className = 'btn alt'; b.style.fontSize = '26px'; b.style.width = '64px'; b.textContent = it.emoji;
+        b.title = it.en;
+        b.addEventListener('click', () => {
+          if (it === target) { score++; call.textContent = target.emoji + ' ' + (LANG === 'fr' ? 'Exact ! ' : 'Exactly! ') + '(' + target.en + ')'; SND.confirm(); }
+          else { call.textContent = (LANG === 'fr' ? 'C’était ' : 'It was ') + target.emoji + ' — ' + target.en + ' !'; }
+          i++; setTimeout(next, 850);
+        });
+        opts.appendChild(b);
+      });
+    }
+    next();
+  } else if (kind === 'tintamarre') {
+    let noise = 0, done = false;
+    const lines = miniData().tintamarreLines;
+    const w = modal('<h2>Tintamarre !</h2>' +
+      '<p style="font-size:12px; opacity:0.7">' + (LANG === 'fr' ? 'Tape n’importe quelle touche — fais du bruit pour l’Acadie !' : 'Mash any key — make noise for Acadie!') + '</p>' +
+      '<div class="meter" style="margin:12px 0"><div id="tt-fill" style="width:0%"></div></div>' +
+      '<p id="tt-line" style="font-family:\'Iowan Old Style\',Palatino,serif; font-size:18px; min-height:44px">' + lines[0].fr + '</p>' +
+      '<p id="tt-burst" style="font-size:22px; min-height:30px"></p>' +
+      '<div class="btnrow"><button class="btn" id="tt-hit" style="font-size:18px">🥄 BANG !</button></div>');
+    const fill = w.querySelector('#tt-fill'), line = w.querySelector('#tt-line'), burst = w.querySelector('#tt-burst');
+    const hit = () => {
+      if (done) return;
+      noise = Math.min(100, noise + 4);
+      fill.style.width = noise + '%';
+      burst.textContent += ['🥄', '🍳', '🔔', '🎺', '🥁'][Math.floor(Math.random() * 5)];
+      if (burst.textContent.length > 24) burst.textContent = '';
+      line.textContent = lines[Math.min(lines.length - 1, Math.floor(noise / 26))].fr;
+      SND.blip(200 + Math.random() * 500, 0.05, 'square', 0.05);
+      if (noise >= 100) {
+        done = true;
+        document.removeEventListener('keydown', keyH, true);
+        setTimeout(() => miniReward('tintamarre', LANG === 'fr' ? 'La rivière t’a entendu·e !' : 'The river heard you!'), 500);
+      }
+    };
+    const keyH = (e) => { e.preventDefault(); e.stopPropagation(); hit(); };
+    w.querySelector('#tt-hit').addEventListener('click', hit);
+    document.addEventListener('keydown', keyH, true);
+  }
+}
+
+/* ---- the tunnels under downtown ----
+   Fredericton legend says steam tunnels run from the old physical plant
+   beneath the whole downtown core. In this game, the legend is true —
+   and the door answers only to the river's true name. */
+const TUNNEL_KEEPER = {
+  name: 'Aldéric',
+  pages: [
+    { fr: 'Tiens. Ça fait quarante ans que personne dit le vrai nom en descendant.', en: 'Well now. Forty years since anyone said the true name on the way down.' },
+    { fr: 'J’étais soudeur de vapeur. Ces tuyaux-là chauffaient toute la ville — pis toutes ses jasettes.', en: 'I was a steamfitter. These pipes heated the whole town — and all its conversations.' },
+    { fr: 'En 1969, on a scellé la porte du fond. La même année que le grand carnet. Coïncidence ? Ben voyons.', en: 'In 1969 we sealed the far door. Same year as the great notebook. Coincidence? Come on now.' },
+    { fr: 'La dernière page est restée en bas avec moi. Je la gardais au chaud. Prends-la.', en: 'The last page stayed down here with me. I kept it warm. Take it.' },
+  ]
+};
+function buildTunnel() {
+  const g = [];
+  for (let y = 0; y < ROOM_H; y++) { const r = []; for (let x = 0; x < ROOM_W; x++) r.push(TL.ROAD); g.push(r); }
+  for (let x = 0; x < ROOM_W; x++) { g[0][x] = TL.PIPE; g[ROOM_H - 1][x] = TL.WALL; }
+  for (let y = 0; y < ROOM_H; y++) { g[y][0] = TL.WALL; g[y][ROOM_W - 1] = TL.WALL; }
+  for (let x = 3; x <= 11; x++) g[3][x] = TL.COUNTER;   /* the old valve bank Aldéric leans on */
+  g[1][3] = TL.PIPE; g[1][11] = TL.PIPE; g[6][3] = TL.PIPE; g[6][11] = TL.PIPE;
+  g[ROOM_H - 1][7] = TL.DOOR;
+  return g;
+}
+function tryGrate() {
+  const w = modal(
+    '<h2>' + (LANG === 'fr' ? 'Une vieille grille de vapeur' : 'An old steam grate') + '</h2>' +
+    '<p style="font-size:14px">' + (LANG === 'fr'
+      ? 'Le métal est tiède. Quelque chose respire en dessous. Une inscription à moitié effacée : « DIS LE VRAI NOM DE LA RIVIÈRE. »'
+      : 'The metal is warm. Something breathes underneath. A half-worn inscription: "SAY THE RIVER’S TRUE NAME."') + '</p>' +
+    '<input type="text" id="t-pass" autocomplete="off" spellcheck="false" placeholder="…">' +
+    '<p id="t-err" style="color:#e58a76; font-size:12px; min-height:16px; margin:6px 0 0"></p>' +
+    '<div class="btnrow"><button class="btn" id="t-go">' + (LANG === 'fr' ? 'Dire le nom' : 'Say the name') + '</button>' +
+    '<button class="btn alt" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
+  );
+  const inp = w.querySelector('#t-pass');
+  const submit = () => {
+    if (inp.value.trim().toUpperCase() === 'WOLASTOQ') { closeModal(); enterTunnels(); }
+    else { w.querySelector('#t-err').textContent = LANG === 'fr' ? 'La grille ne bouge pas. (Un pêcheur saurait peut-être…)' : 'The grate doesn’t move. (A fisherman might know…)'; inp.value = ''; inp.focus(); }
+  };
+  w.querySelector('#t-go').addEventListener('click', submit);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+}
+function enterTunnels() {
+  worldPos = { x: 34, y: 45 };
+  interior = {
+    venue: { id: 'tunnels', name: LANG === 'fr' ? 'Les Tunnels de vapeur' : 'The Steam Tunnels', ico: '🕳️', type: 'tunnel' },
+    grid: buildTunnel(),
+    pack: { venueId: 'tunnels', npc: { name: TUNNEL_KEEPER.name, isHote: false, greetingFR: '…', greetingEN: '(a lantern flares in the dark)' } },
+    keeperStyle: HERO_STYLES[4],
+    isTunnel: true
+  };
+  state = 'interior';
+  player.x = 7; player.y = ROOM_H - 2; player.px = player.x * TILE; player.py = player.y * TILE; player.dir = 'up'; player.moving = false;
+  SND.stamp();
+  showBanner('🕳️ ' + interior.venue.name);
+  grantPin('tunnels', 'Sous la ville', 'Under the Town');
+  writeSave();
+}
+function talkTunnelKeeper() {
+  const met = save.metSpecials['tunnels-alderic'];
+  const pages = (met ? [TUNNEL_KEEPER.pages[TUNNEL_KEEPER.pages.length - 1]] : TUNNEL_KEEPER.pages).map(p => ({ speaker: TUNNEL_KEEPER.name, fr: p.fr, en: p.en }));
+  startDialogue(pages);
+  if (!met) {
+    save.metSpecials['tunnels-alderic'] = true;
+    grantPage(7, 'Aldéric');
+    writeSave(); updateHud();
+  }
+}
+
+/* ---- La Carte du Nouveau-Brunswick: the province unlocks city by city ---- */
+const NB_REGIONS = [
+  { id: 'fredericton', name: 'Fredericton', x: 32, y: 62, open: true },
+  { id: 'moncton', name: 'Moncton / Dieppe', x: 72, y: 66, goal: 250 },
+  { id: 'saintjean', name: 'Saint John', x: 40, y: 82, goal: 200 },
+  { id: 'peninsule', name: 'Péninsule acadienne', x: 74, y: 18, goal: 150 },
+  { id: 'miramichi', name: 'Miramichi', x: 60, y: 38, goal: 100 },
+  { id: 'edmundston', name: 'Edmundston', x: 8, y: 14, goal: 100 },
+  { id: 'standrews', name: 'Saint Andrews', x: 22, y: 88, goal: 75 },
+];
+function showProvinceMap() {
+  const dots = NB_REGIONS.map(r =>
+    '<div style="position:absolute; left:' + r.x + '%; top:' + r.y + '%; transform:translate(-50%,-50%); text-align:center">' +
+    '<div style="font-size:' + (r.open ? '20px' : '15px') + '">' + (r.open ? '✶' : '🔒') + '</div>' +
+    '<div style="font-size:10px; font-family:ui-monospace,monospace; background:rgba(26,35,64,0.85); border-radius:6px; padding:1px 6px; white-space:nowrap">' + r.name +
+    (r.open ? '' : '<br>' + (LANG === 'fr' ? 'objectif : ' : 'goal: ') + r.goal + ' 📝') + '</div></div>'
+  ).join('');
+  modal(
+    '<h2>' + (LANG === 'fr' ? 'La Carte du Nouveau-Brunswick' : 'The Map of New Brunswick') + '</h2>' +
+    '<p style="font-size:13px">' + (LANG === 'fr'
+      ? 'Fredericton d’abord — comme Harvard. Chaque région s’ouvre au développement quand assez de gens de là-bas s’inscrivent à la liste d’attente. Les objectifs ci-dessous sont réels et honnêtes : pas de faux compteurs, jamais.'
+      : 'Fredericton first — the Harvard rule. Each region opens for development when enough people from there join the waitlist. The goals below are real and honest: no fake counters, ever.') + '</p>' +
+    '<div style="position:relative; width:100%; aspect-ratio:1.15; background:linear-gradient(160deg,#1c2a4a,#16203a); border:2px solid var(--ui-cream); border-radius:12px; overflow:hidden">' +
+    '<svg viewBox="0 0 100 100" style="position:absolute; inset:0; width:100%; height:100%" aria-hidden="true">' +
+    '<polygon points="6,6 52,2 60,10 82,8 92,22 88,34 78,30 70,44 78,58 88,60 84,78 62,72 52,92 40,96 34,78 18,86 12,70 24,58 18,40 8,30" fill="#2e3f66" stroke="#6fa3e8" stroke-width="1.2"/>' +
+    '<path d="M 10 22 Q 30 40 32 60" stroke="#6fa3e8" stroke-width="1.5" fill="none" opacity="0.7"/>' +
+    '</svg>' + dots + '</div>' +
+    '<p style="font-size:11px; opacity:0.65; margin-top:8px">📝 = ' + (LANG === 'fr' ? 'inscriptions à la liste d’attente de cette région' : 'waitlist signups from that region') + ' · <a href="../#waitlist" style="color:var(--ui-blue)">' + (LANG === 'fr' ? 'la liste d’attente' : 'the waitlist') + '</a></p>' +
+    '<div class="btnrow"><button class="btn" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
+  );
+}
+
+/* ---- the finale: La Grande Jasette ---- */
+function finaleEligible() {
+  return save.pages.length >= 6 && save.level >= 2 && save.plotStage !== 'done';
+}
+function runFinale() {
+  finaleCrowd = true;
+  const collected = save.pages.slice(0, 3).map(i => carnetData()[i]).filter(Boolean);
+  const pages = finaleData().map(p => ({ speaker: p.speaker, fr: p.fr, en: p.en }));
+  /* weave in three of the player's own collected pages, read aloud */
+  const readings = collected.map((pg, i) => ({ speaker: 'LE CARNET', fr: '« ' + pg.fr + ' »', en: '"' + pg.en + '"' }));
+  pages.splice(Math.min(2, pages.length), 0, ...readings);
+  startDialogue(pages, () => {
+    finaleCrowd = false;
+    save.plotStage = 'done';
+    grantPin('jasette', 'La Grande Jasette', 'The Great Conversation');
+    save.confidence += 10;
+    writeSave(); updateHud();
+    SND.stamp();
+  });
+}
+const PAL = {
+  grass1: '#69a457', grass2: '#5f9a4e', grassDot: '#7bb466',
+  water1: '#3f6fb5', water2: '#4a7cc4', waterHi: '#7ca4dd',
+  road: '#5a5a63', roadLine: '#d8d3b8', side: '#a8a49a', sideLine: '#918d84',
+  bank: '#c2b280', bridge: '#8a6b45', bridgeHi: '#a3835a', truss: '#3f7d51',
+  path: '#c9b98a', flower1: '#e07b9a', flower2: '#e8c04a',
+  trunk: '#6d4c2f', leaf1: '#3e7a3a', leaf2: '#4d8c47',
+  wallA: '#b0705a', wallB: '#c8875f', roofA: '#7a4b39', window: '#a8d4e8', windowLo: '#6fa3c8',
+  door: '#5a3a24', sign: '#e8c04a', floor: '#c9a76b', floorLo: '#b8965c',
+  counter: '#8a5a34', table: '#a3764a', board: '#4a6b8a', shelf: '#7a4b39',
+  bench: '#8a6b45', stall1: '#c94f4f', stall2: '#e8e4d8', gazebo: '#e0d8c0',
+};
+const atlas = document.createElement('canvas');
+atlas.width = TILE * 28; atlas.height = TILE * 2;
+const A = atlas.getContext('2d');
+function px(ctx, ox, x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(ox + x, y, w, h); }
+function paintTile(id, frame, painter) { painter(A, id * TILE, frame * TILE); }
+
+function buildAtlas() {
+  for (let f = 0; f < 2; f++) {
+    paintTile(TL.GRASS, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.grass1); px(c, ox, 3, oy + 4, 1, 1, PAL.grassDot); px(c, ox, 11, oy + 9, 1, 1, PAL.grassDot); px(c, ox, 6, oy + 13, 1, 1, PAL.grassDot); });
+    paintTile(TL.GRASS2, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.grass2); px(c, ox, 5, oy + 3, 1, 2, PAL.grassDot); px(c, ox, 12, oy + 11, 1, 2, PAL.grassDot); });
+    paintTile(TL.TREE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.grass1); px(c, ox, 7, oy + 11, 2, 4, PAL.trunk); px(c, ox, 2, oy + 2, 12, 9, PAL.leaf1); px(c, ox, 4, oy + 1, 8, 3, PAL.leaf2); px(c, ox, 3, oy + 4, 4, 3, PAL.leaf2); });
+    paintTile(TL.WATER, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, f ? PAL.water2 : PAL.water1); px(c, ox, f ? 2 : 8, oy + 4, 5, 1, PAL.waterHi); px(c, ox, f ? 9 : 3, oy + 11, 4, 1, PAL.waterHi); });
+    paintTile(TL.ROAD, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.road); });
+    paintTile(TL.ROADLINE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.road); px(c, ox, 2, oy + 7, 7, 2, PAL.roadLine); });
+    paintTile(TL.SIDE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.side); px(c, ox, 0, oy + 15, 16, 1, PAL.sideLine); px(c, ox, 7, oy, 1, 16, PAL.sideLine); });
+    paintTile(TL.XWALK, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.road); for (let i = 0; i < 4; i++) px(c, ox, 1 + i * 4, oy + 2, 2, 12, PAL.roadLine); });
+    paintTile(TL.BANK, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 8, PAL.grass1); px(c, ox, 0, oy + 8, 16, 8, PAL.bank); });
+    paintTile(TL.BRIDGE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.bridge); for (let i = 0; i < 4; i++) px(c, ox, 0, oy + i * 4, 16, 1, PAL.bridgeHi); });
+    paintTile(TL.TRUSS, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.bridge); px(c, ox, 6, oy, 4, 16, PAL.truss); px(c, ox, 0, oy + 6, 16, 3, PAL.truss); });
+    paintTile(TL.PATH, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.path); px(c, ox, 4, oy + 5, 2, 1, PAL.bank); px(c, ox, 10, oy + 11, 2, 1, PAL.bank); });
+    paintTile(TL.FLOWER, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.grass1); px(c, ox, 3, oy + 3, 3, 3, PAL.flower1); px(c, ox, 10, oy + 8, 3, 3, PAL.flower2); px(c, ox, 5, oy + 11, 2, 2, PAL.flower1); });
+    paintTile(TL.BENCH, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.grass1); px(c, ox, 1, oy + 6, 14, 4, PAL.bench); px(c, ox, 2, oy + 10, 2, 4, PAL.trunk); px(c, ox, 12, oy + 10, 2, 4, PAL.trunk); });
+    paintTile(TL.WALL, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.wallA); for (let j = 0; j < 4; j++) for (let i = 0; i < 2; i++) px(c, ox, i * 8 + (j % 2 ? 4 : 0), oy + j * 4, 7, 3, PAL.wallB); });
+    paintTile(TL.ROOF, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.roofA); px(c, ox, 0, oy + 13, 16, 3, '#5f3a2c'); px(c, ox, 0, oy + 4, 16, 1, '#8a5a45'); px(c, ox, 0, oy + 9, 16, 1, '#8a5a45'); });
+    paintTile(TL.DOOR, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.wallA); px(c, ox, 3, oy + 2, 10, 14, PAL.door); px(c, ox, 4, oy + 3, 8, 6, '#7a5638'); px(c, ox, 11, oy + 9, 2, 2, PAL.sign); });
+    paintTile(TL.WINDOW, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.wallA); px(c, ox, 2, oy + 3, 12, 9, PAL.windowLo); px(c, ox, 3, oy + 4, 5, 3, PAL.window); px(c, ox, 2, oy + 12, 12, 2, PAL.wallB); });
+    paintTile(TL.SIGN, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.wallA); px(c, ox, 2, oy + 3, 12, 8, PAL.sign); px(c, ox, 4, oy + 5, 8, 1, '#7a5a10'); px(c, ox, 4, oy + 8, 6, 1, '#7a5a10'); });
+    paintTile(TL.STALL, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.path); px(c, ox, 1, oy + 6, 14, 8, PAL.table); for (let i = 0; i < 4; i++) px(c, ox, 1 + i * 4, oy, 3, 6, i % 2 ? PAL.stall1 : PAL.stall2); px(c, ox, 3, oy + 7, 3, 3, PAL.flower2); px(c, ox, 9, oy + 7, 3, 3, PAL.leaf2); });
+    paintTile(TL.GAZEBO, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.grass1); px(c, ox, 1, oy + 1, 14, 5, PAL.gazebo); px(c, ox, 2, oy + 6, 2, 9, PAL.gazebo); px(c, ox, 12, oy + 6, 2, 9, PAL.gazebo); });
+    paintTile(TL.FLOOR, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 0, oy + 7, 16, 1, PAL.floorLo); px(c, ox, 7, oy, 1, 16, PAL.floorLo); });
+    paintTile(TL.COUNTER, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 0, oy + 4, 16, 10, PAL.counter); px(c, ox, 0, oy + 4, 16, 2, PAL.table); });
+    paintTile(TL.TABLE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 2, oy + 4, 12, 8, PAL.table); px(c, ox, 4, oy + 12, 2, 3, PAL.counter); px(c, ox, 10, oy + 12, 2, 3, PAL.counter); px(c, ox, 6, oy + 6, 4, 3, PAL.stall2); });
+    paintTile(TL.BOARD, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 1, oy + 1, 14, 11, PAL.board); px(c, ox, 3, oy + 3, 4, 3, PAL.stall2); px(c, ox, 9, oy + 3, 4, 2, PAL.sign); px(c, ox, 3, oy + 8, 10, 2, PAL.stall2); });
+    paintTile(TL.RUG, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 1, oy + 1, 14, 14, PAL.stall1); px(c, ox, 3, oy + 3, 10, 10, '#d86a6a'); });
+    paintTile(TL.SHELF, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 1, oy, 14, 13, PAL.shelf); for (let j = 0; j < 3; j++) { px(c, ox, 2, oy + 1 + j * 4, 12, 3, '#5a3a24'); for (let i = 0; i < 5; i++) px(c, ox, 3 + i * 2, oy + 1 + j * 4, 1, 3, ['#c94f4f', '#e8c04a', '#6fa3e8', '#4d8c47', '#e07b9a'][i]); } });
+    paintTile(TL.PLANT, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.floor); px(c, ox, 5, oy + 9, 6, 5, PAL.stall1); px(c, ox, 4, oy + 2, 8, 7, PAL.leaf2); px(c, ox, 6, oy + 1, 4, 3, PAL.leaf1); });
+    paintTile(TL.GRATE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, PAL.path); px(c, ox, 2, oy + 2, 12, 12, '#3a3a40'); for (let i = 0; i < 4; i++) px(c, ox, 4, oy + 4 + i * 3, 8, 1, '#6a6a72'); px(c, ox, 3, oy + 3, 2, 2, '#8a8a92'); });
+    paintTile(TL.PIPE, f, (c, ox, oy) => { px(c, ox, 0, oy, 16, 16, '#26221e'); px(c, ox, 0, oy + 4, 16, 6, '#5a5248'); px(c, ox, 0, oy + 5, 16, 1, '#7a7268'); px(c, ox, 4, oy + 2, 2, 12, '#4a443c'); px(c, ox, 11, oy + 10, 3, 3, '#c96a2f'); });
+  }
+}
+
+/* =====================================================================
+   SPRITES — procedural paper-doll characters, 16x20, 2-frame walk
+   ===================================================================== */
+const HERO_STYLES = [
+  { name: 'Voyageur A', skin: '#e8b98a', hair: '#4a2f1d', hairStyle: 0, shirt: '#c94f4f', pants: '#31456b' },
+  { name: 'Voyageuse B', skin: '#c68863', hair: '#1d1712', hairStyle: 1, shirt: '#e8c04a', pants: '#3e5a3a' },
+  { name: 'Voyageur C', skin: '#f0cba4', hair: '#b8763a', hairStyle: 2, shirt: '#4d8c9c', pants: '#5a3a4a' },
+  { name: 'Voyageuse D', skin: '#a5683f', hair: '#2f2620', hairStyle: 1, shirt: '#7a4b9c', pants: '#31456b' },
+  { name: 'Voyageur E', skin: '#e8b98a', hair: '#8a8a8a', hairStyle: 2, shirt: '#3e7a3a', pants: '#4a3527' },
+  { name: 'Voyageuse F', skin: '#d9a06e', hair: '#c94f2f', hairStyle: 0, shirt: '#e07b9a', pants: '#2f3e57' },
+];
+function drawChar(c, X, Y, style, dir, frame, opts) {
+  opts = opts || {};
+  const s = style;
+  const legShift = frame ? 1 : -1;
+  /* shadow */
+  c.fillStyle = 'rgba(0,0,0,0.22)'; c.fillRect(X + 3, Y + 18, 10, 2);
+  /* legs */
+  c.fillStyle = s.pants;
+  if (dir === 'left' || dir === 'right') { c.fillRect(X + 5 + (frame ? 1 : 0), Y + 14, 3, 4); c.fillRect(X + 8 - (frame ? 1 : 0), Y + 14, 3, 4); }
+  else { c.fillRect(X + 4, Y + 14 + (legShift > 0 ? 0 : 0), 3, 4); c.fillRect(X + 9, Y + 14, 3, 4); if (frame) { c.fillRect(X + 4, Y + 17, 3, 1); } }
+  /* body */
+  c.fillStyle = s.shirt; c.fillRect(X + 3, Y + 8, 10, 7);
+  /* arms */
+  c.fillStyle = s.shirt; c.fillRect(X + 2, Y + 9, 2, 5); c.fillRect(X + 12, Y + 9, 2, 5);
+  c.fillStyle = s.skin; c.fillRect(X + 2, Y + 13, 2, 2); c.fillRect(X + 12, Y + 13, 2, 2);
+  /* head */
+  c.fillStyle = s.skin; c.fillRect(X + 4, Y + 1, 8, 8);
+  /* hair */
+  c.fillStyle = s.hair;
+  if (s.hairStyle === 0) { c.fillRect(X + 3, Y, 10, 3); c.fillRect(X + 3, Y + 2, 2, 3); c.fillRect(X + 11, Y + 2, 2, 3); }
+  else if (s.hairStyle === 1) { c.fillRect(X + 3, Y, 10, 3); c.fillRect(X + 2, Y + 2, 2, 8); c.fillRect(X + 12, Y + 2, 2, 8); }
+  else { c.fillRect(X + 4, Y, 8, 2); c.fillRect(X + 3, Y + 1, 2, 2); }
+  /* face by direction */
+  if (dir !== 'up') {
+    c.fillStyle = '#26180e';
+    if (dir === 'down') { c.fillRect(X + 6, Y + 5, 1, 2); c.fillRect(X + 9, Y + 5, 1, 2); }
+    if (dir === 'left') { c.fillRect(X + 5, Y + 5, 1, 2); }
+    if (dir === 'right') { c.fillRect(X + 10, Y + 5, 1, 2); }
+  }
+  /* Hôte star */
+  if (opts.star) { c.fillStyle = '#ffd94a'; c.fillRect(X + 6, Y + 9, 4, 1); c.fillRect(X + 7, Y + 8, 2, 3); }
+}
+
+/* =====================================================================
+   GAME STATE
+   ===================================================================== */
+const cv = document.getElementById('game');
+const cx = cv.getContext('2d');
+cx.imageSmoothingEnabled = false;
+
+let state = 'title';           /* title | world | interior */
+let player = { x: 59, y: 24, px: 59 * TILE, py: 24 * TILE, dir: 'down', frame: 0, moving: false, mx: 0, my: 0, styleIdx: 0 };
+let camera = { x: 0, y: 0 };
+let interior = null;           /* { venue, grid, npc } */
+let frameCount = 0;
+let dialogueActive = false;
+let bannerTimer = null;
+
+/* townsfolk on the overworld */
+let folk = [];
+function placeFolk() {
+  folk = [];
+  const spots = {
+    downtown: [[40, 29], [54, 32], [71, 27], [33, 37], [58, 40], [76, 37], [45, 45], [59, 24], [26, 32], [68, 44]],
+    northside: [[30, 5], [41, 8], [50, 5], [61, 10], [25, 8]]
+  };
+  const data = townsfolkData();
+  let d = 0, n = 0;
+  data.forEach((f, i) => {
+    const isN = f.district === 'northside';
+    const list = isN ? spots.northside : spots.downtown;
+    const idx = isN ? (n++ % list.length) : (d++ % list.length);
+    const [x, y] = list[idx];
+    folk.push({ ...f, x, y, style: HERO_STYLES[(i + 1) % HERO_STYLES.length], dir: ['down', 'left', 'right'][i % 3] });
+  });
+}
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+function tileAt(grid, x, y) {
+  if (state === 'interior') return (grid[y] && grid[y][x] !== undefined) ? grid[y][x] : TL.WALL;
+  return (map[y] && map[y][x] !== undefined) ? map[y][x] : TL.TREE;
+}
+function drawTile(id, sx, sy, frame) {
+  A && cx.drawImage(atlas, id * TILE, (frame % 2) * TILE, TILE, TILE, sx, sy, TILE, TILE);
+}
+function render() {
+  frameCount++;
+  const W = cv.width, H = cv.height;
+  cx.fillStyle = '#0b0e1a'; cx.fillRect(0, 0, W, H);
+  const grid = state === 'interior' ? interior.grid : map;
+  const gw = state === 'interior' ? ROOM_W : MAP_W, gh = state === 'interior' ? ROOM_H : MAP_H;
+  /* camera */
+  camera.x = Math.max(0, Math.min(player.px - W / 2 + 8, gw * TILE - W));
+  camera.y = Math.max(0, Math.min(player.py - H / 2 + 10, gh * TILE - H));
+  if (gw * TILE < W) camera.x = -(W - gw * TILE) / 2;
+  if (gh * TILE < H) camera.y = -(H - gh * TILE) / 2;
+  const waterFrame = REDUCED ? 0 : Math.floor(frameCount / 32) % 2;
+  const x0 = Math.floor(camera.x / TILE) - 1, y0 = Math.floor(camera.y / TILE) - 1;
+  const x1 = x0 + Math.ceil(W / TILE) + 2, y1 = y0 + Math.ceil(H / TILE) + 2;
+  const season = seasonOf();
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    const id = tileAt(grid, x, y);
+    const sx = Math.round(x * TILE - camera.x), sy = Math.round(y * TILE - camera.y);
+    drawTile(id, sx, sy, id === TL.WATER ? waterFrame : 0);
+    if (state === 'world') {
+      if (season === 'winter') {
+        if (id === TL.GRASS || id === TL.GRASS2 || id === TL.PATH || id === TL.FLOWER || id === TL.BANK) { cx.fillStyle = 'rgba(240,246,252,0.55)'; cx.fillRect(sx, sy, TILE, TILE); }
+        else if (id === TL.WATER) { cx.fillStyle = 'rgba(210,230,248,0.35)'; cx.fillRect(sx, sy, TILE, TILE); }
+        else if (id === TL.ROOF || id === TL.TREE) { cx.fillStyle = 'rgba(240,246,252,0.4)'; cx.fillRect(sx, sy, TILE, 5); }
+      } else if (season === 'fall' && id === TL.TREE) {
+        cx.fillStyle = 'rgba(201,106,47,0.55)'; cx.fillRect(sx + 2, sy + 1, 12, 10);
+      } else if (season === 'spring' && (id === TL.GRASS || id === TL.GRASS2)) {
+        if ((x * 13 + y * 7) % 17 === 0) { cx.fillStyle = '#8fce7a'; cx.fillRect(sx + 6, sy + 6, 2, 2); }
+      }
+    }
+  }
+  /* venue icons + names over doors (world only) */
+  if (state === 'world') {
+    cx.font = '9px monospace'; cx.textAlign = 'center';
+    const drawLabel = (v) => {
+      const sx = (v.x + v.w / 2) * TILE - camera.x, sy = v.y * TILE - camera.y - 3;
+      if (sx < -80 || sx > W + 80 || sy < -20 || sy > H + 20) return;
+      const near = Math.abs(player.x - (v.x + v.w / 2)) + Math.abs(player.y - v.y) <= 9;
+      const hote = v !== PARK && packFor(v).npc.isHote;
+      const label = near ? (v.ico + ' ' + v.name + (hote ? ' ★' : '')) : (v.ico + (hote ? '★' : ''));
+      const wpx = cx.measureText(label).width + 8;
+      cx.fillStyle = near ? 'rgba(10, 14, 26, 0.85)' : 'rgba(10, 14, 26, 0.55)';
+      cx.fillRect(sx - wpx / 2, sy - 9, wpx, 11);
+      cx.fillStyle = hote && !near ? '#ffd94a' : '#f4ead2';
+      cx.fillText(label, sx, sy);
+    };
+    VENUES.forEach(drawLabel);
+    drawLabel(PARK);
+    /* townsfolk */
+    folk.forEach(f => {
+      const sx = f.x * TILE - camera.x, sy = f.y * TILE - camera.y - 4;
+      if (sx < -20 || sx > W + 20 || sy < -24 || sy > H + 24) return;
+      drawChar(cx, Math.round(sx), Math.round(sy), f.style, f.dir, 0, {});
+    });
+    /* animals */
+    const af = REDUCED ? 0 : Math.floor(frameCount / 24) % 2;
+    animals.forEach(a => {
+      const sx = a.x * TILE - camera.x, sy = a.y * TILE - camera.y;
+      if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) return;
+      drawAnimal(a, Math.round(sx), Math.round(sy), af);
+    });
+    /* legends */
+    cx.font = '9px monospace'; cx.textAlign = 'center';
+    specials.forEach(s => {
+      const sx = s.x * TILE - camera.x, sy = s.y * TILE - camera.y - 4;
+      if (sx < -30 || sx > W + 30 || sy < -26 || sy > H + 26) return;
+      drawChar(cx, Math.round(sx), Math.round(sy), s.style, 'down', af, {});
+      const near = Math.abs(player.x - s.x) + Math.abs(player.y - s.y) <= 7;
+      if (near) {
+        const nm = (s.host ? '🎪 ' : '') + s.name;
+        const nw = cx.measureText(nm).width + 8;
+        cx.fillStyle = 'rgba(10,14,26,0.8)'; cx.fillRect(sx + 8 - nw / 2, sy - 13, nw, 11);
+        cx.fillStyle = save.metSpecials && save.metSpecials[s.id] ? '#f4ead2' : '#ffd94a';
+        cx.fillText(nm, sx + 8, sy - 4);
+      } else if (!(save.metSpecials && save.metSpecials[s.id])) {
+        cx.fillStyle = '#ffd94a'; cx.fillText('!', sx + 8, sy - 4);
+      }
+    });
+    /* the Grande Jasette crowd */
+    if (finaleCrowd) {
+      for (let i = 0; i < 16; i++) {
+        const gx = (PARK.x + 1 + (i % 8)) * TILE - camera.x, gy = (PARK.y + (i < 8 ? 0 : 2)) * TILE - camera.y - 4;
+        drawChar(cx, Math.round(gx), Math.round(gy), HERO_STYLES[i % HERO_STYLES.length], 'down', (i + Math.floor(frameCount / 16)) % 2, { star: i % 5 === 0 });
+      }
+    }
+  }
+  if (state === 'interior' && interior.isTunnel) {
+    /* the dark, and one lantern */
+    cx.fillStyle = 'rgba(4,6,14,0.62)'; cx.fillRect(0, 0, W, H);
+    const lx = player.px - camera.x + 8, ly = player.py - camera.y + 8;
+    const lg = cx.createRadialGradient(lx, ly, 6, lx, ly, 70);
+    lg.addColorStop(0, 'rgba(255,200,110,0.34)'); lg.addColorStop(1, 'rgba(255,200,110,0)');
+    cx.fillStyle = lg; cx.fillRect(lx - 70, ly - 70, 140, 140);
+    const kx = 7.5 * TILE - camera.x, ky = 2.5 * TILE - camera.y;
+    const kg = cx.createRadialGradient(kx, ky, 4, kx, ky, 44);
+    kg.addColorStop(0, 'rgba(255,160,80,0.3)'); kg.addColorStop(1, 'rgba(255,160,80,0)');
+    cx.fillStyle = kg; cx.fillRect(kx - 44, ky - 44, 88, 88);
+  }
+  if (state === 'interior') {
+    /* keeper behind the counter */
+    const k = interior.keeperStyle;
+    drawChar(cx, Math.round(7 * TILE - camera.x), Math.round(2 * TILE - camera.y - 2), k, 'down', 0, { star: interior.pack.npc.isHote });
+    cx.font = '9px monospace'; cx.textAlign = 'center';
+    cx.fillStyle = 'rgba(10,14,26,0.75)';
+    const nm = interior.pack.npc.name + (interior.pack.npc.isHote ? ' ★' : '');
+    const nw = cx.measureText(nm).width + 8;
+    cx.fillRect(7.5 * TILE - camera.x - nw / 2, 1.4 * TILE - camera.y, nw, 11);
+    cx.fillStyle = interior.pack.npc.isHote ? '#ffd94a' : '#f4ead2';
+    cx.fillText(nm, 7.5 * TILE - camera.x, 1.4 * TILE - camera.y + 9);
+  }
+  /* player */
+  const walkFrame = player.moving ? Math.floor(frameCount / 8) % 2 : 0;
+  drawChar(cx, Math.round(player.px - camera.x), Math.round(player.py - camera.y - 4), HERO_STYLES[player.styleIdx], player.dir, walkFrame, {});
+  drawTornado();
+  if (state === 'world') drawWeather();
+  /* interaction hint */
+  const target = interactTarget();
+  if (target && !dialogueActive) {
+    cx.font = 'bold 10px monospace'; cx.textAlign = 'center';
+    cx.fillStyle = '#ffd94a';
+    cx.fillText('[A] ' + target.hint, Math.round(player.px - camera.x + 8), Math.round(player.py - camera.y - 10));
+  }
+  /* title screen */
+  if (state === 'title') renderTitle();
+}
+function renderTitle() {
+  const W = cv.width, H = cv.height;
+  cx.fillStyle = 'rgba(8, 11, 22, 0.55)'; cx.fillRect(0, 0, W, H);
+  /* mini skyline: river + bridge silhouette */
+  cx.fillStyle = '#16203a'; cx.fillRect(0, H - 70, W, 70);
+  cx.fillStyle = '#233158'; for (let i = 0; i < 9; i++) cx.fillRect(20 + i * 52, H - 70 - (i % 3) * 14 - 18, 34, (i % 3) * 14 + 18);
+  cx.fillStyle = '#3f7d51'; cx.fillRect(60, H - 108, 360, 5); for (let i = 0; i < 8; i++) cx.fillRect(70 + i * 44, H - 128, 4, 24);
+  cx.textAlign = 'center';
+  cx.font = 'bold 34px monospace';
+  cx.fillStyle = '#1a2340'; cx.fillText(t('title'), W / 2 + 2, 92 + 2);
+  cx.fillStyle = '#e8c04a'; cx.fillText(t('title'), W / 2, 92);
+  cx.font = 'bold 16px monospace';
+  cx.fillStyle = '#f4ead2'; cx.fillText('— ' + t('subtitle') + ' —', W / 2, 116);
+  cx.font = '11px monospace'; cx.fillStyle = '#6fa3e8';
+  cx.fillText('Douze ans de français. Une vraie conversation.', W / 2, 138);
+  if (Math.floor(frameCount / 30) % 2 === 0 || REDUCED) {
+    cx.font = 'bold 13px monospace'; cx.fillStyle = '#f4ead2';
+    cx.fillText(t('pressStart'), W / 2, 196);
+  }
+  cx.font = '9px monospace'; cx.fillStyle = 'rgba(244,234,210,0.6)';
+  cx.fillText('v0.5 « Les Profondeurs » — ' + t('demoNote'), W / 2, H - 12);
+  cx.fillStyle = 'rgba(244,234,210,0.5)';
+  cx.fillText(LANG === 'fr'
+    ? 'Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean).'
+    : 'On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).', W / 2, H - 26);
+}
+
+/* =====================================================================
+   MOVEMENT + COLLISION
+   ===================================================================== */
+const keys = {};
+function solidAt(tx, ty) {
+  const grid = state === 'interior' ? interior.grid : map;
+  const id = tileAt(grid, tx, ty);
+  if (SOLID.has(id)) return true;
+  if (state === 'world') {
+    if (folk.some(f => f.x === tx && f.y === ty)) return true;
+    if (specials.some(s => s.x === tx && s.y === ty)) return true;
+    if (animals.some(a => (a.kind === 'cat' || a.kind === 'deer') && a.x === tx && a.y === ty)) return true;
+  }
+  return false;
+}
+function tryMove(dx, dy) {
+  if (player.moving || dialogueActive || state === 'title') return;
+  player.dir = dx < 0 ? 'left' : dx > 0 ? 'right' : dy < 0 ? 'up' : 'down';
+  const nx = player.x + dx, ny = player.y + dy;
+  const grid = state === 'interior' ? interior.grid : map;
+  const gw = state === 'interior' ? ROOM_W : MAP_W, gh = state === 'interior' ? ROOM_H : MAP_H;
+  if (nx < 0 || ny < 0 || nx >= gw || ny >= gh) return;
+  const id = tileAt(grid, nx, ny);
+  /* the bridge gate: crossings open once an Hôte has named you Level 2+ */
+  if (state === 'world' && id === TL.BRIDGE && (save.level || 0) < 1) {
+    SND.confirm();
+    startDialogue([
+      { speaker: LANG === 'fr' ? 'La Brigade du pont' : 'The Bridge Brigade',
+        fr: 'Oh là ! Le pont est réservé aux nommés.',
+        en: 'Whoa there! The bridge is for the named.' },
+      { speaker: LANG === 'fr' ? 'La Brigade du pont' : 'The Bridge Brigade',
+        fr: 'Reviens quand un Hôte ★ t’aura nommé·e « Commandeur·e de café ». Les conversations remplissent ton assurance !',
+        en: 'Come back once a gold-star Hôte has named you “Coffee Commander”. Conversations fill your confidence!' },
+    ]);
+    return;
+  }
+  /* doors */
+  if (state === 'world' && id === TL.DOOR) { const v = VENUES.find(v => v.doorX === nx && v.doorY === ny); if (v) { enterVenue(v); return; } }
+  if (state === 'interior' && id === TL.DOOR) { exitVenue(); return; }
+  if (solidAt(nx, ny)) return;
+  player.x = nx; player.y = ny; player.moving = true; player.mx = dx; player.my = dy;
+  stillFrames = 0;   /* the deer noticed */
+  SND.step();
+}
+function stepPlayer() {
+  if (!player.moving) return;
+  const speed = 2;
+  player.px += player.mx * speed; player.py += player.my * speed;
+  if (Math.abs(player.px - player.x * TILE) < speed && Math.abs(player.py - player.y * TILE) < speed) {
+    player.px = player.x * TILE; player.py = player.y * TILE; player.moving = false;
+    if (state === 'world') checkBanner();
+  }
+}
+function checkBanner() {
+  let msg = null;
+  if (player.y <= 13) msg = 'Nashwaaksis — Main Street';
+  else if (player.y >= 14 && player.y <= 22) msg = LANG === 'fr' ? 'La rivière Wolastoq / Saint-Jean' : 'The Wolastoq / Saint John River';
+  else if (player.y >= 23 && player.y <= 25) msg = LANG === 'fr' ? 'La promenade The Green' : 'The Green';
+  else if (player.y >= 29 && player.y <= 32) msg = 'Queen Street';
+  else if (player.y >= 37 && player.y <= 40) msg = 'King Street';
+  else if (player.y >= 45 && player.y <= 48) msg = 'Brunswick Street';
+  if (PARK.x <= player.x && player.x < PARK.x + PARK.w && PARK.y <= player.y && player.y < PARK.y + PARK.h) msg = "Officers' Square";
+  showBanner(msg);
+}
+let lastBanner = '';
+function showBanner(msg) {
+  const el = document.getElementById('loc-banner');
+  if (!msg || msg === lastBanner) { if (!msg) { el.style.opacity = 0; lastBanner = ''; } return; }
+  lastBanner = msg; el.textContent = msg; el.style.opacity = 1;
+  clearTimeout(bannerTimer); bannerTimer = setTimeout(() => { el.style.opacity = 0; }, 2200);
+}
+
+/* =====================================================================
+   INTERACTION
+   ===================================================================== */
+function facing() {
+  const d = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[player.dir];
+  return [player.x + d[0], player.y + d[1]];
+}
+function interactTarget() {
+  if (state === 'title') return null;
+  const [fx, fy] = facing();
+  if (state === 'world') {
+    const sp = specials.find(s => s.x === fx && s.y === fy);
+    if (sp) return { kind: 'special', special: sp, hint: sp.host ? (LANG === 'fr' ? 'jouer' : 'play') : t('talk') };
+    const cat = animals.find(a => a.kind === 'cat' && a.x === fx && a.y === fy);
+    if (cat) return { kind: 'cat', cat, hint: LANG === 'fr' ? 'flatter' : 'pet' };
+    const deer = animals.find(a => a.kind === 'deer' && Math.abs(a.x - player.x) + Math.abs(a.y - player.y) === 1 && (a.state === 'approaching' || a.state === 'friend'));
+    if (deer) return { kind: 'deer', deer, hint: LANG === 'fr' ? 'approcher' : 'approach' };
+    const f = folk.find(f => f.x === fx && f.y === fy);
+    if (f) return { kind: 'folk', folk: f, hint: t('talk') };
+    const grid = map;
+    if (tileAt(grid, fx, fy) === TL.GRATE) return { kind: 'grate', hint: '???' };
+    if (tileAt(grid, fx, fy) === TL.DOOR) { const v = VENUES.find(v => v.doorX === fx && v.doorY === fy); if (v) return { kind: 'door', venue: v, hint: t('enter') }; }
+    if (PARK.x <= fx && fx < PARK.x + PARK.w && PARK.y <= fy && fy < PARK.y + PARK.h && tileAt(grid, fx, fy) === TL.GAZEBO) {
+      return { kind: 'park', hint: finaleEligible() ? '✶✶✶' : 'Tintamarre !' };
+    }
+  } else if (state === 'interior') {
+    if (tileAt(interior.grid, fx, fy) === TL.COUNTER) return { kind: 'keeper', hint: t('talk') };
+    if (tileAt(interior.grid, fx, fy) === TL.BOARD) return { kind: 'board', hint: t('read') };
+    if (tileAt(interior.grid, fx, fy) === TL.DOOR) return { kind: 'exit', hint: t('exit') };
+  }
+  return null;
+}
+function interact() {
+  if (dialogueActive) { advanceDialogue(); return; }
+  const target = interactTarget();
+  if (!target) return;
+  SND.confirm();
+  if (target.kind === 'folk') {
+    const f = target.folk;
+    const pages = [{ speaker: f.name, fr: f.lineFR, en: f.lineEN }];
+    if (f.tipFR || f.tipEN) pages.push({ speaker: f.name, fr: f.tipFR || f.tipEN, en: f.tipEN || '' });
+    startDialogue(pages);
+  } else if (target.kind === 'special') {
+    talkToSpecial(target.special);
+  } else if (target.kind === 'cat') {
+    talkToCat(target.cat);
+  } else if (target.kind === 'deer') {
+    approachDeer(target.deer);
+  } else if (target.kind === 'grate') {
+    tryGrate();
+  } else if (target.kind === 'door') {
+    enterVenue(target.venue);
+  } else if (target.kind === 'park') {
+    if (finaleEligible()) runFinale(); else openMinigame('tintamarre');
+  } else if (target.kind === 'keeper') {
+    if (interior.isTunnel) talkTunnelKeeper();
+    else if (interior.pack.npc.isHote && readyToLevel()) recognitionCeremony();
+    else startEncounter();
+  } else if (target.kind === 'board') {
+    openEvents(interior.venue);
+  } else if (target.kind === 'exit') {
+    exitVenue();
+  }
+}
+
+/* =====================================================================
+   VENUES: enter/exit
+   ===================================================================== */
+let worldPos = null;
+function enterVenue(v) {
+  worldPos = { x: v.doorX, y: v.doorY + 1 };
+  const pack = packFor(v);
+  interior = { venue: v, grid: buildInterior(v), pack, keeperStyle: HERO_STYLES[(v.id.length + 2) % HERO_STYLES.length] };
+  state = 'interior';
+  player.x = 7; player.y = ROOM_H - 2; player.px = player.x * TILE; player.py = player.y * TILE; player.dir = 'up'; player.moving = false;
+  showBanner(v.ico + ' ' + v.name);
+  const g = pack.npc;
+  startDialogue([{ speaker: g.name + (g.isHote ? ' ★' : ''), fr: g.greetingFR, en: g.greetingEN }]);
+}
+function exitVenue() {
+  state = 'world';
+  if (worldPos) { player.x = worldPos.x; player.y = worldPos.y; }
+  player.px = player.x * TILE; player.py = player.y * TILE; player.dir = 'down'; player.moving = false;
+  interior = null;
+}
+
+/* =====================================================================
+   DIALOGUE ENGINE
+   ===================================================================== */
+const dlgEl = document.getElementById('dlg');
+const dlgText = document.getElementById('dlg-text');
+const dlgSpeaker = document.getElementById('dlg-speaker');
+const dlgNext = document.getElementById('dlg-next');
+const choicesEl = document.getElementById('choices');
+let dlgQueue = [], dlgTyping = false, dlgTimer = null, dlgOnDone = null;
+
+function startDialogue(pages, onDone) {
+  dlgQueue = pages.slice(); dlgOnDone = onDone || null;
+  dialogueActive = true;
+  dlgEl.classList.remove('hidden');
+  showPage();
+}
+function showPage() {
+  const page = dlgQueue[0];
+  if (!page) { endDialogue(); return; }
+  dlgSpeaker.innerHTML = page.speaker.replace('★', '<span class="star">★</span>');
+  choicesEl.innerHTML = '';
+  dlgNext.style.visibility = 'hidden';
+  const frSpan = '<span class="fr"></span>' + (page.en ? '<span class="en"></span>' : '');
+  dlgText.innerHTML = frSpan;
+  const frEl = dlgText.querySelector('.fr'), enEl = dlgText.querySelector('.en');
+  const full = chiacify(page.fr || '');
+  if (REDUCED || OPTS.instantText) {
+    frEl.textContent = full; if (enEl) enEl.textContent = page.en;
+    dlgTyping = false; dlgNext.style.visibility = 'visible'; renderChoices(page);
+    return;
+  }
+  let i = 0; dlgTyping = true;
+  clearInterval(dlgTimer);
+  dlgTimer = setInterval(() => {
+    i++;
+    frEl.textContent = full.slice(0, i);
+    if (i % 2 === 0) SND.text();
+    if (i >= full.length) {
+      clearInterval(dlgTimer); dlgTyping = false;
+      if (enEl) enEl.textContent = page.en;
+      if (!page.choices) dlgNext.style.visibility = 'visible';
+      renderChoices(page);
+    }
+  }, 22);
+}
+function renderChoices(page) {
+  if (!page.choices) return;
+  choicesEl.innerHTML = '';
+  page.choices.forEach((ch, i) => {
+    const b = document.createElement('button');
+    b.className = 'choice'; b.type = 'button';
+    b.innerHTML = '<span class="cursor">▶</span>' + ch.fr + '<span class="en">' + ch.en + '</span>';
+    b.addEventListener('click', () => { SND.confirm(); page.onChoice(ch, i); });
+    choicesEl.appendChild(b);
+  });
+  if (choicesEl.firstChild) choicesEl.firstChild.focus();
+}
+function advanceDialogue() {
+  const page = dlgQueue[0];
+  if (!page) { endDialogue(); return; }
+  if (dlgTyping) {  /* fast-forward */
+    clearInterval(dlgTimer); dlgTyping = false;
+    const frEl = dlgText.querySelector('.fr'), enEl = dlgText.querySelector('.en');
+    frEl.textContent = chiacify(page.fr); if (enEl) enEl.textContent = page.en;
+    if (!page.choices) dlgNext.style.visibility = 'visible';
+    renderChoices(page);
+    return;
+  }
+  if (page.choices) return;  /* must click a choice */
+  dlgQueue.shift();
+  if (dlgQueue.length) showPage(); else endDialogue();
+}
+function endDialogue() {
+  dialogueActive = false;
+  dlgEl.classList.add('hidden');
+  clearInterval(dlgTimer);
+  const cb = dlgOnDone; dlgOnDone = null;
+  if (cb) cb();
+}
+
+/* =====================================================================
+   ENCOUNTER — the 3-turn phrase-choice conversation
+   ===================================================================== */
+function startEncounter() {
+  const pack = interior.pack;
+  const already = save.stamps[pack.venueId];
+  let warmthTotal = 0, turnIdx = 0;
+  /* the correction-consent icon rides on the speaker chip: your contract, visibly honoured */
+  const consentIco = CONSENT_LEVELS[save.correction || 1].ico;
+  const speaker = pack.npc.name + (pack.npc.isHote ? ' ★' : '') + ' ' + consentIco;
+  function nextTurn() {
+    if (turnIdx >= pack.encounter.turns.length) { finishEncounter(pack, warmthTotal, already); return; }
+    const turn = pack.encounter.turns[turnIdx];
+    startDialogue([{
+      speaker, fr: turn.npcFR, en: turn.npcEN,
+      choices: turn.choices.map(ch => ({ ...ch })),
+      onChoice: (ch) => {
+        warmthTotal += ch.warmth || 1;
+        turnIdx++;
+        dlgQueue = [];
+        /* honour the correction contract:
+           ✅ (0) — celebrate + echo the phrase back so it sticks
+           🕊️ (3) — reaction only, never a rephrase, no meta-commentary */
+        let rFR = ch.reactionFR, rEN = ch.reactionEN;
+        if ((save.correction || 1) === 0) {
+          rFR = ch.reactionFR + ' — et bien dit : « ' + ch.fr + ' »';
+          rEN = ch.reactionEN + ' — and well said!';
+        }
+        startDialogue([{ speaker, fr: rFR, en: rEN }], nextTurn);
+      }
+    }]);
+  }
+  nextTurn();
+}
+function finishEncounter(pack, warmth, already) {
+  const gained = already ? Math.max(1, Math.floor(warmth / 3)) : warmth + 3;
+  save.confidence += gained;
+  let announce;
+  if (!already) {
+    save.stamps[pack.venueId] = true;
+    if (pack.npc.isHote && !save.hotesMet.includes(pack.npc.name)) save.hotesMet.push(pack.npc.name);
+    announce = { speaker: 'BILINGUA', fr: '✶ ' + t('stampGot') + ' — ' + interior.venue.name + '  ·  ' + t('confUp') + gained, en: pack.quest.titleEN + ' ✓' };
+    SND.stamp();
+  } else {
+    announce = { speaker: 'BILINGUA', fr: t('confUp') + gained + ' ☕', en: '' };
+  }
+  writeSave(); updateHud();
+  const pages = [announce];
+  if (readyToLevel()) pages.push({
+    speaker: 'BILINGUA',
+    fr: '⭐ Ton assurance déborde ! Va voir un Hôte (étoile dorée ★) — il ou elle pourrait te nommer…',
+    en: '⭐ Your confidence is overflowing! Visit an Hôte (gold star ★) — they might just name you…'
+  });
+  startDialogue(pages);
+}
+
+/* =====================================================================
+   MODALS: gate, character creation, passport, events
+   ===================================================================== */
+const modalRoot = document.getElementById('modal-root');
+function closeModal() { modalRoot.innerHTML = ''; }
+function modal(html) {
+  modalRoot.innerHTML = '<div class="modal"><div class="win">' + html + '</div></div>';
+  const first = modalRoot.querySelector('button, input'); if (first) first.focus();
+  return modalRoot.querySelector('.win');
+}
+
+function showInvitation() {
+  const w = modal(
+    '<h2>' + (LANG === 'fr' ? 'Sur invitation seulement' : 'Invitation only') + '</h2>' +
+    '<p>' + (LANG === 'fr'
+      ? 'Fredericton s’ouvre comme un bon souper : quelqu’un doit t’inviter. Chaque invitation vient d’une vraie personne — et un jour, tu auras les tiennes à offrir.'
+      : 'Fredericton opens the way a good dinner party does: someone has to invite you. Every invitation comes from a real person — and one day you’ll have your own to give.') + '</p>' +
+    '<h3>' + (LANG === 'fr' ? 'Ton code d’invitation' : 'Your invitation code') + '</h3>' +
+    '<input type="text" id="i-code" placeholder="STELLA-WOLASTOQ-11" autocapitalize="characters" autocomplete="off" spellcheck="false">' +
+    '<p id="i-err" style="color:#e58a76; font-size:12px; min-height:16px; margin:6px 0 0"></p>' +
+    '<h3>' + (LANG === 'fr' ? 'Qui t’a invité·e ? (optionnel)' : 'Who invited you? (optional)') + '</h3>' +
+    '<input type="text" id="i-by" maxlength="24" placeholder="Marie-Claude">' +
+    '<div class="btnrow"><button class="btn" id="i-go">' + (LANG === 'fr' ? 'Présenter l’invitation ✶' : 'Present the invitation ✶') + '</button>' +
+    '<a class="btn alt" href="../#waitlist" style="text-decoration:none">' + (LANG === 'fr' ? 'Pas de code ? Liste d’attente' : 'No code? Join the waitlist') + '</a></div>' +
+    '<p style="margin-top:10px; opacity:0.6; font-size:11px">' + (LANG === 'fr' ? 'La fondation compte 100 invitations. Les Hôtes en détiennent la plupart.' : 'The founding batch is 100 invitations. Most are held by Hôtes.') + '</p>'
+  );
+  const code = w.querySelector('#i-code'), err = w.querySelector('#i-err'), go = w.querySelector('#i-go');
+  const submit = () => {
+    const val = code.value;
+    if (!validateInvite(val)) {
+      err.textContent = LANG === 'fr' ? 'Hmm — ce code ne semble pas valide. Vérifie les tirets et les chiffres.' : 'Hmm — that code doesn’t look valid. Check the dashes and digits.';
+      code.focus();
+      return;
+    }
+    SND.stamp();
+    const usedCode = val.trim().toUpperCase();
+    const by = w.querySelector('#i-by').value.trim();
+    closeModal();
+    showGate({ codeUsed: usedCode, invitedBy: by });
+  };
+  go.addEventListener('click', submit);
+  code.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+}
+
+function showGate(invite) {
+  const w = modal(
+    '<h2>' + t('gateTitle') + '</h2><p>' + t('gateBody') + '</p>' +
+    '<label class="check"><input type="checkbox" id="g-age"> ' + t('gateCheck') + '</label>' +
+    '<h3>' + t('gateName') + '</h3><input type="text" id="g-name" maxlength="16" placeholder="Kurt">' +
+    '<div class="btnrow"><button class="btn" id="g-go" disabled>' + t('gateGo') + '</button></div>' +
+    '<p style="margin-top:10px; opacity:0.6; font-size:11px">' + t('demoNote') + ' · <a href="../terms.html" style="color:var(--ui-blue)">' + (LANG === 'fr' ? 'Conditions' : 'Terms') + '</a> · <a href="../privacy.html" style="color:var(--ui-blue)">' + (LANG === 'fr' ? 'Vie privée' : 'Privacy') + '</a></p>'
+  );
+  const age = w.querySelector('#g-age'), name = w.querySelector('#g-name'), go = w.querySelector('#g-go');
+  const upd = () => { go.disabled = !(age.checked && name.value.trim().length > 0); };
+  age.addEventListener('change', upd); name.addEventListener('input', upd);
+  go.addEventListener('click', () => { const nm = name.value.trim(); closeModal(); showCreate(nm, invite || {}); });
+}
+
+const CONSENT_LEVELS = [
+  { ico: '✅', fr: 'Corrige-moi souvent, ça m’aide', en: 'Correct me often — it helps' },
+  { ico: '⚖️', fr: 'Corrige-moi seulement si on ne se comprend pas', en: 'Correct me only when meaning breaks' },
+  { ico: '🧭', fr: 'Aide-moi à trouver les mots, sans corriger', en: 'Help me find words, don’t correct' },
+  { ico: '🕊️', fr: 'Ce soir, je veux juste parler', en: 'Tonight, I just want to speak' },
+];
+function showCreate(name, invite) {
+  let sel = 0, conf = 1, consent = 1;
+  function html() {
+    const chips = HERO_STYLES.map((s, i) =>
+      '<button class="btn' + (i === sel ? '' : ' alt') + '" data-i="' + i + '" style="padding:6px 10px">' +
+      '<canvas data-c="' + i + '" width="16" height="20" style="width:32px;height:40px;image-rendering:pixelated;vertical-align:middle"></canvas></button>').join(' ');
+    const confs = [t('conf1'), t('conf2'), t('conf3')].map((c, i) =>
+      '<button class="btn' + (i === conf ? '' : ' alt') + '" data-conf="' + i + '" style="display:block;width:100%;text-align:left;margin:6px 0;font-weight:normal">' + c + '</button>').join('');
+    const consents = CONSENT_LEVELS.map((c, i) =>
+      '<button class="btn' + (i === consent ? '' : ' alt') + '" data-cons="' + i + '" style="display:block;width:100%;text-align:left;margin:6px 0;font-weight:normal">' + c.ico + ' ' + (LANG === 'fr' ? c.fr : c.en) + '</button>').join('');
+    return '<h2>' + t('createT') + '</h2><div class="btnrow" style="justify-content:center">' + chips + '</div>' +
+      '<h3>' + t('confQ') + '</h3>' + confs +
+      '<h3>' + (LANG === 'fr' ? 'Et pour les corrections ? (Tout le monde respectera ton choix — promis.)' : 'And corrections? (Everyone will honour your choice — promised.)') + '</h3>' + consents +
+      '<div class="btnrow"><button class="btn" id="c-go">' + t('begin') + ' ▶</button></div>';
+  }
+  function paint(w) {
+    w.querySelectorAll('canvas[data-c]').forEach(cnv => {
+      const c2 = cnv.getContext('2d'); c2.imageSmoothingEnabled = false;
+      drawChar(c2, 0, 0, HERO_STYLES[+cnv.dataset.c], 'down', 0, {});
+    });
+    w.querySelectorAll('[data-i]').forEach(b => b.addEventListener('click', () => { sel = +b.dataset.i; rerender(); }));
+    w.querySelectorAll('[data-conf]').forEach(b => b.addEventListener('click', () => { conf = +b.dataset.conf; rerender(); }));
+    w.querySelectorAll('[data-cons]').forEach(b => b.addEventListener('click', () => { consent = +b.dataset.cons; rerender(); }));
+    w.querySelector('#c-go').addEventListener('click', () => {
+      save = { name, styleIdx: sel, confStart: conf, confidence: conf * 2, correction: consent, level: 0, recognizedBy: [], stamps: {}, hotesMet: [], myCodes: [], codeUsed: (invite && invite.codeUsed) || null, invitedBy: (invite && invite.invitedBy) || null, pages: [], trucs: [], pins: [], metSpecials: {}, minigamesWon: {}, plotStage: null, lang: LANG, created: new Date().toISOString() };
+      writeSave();
+      closeModal(); beginWorld();
+    });
+  }
+  let w = modal(html()); paint(w);
+  function rerender() { w = modal(html()); paint(w); }
+}
+
+/* Levels are MENTOR-GRANTED: confidence makes you *ready*, but only an
+   Hôte (gold star) can name you to the next level — a small ceremony.
+   That's the whole thesis: real confidence is conferred by people. */
+const LEVELS = [
+  { min: 0, en: 'Brave Beginner', fr: 'Débutant·e courageux·se' },
+  { min: 10, en: 'Coffee Commander', fr: 'Commandeur·e de café' },
+  { min: 22, en: 'Small Talker', fr: 'Causeur·se' },
+  { min: 38, en: 'Regular', fr: 'Habitué·e' },
+  { min: 60, en: 'Conversationalist', fr: 'Grand·e bavard·e' },
+  { min: 90, en: 'Bilingua Legend', fr: 'Légende Bilingua' },
+];
+function confTitle() {
+  const lv = LEVELS[Math.min(save.level || 0, LEVELS.length - 1)];
+  return LANG === 'fr' ? lv.fr : lv.en;
+}
+function readyToLevel() {
+  const next = LEVELS[(save.level || 0) + 1];
+  return !!next && save.confidence >= next.min;
+}
+/* what each Hôte's authority is sworn on — per-venue ceremony flavour */
+const CEREMONY_POWER = {
+  jonnie: { fr: 'du café fraîchement torréfié', en: 'freshly roasted coffee' },
+  chesspiece: { fr: 'de la pâtisserie', en: 'pastry' },
+  dolans: { fr: 'du violon du jeudi soir', en: 'the Thursday-night fiddle' },
+  boyce: { fr: 'des têtes de violon du samedi', en: 'Saturday fiddleheads' },
+  library: { fr: 'de tous les livres de la ville', en: 'every book in town' },
+  fancybites: { fr: 'de la bonne cuisine', en: 'good cooking' },
+};
+function recognitionCeremony() {
+  const pack = interior.pack;
+  const speaker = pack.npc.name + ' ★';
+  const nextLevel = LEVELS[save.level + 1];
+  const power = CEREMONY_POWER[pack.venueId] || { fr: 'du café', en: 'coffee' };
+  const title = LANG === 'fr' ? nextLevel.fr : nextLevel.en;
+  startDialogue([
+    { speaker, fr: 'Attends… je te regarde aller depuis un moment. Tu es prêt·e.',
+      en: 'Wait… I’ve been watching you for a while. You’re ready.' },
+    { speaker, fr: 'Par le pouvoir ' + power.fr + ' qui m’est conféré… je te nomme « ' + nextLevel.fr + ' » !',
+      en: 'By the power of ' + power.en + ' vested in me… I name you “' + nextLevel.en + '”!' },
+    { speaker: 'BILINGUA', fr: '✶ NIVEAU : ' + title + ' ✶', en: (LANG === 'fr' ? nextLevel.en : nextLevel.fr) },
+    { speaker: 'BILINGUA',
+      fr: 'Ton avis compte ! Dis à Kurt ce que tu en penses — le lien est sur la page d’accueil.',
+      en: 'Your opinion counts! Tell Kurt what you think — the link is on the home page.' },
+  ], () => {});
+  save.level += 1;
+  save.recognizedBy.push({ level: save.level, by: pack.npc.name, venue: interior.venue.name });
+  /* first naming confers the power to invite: 3 invitations of your own */
+  if (!save.myCodes || save.myCodes.length === 0) {
+    save.myCodes = [makeInvite(), makeInvite(), makeInvite()];
+    dlgQueue.splice(3, 0, {
+      speaker: pack.npc.name + ' ★',
+      fr: 'Et avec le titre viennent trois invitations. Fredericton s’agrandit une personne à la fois — choisis bien.',
+      en: 'And with the title come three invitations. Fredericton grows one person at a time — choose well.'
+    }, {
+      speaker: 'BILINGUA',
+      fr: '✶ 3 INVITATIONS reçues — dans ton Passeport [P]',
+      en: '✶ 3 INVITATIONS received — in your Passeport [P]'
+    });
+  }
+  writeSave(); updateHud();
+  SND.stamp();
+}
+function showPassport() {
+  const total = VENUES.length;
+  const got = Object.keys(save.stamps).length;
+  const pct = Math.min(100, Math.round(save.confidence));
+  const stamps = VENUES.map(v => {
+    const has = save.stamps[v.id];
+    return '<div class="stamp' + (has ? ' got' : '') + '"><span class="ico">' + (has ? v.ico : '·') + '</span><span>' + v.name + '</span></div>';
+  }).join('');
+  const safety = t('safetyRules').map(r => '<li>' + r + '</li>').join('');
+  const sheet =
+    '<div style="display:flex; gap:14px; align-items:center; margin-bottom:10px">' +
+    '<canvas id="pp-avatar" width="16" height="20" style="width:64px; height:80px; image-rendering:pixelated; background:var(--ui-navy); border:2px solid var(--ui-cream); border-radius:8px; flex:none"></canvas>' +
+    '<div style="flex:1">' +
+    '<div style="font-family:\'Courier New\',monospace; font-weight:bold; font-size:18px; color:var(--ui-gold)">' + save.name + '</div>' +
+    '<div style="font-size:13px">' + confTitle() + ' · ' + CONSENT_LEVELS[save.correction || 1].ico + '</div>' +
+    '<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-top:6px; font-size:11px; font-family:ui-monospace,monospace; text-align:center">' +
+    '<div>☕<br>' + save.confidence + '</div>' +
+    '<div>📖<br>' + save.trucs.length + '</div>' +
+    '<div>📜<br>' + save.pages.length + '/8</div>' +
+    '<div>✶<br>' + save.pins.length + '</div>' +
+    '</div></div></div>';
+  modal(
+    '<h2>' + t('passport') + '</h2>' + sheet +
+    '<div class="btnrow" style="margin:0 0 10px"><button class="btn alt" id="pp-map" style="font-size:12px">🗺️ ' + (LANG === 'fr' ? 'La Carte du N.-B.' : 'The NB Map') + '</button></div>' +
+    '<p>' + t('confidence') + ': <b>' + save.confidence + '</b> ☕</p>' +
+    '<div class="meter"><div style="width:' + pct + '%"></div></div>' +
+    '<h3>' + t('stamps') + ' (' + got + '/' + total + ')</h3><div class="stamps">' + stamps + '</div>' +
+    (save.recognizedBy && save.recognizedBy.length
+      ? '<h3>' + (LANG === 'fr' ? 'Nominations ★' : 'Recognitions ★') + '</h3><p>' +
+        save.recognizedBy.map(r => '« ' + (LANG === 'fr' ? LEVELS[r.level].fr : LEVELS[r.level].en) + ' » — ' + (LANG === 'fr' ? 'nommé·e par' : 'named by') + ' ' + r.by + ' (' + r.venue + ')').join('<br>') + '</p>'
+      : '') +
+    (save.hotesMet.length ? '<h3>Hôtes ★</h3><p>' + save.hotesMet.join(' · ') + '</p>' : '') +
+    (save.myCodes && save.myCodes.length
+      ? '<h3>' + (LANG === 'fr' ? 'Mes invitations ✶' : 'My invitations ✶') + '</h3>' +
+        '<p style="font-size:12px; opacity:0.75">' + (LANG === 'fr' ? 'Trois clés de la ville. Donne-les à des gens qui essaieraient.' : 'Three keys to the city. Give them to people who would try.') + '</p>' +
+        save.myCodes.map((c, i) => '<p style="font-family:ui-monospace,Menlo,monospace"><b>' + c + '</b> <button class="btn alt" style="padding:2px 10px; font-size:11px" data-copy="' + c + '">' + (LANG === 'fr' ? 'copier' : 'copy') + '</button></p>').join('')
+      : '') +
+    (save.invitedBy ? '<p style="font-size:12px; opacity:0.75">' + (LANG === 'fr' ? 'Invité·e par' : 'Invited by') + ' <b>' + save.invitedBy.replace(/</g, '&lt;') + '</b></p>' : '') +
+    '<h3>' + (LANG === 'fr' ? 'Le Carnet de la Grande Jasette' : 'The Notebook of the Great Conversation') + ' (' + save.pages.length + '/8)</h3>' +
+    (save.pages.length
+      ? save.pages.map(i => { const pg = carnetData()[i]; return pg ? '<p style="font-style:italic; font-size:13px; margin:4px 0">« ' + pg.fr + ' »<br><span style="font-size:11px; opacity:0.6">' + pg.en + '</span></p>' : ''; }).join('')
+      : '<p style="font-size:12px; opacity:0.6">' + (LANG === 'fr' ? 'Des pages sont éparpillées dans la ville… Le Vieux du Pont en sait plus.' : 'Pages are scattered across town… the Old Man of the Bridge knows more.') + '</p>') +
+    (save.trucs.length
+      ? '<h3>' + (LANG === 'fr' ? 'Les Trucs (grimoire du français)' : 'The Trucs (French grimoire)') + ' (' + save.trucs.length + ')</h3>' +
+        save.trucs.map(tr => '<p style="font-size:12px; margin:5px 0"><b>' + (LANG === 'fr' ? tr.titleFR : tr.titleEN) + '</b> — ' + (LANG === 'fr' ? tr.ruleFR : tr.ruleEN) + '<br><span style="font-size:11px; opacity:0.65; font-style:italic">' + (LANG === 'fr' ? tr.exampleFR : tr.exampleEN) + '</span></p>').join('')
+      : '') +
+    (save.pins.length
+      ? '<h3>' + (LANG === 'fr' ? 'Épinglettes' : 'Pins') + '</h3><p>' + save.pins.map(p => '✶ ' + (LANG === 'fr' ? p.fr : p.en)).join(' · ') + '</p>'
+      : '') +
+    '<h3>' + t('safety') + '</h3><ul>' + safety + '</ul>' +
+    '<div class="btnrow"><button class="btn" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
+  );
+  const av = document.getElementById('pp-avatar');
+  if (av) { const c2 = av.getContext('2d'); c2.imageSmoothingEnabled = false; drawChar(c2, 0, 0, HERO_STYLES[save.styleIdx || 0], 'down', 0, {}); }
+  const mapBtn = document.getElementById('pp-map');
+  if (mapBtn) mapBtn.addEventListener('click', () => { closeModal(); showProvinceMap(); });
+  modalRoot.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
+    const codeText = b.dataset.copy + (LANG === 'fr'
+      ? ' — ton invitation à Bilingua Quest, de la part de ' + save.name
+      : ' — your invitation to Bilingua Quest, from ' + save.name);
+    (navigator.clipboard ? navigator.clipboard.writeText(codeText) : Promise.reject()).then(
+      () => { b.textContent = LANG === 'fr' ? 'copié ✶' : 'copied ✶'; SND.confirm(); },
+      () => { b.textContent = b.dataset.copy; }
+    );
+  }));
+}
+function showSettings() {
+  const opt = (id, label, on) => '<label class="check"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + '> ' + label + '</label>';
+  const consents = save ? CONSENT_LEVELS.map((c, i) =>
+    '<button class="btn' + (i === save.correction ? '' : ' alt') + '" data-scons="' + i + '" style="display:block;width:100%;text-align:left;margin:5px 0;font-weight:normal;font-size:13px">' + c.ico + ' ' + (LANG === 'fr' ? c.fr : c.en) + '</button>').join('') : '';
+  const w = modal(
+    '<h2>' + (LANG === 'fr' ? 'Réglages & accessibilité' : 'Settings & accessibility') + '</h2>' +
+    opt('s-instant', LANG === 'fr' ? 'Texte instantané (sans machine à écrire)' : 'Instant text (no typewriter)', OPTS.instantText) +
+    opt('s-large', LANG === 'fr' ? 'Gros texte de dialogue' : 'Large dialogue text', OPTS.largeText) +
+    opt('s-contrast', LANG === 'fr' ? 'Contraste élevé' : 'High contrast', OPTS.highContrast) +
+    opt('s-sound', LANG === 'fr' ? 'Sons (bips rétro)' : 'Sound (retro bleeps)', SND.on) +
+    '<label class="check"><input type="checkbox" id="s-lang"' + (LANG === 'fr' ? ' checked' : '') + '> ' + (LANG === 'fr' ? 'Interface en français' : 'French interface') + '</label>' +
+    (save ? '<h3>' + (LANG === 'fr' ? 'Mes corrections' : 'My corrections') + '</h3>' + consents : '') +
+    '<h3>' + (LANG === 'fr' ? 'Secrets' : 'Secrets') + '</h3>' +
+    '<input type="text" id="s-secret" placeholder="' + (LANG === 'fr' ? 'Un mot magique ?' : 'A magic word?') + '" autocomplete="off">' +
+    '<p style="font-size:11px; opacity:0.55; margin-top:6px">' + (LANG === 'fr' ? 'Les mouvements réduits de ton système sont toujours respectés.' : 'Your system’s reduced-motion setting is always respected.') + '</p>' +
+    '<div class="btnrow"><button class="btn" id="s-close">' + t('close') + '</button></div>'
+  );
+  w.querySelector('#s-instant').addEventListener('change', e => { OPTS.instantText = e.target.checked; writeOpts(); });
+  w.querySelector('#s-large').addEventListener('change', e => { OPTS.largeText = e.target.checked; writeOpts(); });
+  w.querySelector('#s-contrast').addEventListener('change', e => { OPTS.highContrast = e.target.checked; writeOpts(); });
+  w.querySelector('#s-sound').addEventListener('change', e => { SND.on = e.target.checked; if (SND.on) { SND.ensure(); SND.confirm(); } document.getElementById('hud-snd').textContent = '♪ ' + (SND.on ? 'on' : 'off'); });
+  w.querySelector('#s-lang').addEventListener('change', e => { LANG = e.target.checked ? 'fr' : 'en'; localStorage.setItem('bq_lang', LANG); if (save) updateHud(); });
+  w.querySelectorAll('[data-scons]').forEach(b => b.addEventListener('click', () => { save.correction = +b.dataset.scons; writeSave(); closeModal(); showSettings(); }));
+  w.querySelector('#s-secret').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const v = e.target.value.trim().toUpperCase();
+      if (['DISCO', '1969', 'TORNADE', 'CHIAC', 'MOITIE'].includes(v)) { closeModal(); toggleCheat(v); }
+      else { e.target.value = ''; e.target.placeholder = LANG === 'fr' ? 'Hmm, non…' : 'Hmm, no…'; }
+    }
+  });
+  w.querySelector('#s-close').addEventListener('click', closeModal);
+}
+
+function showExpedition() {
+  modal(
+    '<h2>' + (LANG === 'fr' ? 'L’Expédition — le vrai jeu' : 'The Expedition — the real game') + '</h2>' +
+    '<p>' + (LANG === 'fr'
+      ? 'Le jeu que tu tiens est la bande-annonce. Le vrai jeu se joue dehors : des groupes de 3 à 6 personnes, 45 minutes, trois lieux du centre-ville, une mission coopérative — et personne n’a assez d’informations pour réussir seul. Il faut se parler. En français.'
+      : 'This game is the trailer. The real game happens outside: parties of 3–6, 45 minutes, three downtown locations, one cooperative mission — and nobody holds enough information to win alone. You have to talk. In French.') + '</p>' +
+    '<h3>' + (LANG === 'fr' ? 'Les six rôles' : 'The six roles') + '</h3>' +
+    '<ul style="font-size:13px">' +
+    '<li><b>Le Guide</b> — ' + (LANG === 'fr' ? 'voit la route (mais ne peut pas pointer)' : 'sees the route (but may not point)') + '</li>' +
+    '<li><b>L’Archiviste</b> — ' + (LANG === 'fr' ? 'détient les indices historiques' : 'holds the historical clues') + '</li>' +
+    '<li><b>Le/La Diplomate</b> — ' + (LANG === 'fr' ? 'seul·e à parler aux inconnus' : 'the only one who may address strangers') + '</li>' +
+    '<li><b>L’Observateur·rice</b> — ' + (LANG === 'fr' ? 'repère les détails' : 'spots the details') + '</li>' +
+    '<li><b>Le/La Trouble-fête</b> — ' + (LANG === 'fr' ? 'déploie une complication absurde' : 'deploys one absurd complication') + '</li>' +
+    '<li><b>Le/La Gardien·ne des mots</b> — ' + (LANG === 'fr' ? 'garde les phrases de secours et LA phrase anglaise permise' : 'guards the rescue phrases and THE one permitted English sentence') + '</li>' +
+    '</ul>' +
+    '<p style="font-size:12px; opacity:0.75">' + (LANG === 'fr'
+      ? 'Sécurité : lieux publics, arrivée/départ pointés, groupe minimum de 4, options sans alcool, cartes de consentement aux corrections sur la table.'
+      : 'Safety: public places, check-in/check-out, minimum party of 4, alcohol-free options, correction-consent cards on the table.') + '</p>' +
+    '<div class="btnrow">' +
+    '<a class="btn" href="../expedition.html" style="text-decoration:none">' + (LANG === 'fr' ? 'La trousse imprimable ▶' : 'The printable kit ▶') + '</a>' +
+    '<button class="btn alt" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
+  );
+}
+
+function openEvents(venue) {
+  const evts = eventsData().filter(e => !venue || e.venueId === venue.id || true);
+  const list = evts.map(e => {
+    const v = VENUES.find(v => v.id === e.venueId) || PARK;
+    const title = LANG === 'fr' ? e.titleFR : e.titleEN;
+    const desc = LANG === 'fr' ? e.descFR : e.descEN;
+    const alt = LANG === 'fr' ? e.titleEN : e.titleFR;
+    return '<div class="evt"><span class="when">' + e.when + ' — ' + (v ? v.ico + ' ' + v.name : '') + '</span><br><b>' + title + '</b><span class="tag">' + e.kind + '</span><br>' + desc + '<br><span class="fr">' + alt + '</span></div>';
+  }).join('');
+  modal(
+    '<h2>' + t('events') + '</h2><p style="opacity:0.65;font-size:11px">' + t('sample') + '</p>' + list +
+    '<div class="btnrow"><button class="btn" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
+  );
+}
+
+/* =====================================================================
+   HUD + INPUT + BOOT
+   ===================================================================== */
+function updateHud() {
+  const ready = readyToLevel();
+  document.getElementById('hud-conf').textContent =
+    (ready ? '⭐ ' : '☕ ') + save.confidence + ' · ' + confTitle() +
+    (ready ? (LANG === 'fr' ? ' — vois un Hôte ★ !' : ' — see an Hôte ★!') : '');
+}
+function beginWorld() {
+  state = 'world';
+  document.getElementById('vision-link').style.display = 'none';
+  player.styleIdx = save.styleIdx || 0;
+  player.x = 59; player.y = 23; player.px = player.x * TILE; player.py = player.y * TILE;
+  placeFolk();
+  placeLivingTown();
+  document.getElementById('hud').classList.remove('hidden');
+  updateHud();
+  showBanner(LANG === 'fr' ? 'Bienvenue à Fredericton, ' + save.name + ' !' : 'Welcome to Fredericton, ' + save.name + '!');
+}
+function titleAction() {
+  if (state !== 'title') return;
+  SND.confirm();
+  if (save && save.name) {
+    /* continue vs new */
+    modal('<h2>' + t('title') + '</h2><div class="btnrow">' +
+      '<button class="btn" id="m-cont">' + t('continueG') + ' — ' + save.name + '</button>' +
+      '<button class="btn alt" id="m-new">' + t('newGame') + '</button></div>');
+    document.getElementById('m-cont').addEventListener('click', () => { closeModal(); beginWorld(); });
+    document.getElementById('m-new').addEventListener('click', () => { closeModal(); showInvitation(); });
+  } else showInvitation();
+}
+document.addEventListener('keydown', (e) => {
+  if (e.repeat && ['Enter', ' ', 'z', 'Z'].includes(e.key)) return;
+  keys[e.key] = true;
+  if (state === 'title' && (e.key === 'Enter' || e.key === ' ')) { titleAction(); return; }
+  if ((e.key === 'z' || e.key === 'Z' || e.key === 'Enter' || e.key === ' ') && state !== 'title') {
+    if (!modalRoot.children.length) { e.preventDefault(); interact(); }
+  }
+  if ((e.key === 'p' || e.key === 'P') && state !== 'title' && save) {
+    if (modalRoot.children.length) closeModal(); else showPassport();
+  }
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'm' || e.key === 'M') toggleSound();
+});
+document.addEventListener('keyup', (e) => { keys[e.key] = false; });
+function pollKeys() {
+  if (modalRoot.children.length || dialogueActive) return;
+  if (keys['ArrowUp'] || keys['w'] || keys['W']) tryMove(0, -1);
+  else if (keys['ArrowDown'] || keys['s'] || keys['S']) tryMove(0, 1);
+  else if (keys['ArrowLeft'] || keys['a'] || keys['A']) tryMove(-1, 0);
+  else if (keys['ArrowRight'] || keys['d'] || keys['D']) tryMove(1, 0);
+}
+/* touch */
+if ('ontouchstart' in window) document.body.classList.add('touch');
+document.querySelectorAll('#dpad button').forEach(b => {
+  const dir = b.dataset.dir;
+  const D = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[dir];
+  let iv = null;
+  const start = (e) => { e.preventDefault(); tryMove(D[0], D[1]); iv = setInterval(() => tryMove(D[0], D[1]), 160); };
+  const stop = () => clearInterval(iv);
+  b.addEventListener('touchstart', start); b.addEventListener('touchend', stop); b.addEventListener('touchcancel', stop);
+});
+document.getElementById('abtn').addEventListener('touchstart', (e) => { e.preventDefault(); if (state === 'title') titleAction(); else interact(); });
+cv.addEventListener('click', () => { if (state === 'title') titleAction(); });
+document.getElementById('dlg').addEventListener('click', (e) => { if (e.target.closest('.choice')) return; advanceDialogue(); });
+/* hud buttons */
+document.getElementById('hud-passport').addEventListener('click', showPassport);
+document.getElementById('hud-lang').addEventListener('click', () => {
+  LANG = LANG === 'en' ? 'fr' : 'en'; localStorage.setItem('bq_lang', LANG); updateHud();
+  document.getElementById('hud-passport').textContent = t('passport') + ' [P]';
+});
+function toggleSound() {
+  SND.on = !SND.on; if (SND.on) { SND.ensure(); SND.confirm(); }
+  document.getElementById('hud-snd').textContent = '♪ ' + (SND.on ? 'on' : 'off');
+}
+document.getElementById('hud-snd').addEventListener('click', toggleSound);
+document.getElementById('hud-set').addEventListener('click', () => { if (modalRoot.children.length) closeModal(); else showSettings(); });
+document.getElementById('hud-exp').addEventListener('click', () => { if (modalRoot.children.length) closeModal(); else showExpedition(); });
+
+/* resize: integer-scale canvas to viewport */
+function fit() {
+  let scale = Math.min(window.innerWidth / 480, window.innerHeight / 320);
+  if (scale >= 1) scale = Math.floor(scale);          /* integer upscale for crispness */
+  cv.style.width = (480 * scale) + 'px'; cv.style.height = (320 * scale) + 'px';
+}
+window.addEventListener('resize', fit); fit();
+
+/* main loop */
+buildAtlas();
+buildWorld();
+function loop() {
+  pollKeys();
+  stepPlayer();
+  if (state === 'world' && !player.moving) stillFrames++;
+  if (frameCount % 3 === 0) updateAnimals();
+  updateCheatFx();
+  render();
+  requestAnimationFrame(loop);
+}
+initParticles();
+writeOpts();
+loop();
+</script>
+</body>
+</html>
