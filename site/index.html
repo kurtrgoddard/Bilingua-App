@@ -120,7 +120,7 @@
   <p class="sub">« Douze ans de français. Une vraie conversation. »</p>
   <p class="sub-en">Twelve years of school French. Time for one real conversation.</p>
   <a class="play" href="/play/">▶ Jouer / Play</a>
-  <p class="note">Free · plays in your browser · adults 18+ · prototype v0.1</p>
+  <p class="note">Free · plays in your browser · adults 18+ · prototype v0.2 · <strong>invitation only — the founding batch is 100</strong></p>
   <img src="shots/4-world-spawn.png" alt="SNES-style pixel-art view of the Bill Thorpe Walking Bridge crossing the river into downtown Fredericton" width="1024" height="720">
 </div>
 
@@ -179,6 +179,31 @@
       <div class="rm"><span class="v">v1.5</span><h3>Real conversations</h3><p>Matched practice with humans behind a safety-first trust ladder; meetups in public venues.</p></div>
       <div class="rm"><span class="v">v2</span><h3>New Brunswick</h3><p>« When Moncton unlocks… » City by city, a game people visit the province to play.</p></div>
     </div>
+  </section>
+
+  <section id="invitations">
+    <div class="eyebrow"><span>Getting in</span><span class="moitie"></span><span class="fr">Les invitations</span></div>
+    <h2>Fredericton is invitation-only</h2>
+    <p>Like any good dinner party. You can't download your way in — <strong>someone has to hand you an invitation</strong>, and every invitation comes from a real person. The founding batch is exactly <strong>100</strong>: most are held by Hôtes, the francophone mentors, who give them the way they give recognition — one at a time, to people who would try.</p>
+    <p>And the only way to earn invitations of your own? <strong>Be named.</strong> The moment an Hôte names you to your first level, you receive three — because the town should grow exactly the way confidence does: person to person, by recognition. (Every number here is true, always. No fake counters, ever.)</p>
+    <div class="steps">
+      <div class="step"><span class="ico">✉️</span><h3>Get a code</h3><p>From an Hôte, from a friend who was named, or from the waitlist below.</p></div>
+      <div class="step"><span class="ico">🏅</span><h3>Get named</h3><p>Play until an Hôte names you « Commandeur·e de café ».</p></div>
+      <div class="step"><span class="ico">🎁</span><h3>Give three</h3><p>Your Passeport now holds three invitations. Choose well.</p></div>
+    </div>
+    <h3 id="waitlist" style="font-size:1.15rem; margin-top:2rem">No code? Join the waitlist / Pas de code ? La liste d'attente</h3>
+    <form name="waitlist" method="POST" action="/merci.html" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="waitlist">
+      <p class="hp"><label>Don't fill this out: <input name="bot-field"></label></p>
+      <label for="w-name">Name</label>
+      <input type="text" id="w-name" name="name" required autocomplete="name">
+      <label for="w-email">Email</label>
+      <input type="email" id="w-email" name="email" required autocomplete="email">
+      <label for="w-fr">Are you francophone, anglophone, or somewhere in between? (optional)</label>
+      <input type="text" id="w-fr" name="language" placeholder="Francophone / anglophone / moitié-moitié…">
+      <button type="submit">Join the waitlist / M'inscrire</button>
+    </form>
+    <p style="font-size:0.85rem; color:var(--muted)">Francophones: skip the line — write "Hôte?" in the last field and we'll talk about handing you keys to the city.</p>
   </section>
 
   <section id="feedback">

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L'Atelier des invitations — Bilingua Quest</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root { --paper: #F8F4EC; --ink: #2A2118; --acadie: #1F4FA8; --stella: #C89512; --line: #E3DACB; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: Charter, Cambria, Georgia, serif; padding: 2rem 1.25rem; }
+  .top { max-width: 44rem; margin: 0 auto 2rem; }
+  h1 { font-family: 'Iowan Old Style', Palatino, Georgia, serif; }
+  p { margin: 0.6rem 0; line-height: 1.55; }
+  .controls { display: flex; gap: 0.8rem; align-items: center; margin: 1.2rem 0; flex-wrap: wrap; }
+  button { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1rem; background: var(--acadie); color: var(--paper); border: none; border-radius: 8px; padding: 0.6rem 1.4rem; cursor: pointer; }
+  button.alt { background: var(--stella); color: #201a08; }
+  input[type="number"] { font-size: 1rem; width: 5rem; padding: 0.5rem; border: 1.5px solid var(--line); border-radius: 8px; background: white; }
+  .sheet { max-width: 52rem; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.8rem; }
+  .card {
+    border: 2.5px solid var(--acadie); border-radius: 14px; background: white;
+    padding: 1rem 1.1rem; text-align: center; break-inside: avoid; page-break-inside: avoid;
+  }
+  .card .star { color: var(--stella); font-size: 1.2rem; }
+  .card h2 { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 1.05rem; margin: 0.2rem 0; }
+  .card .fr { font-style: italic; font-size: 0.78rem; color: #6E6357; }
+  .card .code { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.05rem; letter-spacing: 0.04em; margin: 0.7rem 0; padding: 0.45rem; border: 2px dashed var(--stella); border-radius: 8px; }
+  .card .url { font-size: 0.72rem; color: #6E6357; }
+  .card .from { font-size: 0.72rem; margin-top: 0.5rem; color: #6E6357; }
+  .card .from span { display: inline-block; border-bottom: 1px solid var(--ink); min-width: 8rem; }
+  @media print {
+    .top { display: none; }
+    body { padding: 0.5rem; background: white; }
+    .sheet { gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>L'Atelier des invitations</h1>
+  <p>For the keeper of the keys only (this page is unlinked and unindexed). Generate a founding batch, print, cut, and hand them out like they matter — because they do. Each code is valid in the game. Keep a photo of what you printed so the "100" stays an honest number.</p>
+  <p style="font-size:0.85rem; color:#6E6357">Prototype note: codes are validated client-side in v0.2 (a ritual, not a lock). v1 moves them server-side with real redemption tracking.</p>
+  <div class="controls">
+    <label>How many: <input type="number" id="count" value="12" min="1" max="100"></label>
+    <button id="gen">Generate</button>
+    <button class="alt" onclick="window.print()">Print sheet</button>
+  </div>
+</div>
+<div class="sheet" id="sheet"></div>
+<script>
+'use strict';
+const INVITE_WORDS = ['VIOLET','WOLASTOQ','FOUGERE','ACADIE','STELLA','POUTINE','RIVIERE','PONT','CAFE','VELO','HARVEST','FROSTIVAL','TINTAMARRE','MARIGOLD','CHICKADEE','MOITIE','BRUME','HOMARD','SIROP','CANOT','LILAS','PICNIC','AURORE','SENTIER'];
+function inviteChecksum(w1, w2) {
+  const s = (w1 + '-' + w2).toUpperCase();
+  let v = 0;
+  for (let i = 0; i < s.length; i++) v = (v * 31 + s.charCodeAt(i)) % 1000000;
+  return 10 + (v % 89);
+}
+function makeInvite(exclude) {
+  for (let tries = 0; tries < 200; tries++) {
+    const i = Math.floor(Math.random() * INVITE_WORDS.length);
+    let j = Math.floor(Math.random() * INVITE_WORDS.length);
+    if (j === i) j = (j + 1) % INVITE_WORDS.length;
+    const code = INVITE_WORDS[i] + '-' + INVITE_WORDS[j] + '-' + inviteChecksum(INVITE_WORDS[i], INVITE_WORDS[j]);
+    if (!exclude.has(code)) { exclude.add(code); return code; }
+  }
+  return null;
+}
+function render() {
+  const n = Math.min(100, Math.max(1, parseInt(document.getElementById('count').value, 10) || 12));
+  const seen = new Set();
+  const cards = [];
+  for (let k = 0; k < n; k++) {
+    const code = makeInvite(seen);
+    if (!code) break;
+    cards.push(
+      '<div class="card">' +
+      '<div class="star">✶</div>' +
+      '<h2>You are invited to Fredericton.</h2>' +
+      '<div class="fr">Tu es invité·e à Fredericton.</div>' +
+      '<div class="code">' + code + '</div>' +
+      '<div class="url">bilingua-quest.netlify.app · 18+</div>' +
+      '<div class="from">de la part de / from <span>&nbsp;</span></div>' +
+      '</div>'
+    );
+  }
+  document.getElementById('sheet').innerHTML = cards.join('');
+}
+document.getElementById('gen').addEventListener('click', render);
+render();
+</script>
+</body>
+</html>

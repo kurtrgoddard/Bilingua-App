@@ -249,12 +249,39 @@ const T = {
 };
 const t = (k) => (T[k] ? (T[k][LANG] !== undefined ? T[k][LANG] : T[k].en) : k);
 
+/* ---------------- invitations ----------------
+   Fredericton is invitation-only — like any good dinner party.
+   v0.2 validates codes client-side (a ritual, not a lock; v1 moves
+   this server-side). Codes: WORD-WORD-NN over a local word list. */
+const INVITE_WORDS = ['VIOLET','WOLASTOQ','FOUGERE','ACADIE','STELLA','POUTINE','RIVIERE','PONT','CAFE','VELO','HARVEST','FROSTIVAL','TINTAMARRE','MARIGOLD','CHICKADEE','MOITIE','BRUME','HOMARD','SIROP','CANOT','LILAS','PICNIC','AURORE','SENTIER'];
+function inviteChecksum(w1, w2) {
+  const s = (w1 + '-' + w2).toUpperCase();
+  let v = 0;
+  for (let i = 0; i < s.length; i++) v = (v * 31 + s.charCodeAt(i)) % 1000000;
+  return 10 + (v % 89);
+}
+function validateInvite(raw) {
+  const parts = String(raw || '').trim().toUpperCase().replace(/\s+/g, '-').split('-').filter(Boolean);
+  if (parts.length !== 3) return false;
+  const [w1, w2, nn] = parts;
+  if (!INVITE_WORDS.includes(w1) || !INVITE_WORDS.includes(w2) || w1 === w2) return false;
+  return parseInt(nn, 10) === inviteChecksum(w1, w2);
+}
+function makeInvite() {
+  const i = Math.floor(Math.random() * INVITE_WORDS.length);
+  let j = Math.floor(Math.random() * INVITE_WORDS.length);
+  if (j === i) j = (j + 1) % INVITE_WORDS.length;
+  const w1 = INVITE_WORDS[i], w2 = INVITE_WORDS[j];
+  return w1 + '-' + w2 + '-' + inviteChecksum(w1, w2);
+}
+
 /* ---------------- save ---------------- */
 const SAVE_KEY = 'bq_save_v1';
 let save = null;
 function loadSave() {
   try { save = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { save = null; }
   if (save && save.level === undefined) { save.level = 0; save.recognizedBy = []; }  /* migrate v0 saves */
+  if (save && save.myCodes === undefined) { save.myCodes = []; save.codeUsed = null; save.invitedBy = null; }  /* migrate v0.1 saves */
 }
 function writeSave() { if (save) localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
 loadSave();
@@ -986,7 +1013,40 @@ function modal(html) {
   return modalRoot.querySelector('.win');
 }
 
-function showGate() {
+function showInvitation() {
+  const w = modal(
+    '<h2>' + (LANG === 'fr' ? 'Sur invitation seulement' : 'Invitation only') + '</h2>' +
+    '<p>' + (LANG === 'fr'
+      ? 'Fredericton s’ouvre comme un bon souper : quelqu’un doit t’inviter. Chaque invitation vient d’une vraie personne — et un jour, tu auras les tiennes à offrir.'
+      : 'Fredericton opens the way a good dinner party does: someone has to invite you. Every invitation comes from a real person — and one day you’ll have your own to give.') + '</p>' +
+    '<h3>' + (LANG === 'fr' ? 'Ton code d’invitation' : 'Your invitation code') + '</h3>' +
+    '<input type="text" id="i-code" placeholder="STELLA-WOLASTOQ-11" autocapitalize="characters" autocomplete="off" spellcheck="false">' +
+    '<p id="i-err" style="color:#e58a76; font-size:12px; min-height:16px; margin:6px 0 0"></p>' +
+    '<h3>' + (LANG === 'fr' ? 'Qui t’a invité·e ? (optionnel)' : 'Who invited you? (optional)') + '</h3>' +
+    '<input type="text" id="i-by" maxlength="24" placeholder="Marie-Claude">' +
+    '<div class="btnrow"><button class="btn" id="i-go">' + (LANG === 'fr' ? 'Présenter l’invitation ✶' : 'Present the invitation ✶') + '</button>' +
+    '<a class="btn alt" href="../#waitlist" style="text-decoration:none">' + (LANG === 'fr' ? 'Pas de code ? Liste d’attente' : 'No code? Join the waitlist') + '</a></div>' +
+    '<p style="margin-top:10px; opacity:0.6; font-size:11px">' + (LANG === 'fr' ? 'La fondation compte 100 invitations. Les Hôtes en détiennent la plupart.' : 'The founding batch is 100 invitations. Most are held by Hôtes.') + '</p>'
+  );
+  const code = w.querySelector('#i-code'), err = w.querySelector('#i-err'), go = w.querySelector('#i-go');
+  const submit = () => {
+    const val = code.value;
+    if (!validateInvite(val)) {
+      err.textContent = LANG === 'fr' ? 'Hmm — ce code ne semble pas valide. Vérifie les tirets et les chiffres.' : 'Hmm — that code doesn’t look valid. Check the dashes and digits.';
+      code.focus();
+      return;
+    }
+    SND.stamp();
+    const usedCode = val.trim().toUpperCase();
+    const by = w.querySelector('#i-by').value.trim();
+    closeModal();
+    showGate({ codeUsed: usedCode, invitedBy: by });
+  };
+  go.addEventListener('click', submit);
+  code.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+}
+
+function showGate(invite) {
   const w = modal(
     '<h2>' + t('gateTitle') + '</h2><p>' + t('gateBody') + '</p>' +
     '<label class="check"><input type="checkbox" id="g-age"> ' + t('gateCheck') + '</label>' +
@@ -997,10 +1057,10 @@ function showGate() {
   const age = w.querySelector('#g-age'), name = w.querySelector('#g-name'), go = w.querySelector('#g-go');
   const upd = () => { go.disabled = !(age.checked && name.value.trim().length > 0); };
   age.addEventListener('change', upd); name.addEventListener('input', upd);
-  go.addEventListener('click', () => { const nm = name.value.trim(); closeModal(); showCreate(nm); });
+  go.addEventListener('click', () => { const nm = name.value.trim(); closeModal(); showCreate(nm, invite || {}); });
 }
 
-function showCreate(name) {
+function showCreate(name, invite) {
   let sel = 0, conf = 1;
   function html() {
     const chips = HERO_STYLES.map((s, i) =>
@@ -1020,7 +1080,7 @@ function showCreate(name) {
     w.querySelectorAll('[data-i]').forEach(b => b.addEventListener('click', () => { sel = +b.dataset.i; rerender(); }));
     w.querySelectorAll('[data-conf]').forEach(b => b.addEventListener('click', () => { conf = +b.dataset.conf; rerender(); }));
     w.querySelector('#c-go').addEventListener('click', () => {
-      save = { name, styleIdx: sel, confStart: conf, confidence: conf * 2, level: 0, recognizedBy: [], stamps: {}, hotesMet: [], lang: LANG, created: new Date().toISOString() };
+      save = { name, styleIdx: sel, confStart: conf, confidence: conf * 2, level: 0, recognizedBy: [], stamps: {}, hotesMet: [], myCodes: [], codeUsed: (invite && invite.codeUsed) || null, invitedBy: (invite && invite.invitedBy) || null, lang: LANG, created: new Date().toISOString() };
       writeSave();
       closeModal(); beginWorld();
     });
@@ -1075,6 +1135,19 @@ function recognitionCeremony() {
   ], () => {});
   save.level += 1;
   save.recognizedBy.push({ level: save.level, by: pack.npc.name, venue: interior.venue.name });
+  /* first naming confers the power to invite: 3 invitations of your own */
+  if (!save.myCodes || save.myCodes.length === 0) {
+    save.myCodes = [makeInvite(), makeInvite(), makeInvite()];
+    dlgQueue.splice(3, 0, {
+      speaker: pack.npc.name + ' ★',
+      fr: 'Et avec le titre viennent trois invitations. Fredericton s’agrandit une personne à la fois — choisis bien.',
+      en: 'And with the title come three invitations. Fredericton grows one person at a time — choose well.'
+    }, {
+      speaker: 'BILINGUA',
+      fr: '✶ 3 INVITATIONS reçues — dans ton Passeport [P]',
+      en: '✶ 3 INVITATIONS received — in your Passeport [P]'
+    });
+  }
   writeSave(); updateHud();
   SND.stamp();
 }
@@ -1097,9 +1170,23 @@ function showPassport() {
         save.recognizedBy.map(r => '« ' + (LANG === 'fr' ? LEVELS[r.level].fr : LEVELS[r.level].en) + ' » — ' + (LANG === 'fr' ? 'nommé·e par' : 'named by') + ' ' + r.by + ' (' + r.venue + ')').join('<br>') + '</p>'
       : '') +
     (save.hotesMet.length ? '<h3>Hôtes ★</h3><p>' + save.hotesMet.join(' · ') + '</p>' : '') +
+    (save.myCodes && save.myCodes.length
+      ? '<h3>' + (LANG === 'fr' ? 'Mes invitations ✶' : 'My invitations ✶') + '</h3>' +
+        '<p style="font-size:12px; opacity:0.75">' + (LANG === 'fr' ? 'Trois clés de la ville. Donne-les à des gens qui essaieraient.' : 'Three keys to the city. Give them to people who would try.') + '</p>' +
+        save.myCodes.map((c, i) => '<p style="font-family:ui-monospace,Menlo,monospace"><b>' + c + '</b> <button class="btn alt" style="padding:2px 10px; font-size:11px" data-copy="' + c + '">' + (LANG === 'fr' ? 'copier' : 'copy') + '</button></p>').join('')
+      : '') +
+    (save.invitedBy ? '<p style="font-size:12px; opacity:0.75">' + (LANG === 'fr' ? 'Invité·e par' : 'Invited by') + ' <b>' + save.invitedBy.replace(/</g, '&lt;') + '</b></p>' : '') +
     '<h3>' + t('safety') + '</h3><ul>' + safety + '</ul>' +
     '<div class="btnrow"><button class="btn" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
-  );
+  ).querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
+    const codeText = b.dataset.copy + (LANG === 'fr'
+      ? ' — ton invitation à Bilingua Quest, de la part de ' + save.name
+      : ' — your invitation to Bilingua Quest, from ' + save.name);
+    (navigator.clipboard ? navigator.clipboard.writeText(codeText) : Promise.reject()).then(
+      () => { b.textContent = LANG === 'fr' ? 'copié ✶' : 'copied ✶'; SND.confirm(); },
+      () => { b.textContent = b.dataset.copy; }
+    );
+  }));
 }
 function openEvents(venue) {
   const evts = eventsData().filter(e => !venue || e.venueId === venue.id || true);
@@ -1144,8 +1231,8 @@ function titleAction() {
       '<button class="btn" id="m-cont">' + t('continueG') + ' — ' + save.name + '</button>' +
       '<button class="btn alt" id="m-new">' + t('newGame') + '</button></div>');
     document.getElementById('m-cont').addEventListener('click', () => { closeModal(); beginWorld(); });
-    document.getElementById('m-new').addEventListener('click', () => { closeModal(); showGate(); });
-  } else showGate();
+    document.getElementById('m-new').addEventListener('click', () => { closeModal(); showInvitation(); });
+  } else showInvitation();
 }
 document.addEventListener('keydown', (e) => {
   if (e.repeat && ['Enter', ' ', 'z', 'Z'].includes(e.key)) return;
