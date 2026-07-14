@@ -169,6 +169,19 @@
     color: #201a08; font-size: 20px; font-weight: bold; font-family: inherit;
     pointer-events: auto;
   }
+
+  /* accessibility modes */
+  body.dlg-large #dlg { font-size: 18px; }
+  body.dlg-large #dlg-text .en { font-size: 15px; }
+  body.dlg-large .choice { font-size: 17px; }
+  body.dlg-large .choice .en { font-size: 13px; }
+  body.dlg-contrast #dlg, body.dlg-contrast .modal .win {
+    background: #000; border-color: #fff;
+    box-shadow: 0 0 0 3px #000;
+  }
+  body.dlg-contrast #dlg-text .en { opacity: 1; color: #ffd94a; }
+  body.dlg-contrast .choice { background: #000; border-color: #fff; }
+  body.dlg-contrast .choice:hover, body.dlg-contrast .choice:focus-visible { border-color: #ffd94a; }
 </style>
 </head>
 <body>
@@ -179,8 +192,10 @@
 <div id="hud" class="hidden">
   <span class="pill" id="hud-conf">☕ 0</span>
   <button class="pill" id="hud-passport" type="button">Passeport [P]</button>
+  <button class="pill" id="hud-exp" type="button">Expédition</button>
   <button class="pill" id="hud-lang" type="button">FR/EN</button>
   <button class="pill" id="hud-snd" type="button">♪ off</button>
+  <button class="pill" id="hud-set" type="button" aria-label="Settings">⚙</button>
 </div>
 <div id="loc-banner"></div>
 
@@ -283,6 +298,7 @@ function loadSave() {
   if (save && save.level === undefined) { save.level = 0; save.recognizedBy = []; }  /* migrate v0 saves */
   if (save && save.myCodes === undefined) { save.myCodes = []; save.codeUsed = null; save.invitedBy = null; }  /* migrate v0.1 saves */
   if (save && save.pages === undefined) { save.pages = []; save.trucs = []; save.pins = []; save.metSpecials = {}; save.minigamesWon = {}; save.plotStage = null; }  /* migrate v0.2 saves */
+  if (save && save.correction === undefined) save.correction = 1;  /* migrate v0.3 saves */
 }
 function writeSave() { if (save) localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
 loadSave();
@@ -311,6 +327,145 @@ const SND = {
 
 /* ---------------- reduced motion ---------------- */
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- options (accessibility & preferences) ---------------- */
+let OPTS = { instantText: false, largeText: false, highContrast: false };
+try { OPTS = Object.assign(OPTS, JSON.parse(localStorage.getItem('bq_opts')) || {}); } catch (e) {}
+function writeOpts() {
+  localStorage.setItem('bq_opts', JSON.stringify(OPTS));
+  document.body.classList.toggle('dlg-large', !!OPTS.largeText);
+  document.body.classList.toggle('dlg-contrast', !!OPTS.highContrast);
+}
+
+/* ---------------- the clock & the seasons ----------------
+   The town keeps Fredericton time: dawn is dawn, snow is snow.
+   No weather API — the calendar and the clock are honest enough. */
+const CLOCK = { hour: new Date().getHours(), month: new Date().getMonth() };
+function DEBUG_setClock(hour, month) { CLOCK.hour = hour; CLOCK.month = month; initParticles(); }
+function seasonOf() {
+  const m = CLOCK.month;
+  if (m === 11 || m <= 1) return 'winter';
+  if (m <= 4) return 'spring';
+  if (m <= 7) return 'summer';
+  return 'fall';
+}
+function dayPhase() {
+  const h = CLOCK.hour;
+  if (h >= 5 && h < 8) return 'dawn';
+  if (h >= 8 && h < 17) return 'day';
+  if (h >= 17 && h < 21) return 'dusk';
+  return 'night';
+}
+/* weather particles: snow, rain, leaves, fireflies */
+let particles = [];
+function initParticles() {
+  particles = [];
+  if (REDUCED) return;
+  const s = seasonOf(), n = 42;
+  for (let i = 0; i < n; i++) {
+    particles.push({
+      x: Math.random() * 480, y: Math.random() * 320,
+      vx: s === 'fall' ? 0.3 + Math.random() * 0.5 : (Math.random() - 0.5) * 0.3,
+      vy: s === 'winter' ? 0.25 + Math.random() * 0.4 : s === 'spring' ? 2.2 + Math.random() * 1.4 : 0.2 + Math.random() * 0.4,
+      ph: Math.random() * Math.PI * 2
+    });
+  }
+}
+function drawWeather() {
+  const s = seasonOf(), phase = dayPhase();
+  /* seasonal particles (screen space) */
+  if (!REDUCED) {
+    particles.forEach(p => {
+      p.ph += 0.03;
+      p.x += p.vx + (s === 'winter' ? Math.sin(p.ph) * 0.3 : 0);
+      p.y += p.vy;
+      if (p.y > 322) { p.y = -4; p.x = Math.random() * 480; }
+      if (p.x > 482) p.x = -2; if (p.x < -4) p.x = 482;
+      if (s === 'winter') { cx.fillStyle = 'rgba(255,255,255,0.85)'; cx.fillRect(p.x, p.y, 2, 2); }
+      else if (s === 'spring') { if (Math.floor(frameCount / 300) % 3 === 0) { cx.fillStyle = 'rgba(160,200,255,0.5)'; cx.fillRect(p.x, p.y, 1, 5); } }
+      else if (s === 'fall') { cx.fillStyle = ['#c96a2f', '#d98a2f', '#a8542f'][Math.floor(p.ph) % 3]; cx.fillRect(p.x, p.y, 2, 2); }
+      else if (s === 'summer' && phase === 'night') { const a = 0.3 + 0.7 * Math.abs(Math.sin(p.ph)); cx.fillStyle = 'rgba(240,230,120,' + a * 0.8 + ')'; cx.fillRect(p.x, p.y % 200 + 60, 2, 2); }
+    });
+  }
+  /* time-of-day tint */
+  if (phase === 'dawn') { cx.fillStyle = 'rgba(255,180,120,0.13)'; cx.fillRect(0, 0, 480, 320); }
+  else if (phase === 'dusk') { cx.fillStyle = 'rgba(255,130,70,0.18)'; cx.fillRect(0, 0, 480, 320); }
+  else if (phase === 'night') {
+    cx.fillStyle = 'rgba(10,16,48,0.42)'; cx.fillRect(0, 0, 480, 320);
+    /* streetlamps at the downtown intersections */
+    if (state === 'world') {
+      [[10, 29], [22, 29], [36, 29], [48, 29], [64, 29], [80, 29], [10, 37], [36, 37], [64, 37], [22, 45], [48, 45], [80, 45]].forEach(([lx, ly]) => {
+        const sx = lx * TILE - camera.x + 8, sy = ly * TILE - camera.y + 8;
+        if (sx < -40 || sx > 520 || sy < -40 || sy > 360) return;
+        const g = cx.createRadialGradient(sx, sy, 2, sx, sy, 26);
+        g.addColorStop(0, 'rgba(255,220,140,0.35)'); g.addColorStop(1, 'rgba(255,220,140,0)');
+        cx.fillStyle = g; cx.fillRect(sx - 26, sy - 26, 52, 52);
+      });
+    }
+  }
+}
+
+/* ---------------- cheat codes (playground lore) ---------------- */
+let cheatBuffer = '';
+const CHEATS = { active: {} };
+let tornado = null;
+function applyFilterCheats() {
+  const f = [];
+  if (CHEATS.active['1969']) f.push('sepia(0.75) contrast(0.92)');
+  cv.style.filter = f.join(' ');
+}
+function toggleCheat(code) {
+  const on = !CHEATS.active[code];
+  CHEATS.active[code] = on;
+  const names = { DISCO: 'Mode disco', 1969: 'Frédéricton, 1969', TORNADE: 'Tornade !', CHIAC: 'Mode chiac', MOITIE: 'Moitié-moitié' };
+  if (code === 'MOITIE') { LANG = LANG === 'en' ? 'fr' : 'en'; localStorage.setItem('bq_lang', LANG); if (save) updateHud(); }
+  if (code === 'TORNADE') { tornado = { x: -20, y: 12 + Math.random() * 30, t: 0 }; CHEATS.active.TORNADE = false; }
+  if (code === '1969') applyFilterCheats();
+  if (code === 'DISCO' && on) SND.on = true;
+  showBanner('✶ ' + (names[code] || code) + (code === 'TORNADE' ? '' : (on ? ' : ON' : ' : OFF')));
+  SND.stamp();
+}
+function updateCheatFx() {
+  if (CHEATS.active.DISCO) {
+    cv.style.filter = 'hue-rotate(' + ((frameCount * 4) % 360) + 'deg)' + (CHEATS.active['1969'] ? ' sepia(0.75)' : '');
+    if (frameCount % 20 === 0) SND.blip([262, 330, 392, 523][Math.floor(frameCount / 20) % 4], 0.09, 'square', 0.03);
+  } else if (!CHEATS.active['1969']) { if (cv.style.filter) cv.style.filter = ''; }
+  if (tornado) {
+    tornado.t++; tornado.x += 1.2; tornado.y += Math.sin(tornado.t / 12) * 0.8;
+    /* scatter squirrels and leaves in its path — nobody is harmed; the deer have seen worse */
+    animals.forEach(a => { if (a.kind === 'squirrel' && Math.abs(a.x - tornado.x) < 5 && Math.abs(a.y - tornado.y) < 5) { a.x = Math.max(a.minX, Math.min(a.maxX, a.x + Math.floor(Math.random() * 9 - 4))); } });
+    if (tornado.x > MAP_W + 4) tornado = null;
+  }
+}
+function drawTornado() {
+  if (!tornado || state !== 'world') return;
+  const sx = tornado.x * TILE - camera.x, sy = tornado.y * TILE - camera.y;
+  for (let i = 0; i < 6; i++) {
+    const w = 8 + i * 5, off = Math.sin(frameCount / 3 + i) * (3 + i);
+    cx.fillStyle = 'rgba(120,110,100,' + (0.55 - i * 0.06) + ')';
+    cx.fillRect(sx - w / 2 + off, sy - i * 8, w, 7);
+  }
+  for (let i = 0; i < 5; i++) {
+    cx.fillStyle = '#c96a2f';
+    cx.fillRect(sx + Math.sin(frameCount / 4 + i * 2) * 22, sy - 20 + Math.cos(frameCount / 5 + i) * 16, 2, 2);
+  }
+}
+document.addEventListener('keydown', (e) => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  if (!/^[a-zA-Z0-9]$/.test(e.key)) return;
+  cheatBuffer = (cheatBuffer + e.key.toUpperCase()).slice(-10);
+  ['DISCO', '1969', 'TORNADE', 'CHIAC', 'MOITIE'].forEach(c => {
+    if (cheatBuffer.endsWith(c)) { cheatBuffer = ''; toggleCheat(c); }
+  });
+});
+/* chiac mode: a light sprinkle on displayed French */
+function chiacify(s) {
+  if (!CHEATS.active.CHIAC || !s) return s;
+  if (s.includes('right là')) return s;
+  if (Math.random() < 0.3 && s.endsWith('!')) return s.slice(0, -1) + ', right là !';
+  if (Math.random() < 0.15 && s.endsWith('.')) return s.slice(0, -1) + ', faque voilà.';
+  return s;
+}
 
 /* =====================================================================
    MAP — real Fredericton geometry, stylized.
@@ -1036,9 +1191,22 @@ function render() {
   const waterFrame = REDUCED ? 0 : Math.floor(frameCount / 32) % 2;
   const x0 = Math.floor(camera.x / TILE) - 1, y0 = Math.floor(camera.y / TILE) - 1;
   const x1 = x0 + Math.ceil(W / TILE) + 2, y1 = y0 + Math.ceil(H / TILE) + 2;
+  const season = seasonOf();
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
     const id = tileAt(grid, x, y);
-    drawTile(id, Math.round(x * TILE - camera.x), Math.round(y * TILE - camera.y), id === TL.WATER ? waterFrame : 0);
+    const sx = Math.round(x * TILE - camera.x), sy = Math.round(y * TILE - camera.y);
+    drawTile(id, sx, sy, id === TL.WATER ? waterFrame : 0);
+    if (state === 'world') {
+      if (season === 'winter') {
+        if (id === TL.GRASS || id === TL.GRASS2 || id === TL.PATH || id === TL.FLOWER || id === TL.BANK) { cx.fillStyle = 'rgba(240,246,252,0.55)'; cx.fillRect(sx, sy, TILE, TILE); }
+        else if (id === TL.WATER) { cx.fillStyle = 'rgba(210,230,248,0.35)'; cx.fillRect(sx, sy, TILE, TILE); }
+        else if (id === TL.ROOF || id === TL.TREE) { cx.fillStyle = 'rgba(240,246,252,0.4)'; cx.fillRect(sx, sy, TILE, 5); }
+      } else if (season === 'fall' && id === TL.TREE) {
+        cx.fillStyle = 'rgba(201,106,47,0.55)'; cx.fillRect(sx + 2, sy + 1, 12, 10);
+      } else if (season === 'spring' && (id === TL.GRASS || id === TL.GRASS2)) {
+        if ((x * 13 + y * 7) % 17 === 0) { cx.fillStyle = '#8fce7a'; cx.fillRect(sx + 6, sy + 6, 2, 2); }
+      }
+    }
   }
   /* venue icons + names over doors (world only) */
   if (state === 'world') {
@@ -1110,6 +1278,8 @@ function render() {
   /* player */
   const walkFrame = player.moving ? Math.floor(frameCount / 8) % 2 : 0;
   drawChar(cx, Math.round(player.px - camera.x), Math.round(player.py - camera.y - 4), HERO_STYLES[player.styleIdx], player.dir, walkFrame, {});
+  drawTornado();
+  if (state === 'world') drawWeather();
   /* interaction hint */
   const target = interactTarget();
   if (target && !dialogueActive) {
@@ -1140,7 +1310,11 @@ function renderTitle() {
     cx.fillText(t('pressStart'), W / 2, 196);
   }
   cx.font = '9px monospace'; cx.fillStyle = 'rgba(244,234,210,0.6)';
-  cx.fillText('v0.3 « La Ville Vivante » — ' + t('demoNote'), W / 2, H - 12);
+  cx.fillText('v0.4 « Les Saisons » — ' + t('demoNote'), W / 2, H - 12);
+  cx.fillStyle = 'rgba(244,234,210,0.5)';
+  cx.fillText(LANG === 'fr'
+    ? 'Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean).'
+    : 'On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).', W / 2, H - 26);
 }
 
 /* =====================================================================
@@ -1322,8 +1496,8 @@ function showPage() {
   const frSpan = '<span class="fr"></span>' + (page.en ? '<span class="en"></span>' : '');
   dlgText.innerHTML = frSpan;
   const frEl = dlgText.querySelector('.fr'), enEl = dlgText.querySelector('.en');
-  const full = page.fr || '';
-  if (REDUCED) {
+  const full = chiacify(page.fr || '');
+  if (REDUCED || OPTS.instantText) {
     frEl.textContent = full; if (enEl) enEl.textContent = page.en;
     dlgTyping = false; dlgNext.style.visibility = 'visible'; renderChoices(page);
     return;
@@ -1360,7 +1534,7 @@ function advanceDialogue() {
   if (dlgTyping) {  /* fast-forward */
     clearInterval(dlgTimer); dlgTyping = false;
     const frEl = dlgText.querySelector('.fr'), enEl = dlgText.querySelector('.en');
-    frEl.textContent = page.fr; if (enEl) enEl.textContent = page.en;
+    frEl.textContent = chiacify(page.fr); if (enEl) enEl.textContent = page.en;
     if (!page.choices) dlgNext.style.visibility = 'visible';
     renderChoices(page);
     return;
@@ -1384,7 +1558,9 @@ function startEncounter() {
   const pack = interior.pack;
   const already = save.stamps[pack.venueId];
   let warmthTotal = 0, turnIdx = 0;
-  const speaker = pack.npc.name + (pack.npc.isHote ? ' ★' : '');
+  /* the correction-consent icon rides on the speaker chip: your contract, visibly honoured */
+  const consentIco = CONSENT_LEVELS[save.correction || 1].ico;
+  const speaker = pack.npc.name + (pack.npc.isHote ? ' ★' : '') + ' ' + consentIco;
   function nextTurn() {
     if (turnIdx >= pack.encounter.turns.length) { finishEncounter(pack, warmthTotal, already); return; }
     const turn = pack.encounter.turns[turnIdx];
@@ -1395,7 +1571,15 @@ function startEncounter() {
         warmthTotal += ch.warmth || 1;
         turnIdx++;
         dlgQueue = [];
-        startDialogue([{ speaker, fr: ch.reactionFR, en: ch.reactionEN }], nextTurn);
+        /* honour the correction contract:
+           ✅ (0) — celebrate + echo the phrase back so it sticks
+           🕊️ (3) — reaction only, never a rephrase, no meta-commentary */
+        let rFR = ch.reactionFR, rEN = ch.reactionEN;
+        if ((save.correction || 1) === 0) {
+          rFR = ch.reactionFR + ' — et bien dit : « ' + ch.fr + ' »';
+          rEN = ch.reactionEN + ' — and well said!';
+        }
+        startDialogue([{ speaker, fr: rFR, en: rEN }], nextTurn);
       }
     }]);
   }
@@ -1473,7 +1657,7 @@ function showGate(invite) {
     '<label class="check"><input type="checkbox" id="g-age"> ' + t('gateCheck') + '</label>' +
     '<h3>' + t('gateName') + '</h3><input type="text" id="g-name" maxlength="16" placeholder="Kurt">' +
     '<div class="btnrow"><button class="btn" id="g-go" disabled>' + t('gateGo') + '</button></div>' +
-    '<p style="margin-top:10px; opacity:0.6; font-size:11px">' + t('demoNote') + '</p>'
+    '<p style="margin-top:10px; opacity:0.6; font-size:11px">' + t('demoNote') + ' · <a href="../terms.html" style="color:var(--ui-blue)">' + (LANG === 'fr' ? 'Conditions' : 'Terms') + '</a> · <a href="../privacy.html" style="color:var(--ui-blue)">' + (LANG === 'fr' ? 'Vie privée' : 'Privacy') + '</a></p>'
   );
   const age = w.querySelector('#g-age'), name = w.querySelector('#g-name'), go = w.querySelector('#g-go');
   const upd = () => { go.disabled = !(age.checked && name.value.trim().length > 0); };
@@ -1481,16 +1665,25 @@ function showGate(invite) {
   go.addEventListener('click', () => { const nm = name.value.trim(); closeModal(); showCreate(nm, invite || {}); });
 }
 
+const CONSENT_LEVELS = [
+  { ico: '✅', fr: 'Corrige-moi souvent, ça m’aide', en: 'Correct me often — it helps' },
+  { ico: '⚖️', fr: 'Corrige-moi seulement si on ne se comprend pas', en: 'Correct me only when meaning breaks' },
+  { ico: '🧭', fr: 'Aide-moi à trouver les mots, sans corriger', en: 'Help me find words, don’t correct' },
+  { ico: '🕊️', fr: 'Ce soir, je veux juste parler', en: 'Tonight, I just want to speak' },
+];
 function showCreate(name, invite) {
-  let sel = 0, conf = 1;
+  let sel = 0, conf = 1, consent = 1;
   function html() {
     const chips = HERO_STYLES.map((s, i) =>
       '<button class="btn' + (i === sel ? '' : ' alt') + '" data-i="' + i + '" style="padding:6px 10px">' +
       '<canvas data-c="' + i + '" width="16" height="20" style="width:32px;height:40px;image-rendering:pixelated;vertical-align:middle"></canvas></button>').join(' ');
     const confs = [t('conf1'), t('conf2'), t('conf3')].map((c, i) =>
       '<button class="btn' + (i === conf ? '' : ' alt') + '" data-conf="' + i + '" style="display:block;width:100%;text-align:left;margin:6px 0;font-weight:normal">' + c + '</button>').join('');
+    const consents = CONSENT_LEVELS.map((c, i) =>
+      '<button class="btn' + (i === consent ? '' : ' alt') + '" data-cons="' + i + '" style="display:block;width:100%;text-align:left;margin:6px 0;font-weight:normal">' + c.ico + ' ' + (LANG === 'fr' ? c.fr : c.en) + '</button>').join('');
     return '<h2>' + t('createT') + '</h2><div class="btnrow" style="justify-content:center">' + chips + '</div>' +
       '<h3>' + t('confQ') + '</h3>' + confs +
+      '<h3>' + (LANG === 'fr' ? 'Et pour les corrections ? (Tout le monde respectera ton choix — promis.)' : 'And corrections? (Everyone will honour your choice — promised.)') + '</h3>' + consents +
       '<div class="btnrow"><button class="btn" id="c-go">' + t('begin') + ' ▶</button></div>';
   }
   function paint(w) {
@@ -1500,8 +1693,9 @@ function showCreate(name, invite) {
     });
     w.querySelectorAll('[data-i]').forEach(b => b.addEventListener('click', () => { sel = +b.dataset.i; rerender(); }));
     w.querySelectorAll('[data-conf]').forEach(b => b.addEventListener('click', () => { conf = +b.dataset.conf; rerender(); }));
+    w.querySelectorAll('[data-cons]').forEach(b => b.addEventListener('click', () => { consent = +b.dataset.cons; rerender(); }));
     w.querySelector('#c-go').addEventListener('click', () => {
-      save = { name, styleIdx: sel, confStart: conf, confidence: conf * 2, level: 0, recognizedBy: [], stamps: {}, hotesMet: [], myCodes: [], codeUsed: (invite && invite.codeUsed) || null, invitedBy: (invite && invite.invitedBy) || null, pages: [], trucs: [], pins: [], metSpecials: {}, minigamesWon: {}, plotStage: null, lang: LANG, created: new Date().toISOString() };
+      save = { name, styleIdx: sel, confStart: conf, confidence: conf * 2, correction: consent, level: 0, recognizedBy: [], stamps: {}, hotesMet: [], myCodes: [], codeUsed: (invite && invite.codeUsed) || null, invitedBy: (invite && invite.invitedBy) || null, pages: [], trucs: [], pins: [], metSpecials: {}, minigamesWon: {}, plotStage: null, lang: LANG, created: new Date().toISOString() };
       writeSave();
       closeModal(); beginWorld();
     });
@@ -1620,6 +1814,63 @@ function showPassport() {
     );
   }));
 }
+function showSettings() {
+  const opt = (id, label, on) => '<label class="check"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + '> ' + label + '</label>';
+  const consents = save ? CONSENT_LEVELS.map((c, i) =>
+    '<button class="btn' + (i === save.correction ? '' : ' alt') + '" data-scons="' + i + '" style="display:block;width:100%;text-align:left;margin:5px 0;font-weight:normal;font-size:13px">' + c.ico + ' ' + (LANG === 'fr' ? c.fr : c.en) + '</button>').join('') : '';
+  const w = modal(
+    '<h2>' + (LANG === 'fr' ? 'Réglages & accessibilité' : 'Settings & accessibility') + '</h2>' +
+    opt('s-instant', LANG === 'fr' ? 'Texte instantané (sans machine à écrire)' : 'Instant text (no typewriter)', OPTS.instantText) +
+    opt('s-large', LANG === 'fr' ? 'Gros texte de dialogue' : 'Large dialogue text', OPTS.largeText) +
+    opt('s-contrast', LANG === 'fr' ? 'Contraste élevé' : 'High contrast', OPTS.highContrast) +
+    opt('s-sound', LANG === 'fr' ? 'Sons (bips rétro)' : 'Sound (retro bleeps)', SND.on) +
+    '<label class="check"><input type="checkbox" id="s-lang"' + (LANG === 'fr' ? ' checked' : '') + '> ' + (LANG === 'fr' ? 'Interface en français' : 'French interface') + '</label>' +
+    (save ? '<h3>' + (LANG === 'fr' ? 'Mes corrections' : 'My corrections') + '</h3>' + consents : '') +
+    '<h3>' + (LANG === 'fr' ? 'Secrets' : 'Secrets') + '</h3>' +
+    '<input type="text" id="s-secret" placeholder="' + (LANG === 'fr' ? 'Un mot magique ?' : 'A magic word?') + '" autocomplete="off">' +
+    '<p style="font-size:11px; opacity:0.55; margin-top:6px">' + (LANG === 'fr' ? 'Les mouvements réduits de ton système sont toujours respectés.' : 'Your system’s reduced-motion setting is always respected.') + '</p>' +
+    '<div class="btnrow"><button class="btn" id="s-close">' + t('close') + '</button></div>'
+  );
+  w.querySelector('#s-instant').addEventListener('change', e => { OPTS.instantText = e.target.checked; writeOpts(); });
+  w.querySelector('#s-large').addEventListener('change', e => { OPTS.largeText = e.target.checked; writeOpts(); });
+  w.querySelector('#s-contrast').addEventListener('change', e => { OPTS.highContrast = e.target.checked; writeOpts(); });
+  w.querySelector('#s-sound').addEventListener('change', e => { SND.on = e.target.checked; if (SND.on) { SND.ensure(); SND.confirm(); } document.getElementById('hud-snd').textContent = '♪ ' + (SND.on ? 'on' : 'off'); });
+  w.querySelector('#s-lang').addEventListener('change', e => { LANG = e.target.checked ? 'fr' : 'en'; localStorage.setItem('bq_lang', LANG); if (save) updateHud(); });
+  w.querySelectorAll('[data-scons]').forEach(b => b.addEventListener('click', () => { save.correction = +b.dataset.scons; writeSave(); closeModal(); showSettings(); }));
+  w.querySelector('#s-secret').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const v = e.target.value.trim().toUpperCase();
+      if (['DISCO', '1969', 'TORNADE', 'CHIAC', 'MOITIE'].includes(v)) { closeModal(); toggleCheat(v); }
+      else { e.target.value = ''; e.target.placeholder = LANG === 'fr' ? 'Hmm, non…' : 'Hmm, no…'; }
+    }
+  });
+  w.querySelector('#s-close').addEventListener('click', closeModal);
+}
+
+function showExpedition() {
+  modal(
+    '<h2>' + (LANG === 'fr' ? 'L’Expédition — le vrai jeu' : 'The Expedition — the real game') + '</h2>' +
+    '<p>' + (LANG === 'fr'
+      ? 'Le jeu que tu tiens est la bande-annonce. Le vrai jeu se joue dehors : des groupes de 3 à 6 personnes, 45 minutes, trois lieux du centre-ville, une mission coopérative — et personne n’a assez d’informations pour réussir seul. Il faut se parler. En français.'
+      : 'This game is the trailer. The real game happens outside: parties of 3–6, 45 minutes, three downtown locations, one cooperative mission — and nobody holds enough information to win alone. You have to talk. In French.') + '</p>' +
+    '<h3>' + (LANG === 'fr' ? 'Les six rôles' : 'The six roles') + '</h3>' +
+    '<ul style="font-size:13px">' +
+    '<li><b>Le Guide</b> — ' + (LANG === 'fr' ? 'voit la route (mais ne peut pas pointer)' : 'sees the route (but may not point)') + '</li>' +
+    '<li><b>L’Archiviste</b> — ' + (LANG === 'fr' ? 'détient les indices historiques' : 'holds the historical clues') + '</li>' +
+    '<li><b>Le/La Diplomate</b> — ' + (LANG === 'fr' ? 'seul·e à parler aux inconnus' : 'the only one who may address strangers') + '</li>' +
+    '<li><b>L’Observateur·rice</b> — ' + (LANG === 'fr' ? 'repère les détails' : 'spots the details') + '</li>' +
+    '<li><b>Le/La Trouble-fête</b> — ' + (LANG === 'fr' ? 'déploie une complication absurde' : 'deploys one absurd complication') + '</li>' +
+    '<li><b>Le/La Gardien·ne des mots</b> — ' + (LANG === 'fr' ? 'garde les phrases de secours et LA phrase anglaise permise' : 'guards the rescue phrases and THE one permitted English sentence') + '</li>' +
+    '</ul>' +
+    '<p style="font-size:12px; opacity:0.75">' + (LANG === 'fr'
+      ? 'Sécurité : lieux publics, arrivée/départ pointés, groupe minimum de 4, options sans alcool, cartes de consentement aux corrections sur la table.'
+      : 'Safety: public places, check-in/check-out, minimum party of 4, alcohol-free options, correction-consent cards on the table.') + '</p>' +
+    '<div class="btnrow">' +
+    '<a class="btn" href="../expedition.html" style="text-decoration:none">' + (LANG === 'fr' ? 'La trousse imprimable ▶' : 'The printable kit ▶') + '</a>' +
+    '<button class="btn alt" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
+  );
+}
+
 function openEvents(venue) {
   const evts = eventsData().filter(e => !venue || e.venueId === venue.id || true);
   const list = evts.map(e => {
@@ -1712,6 +1963,8 @@ function toggleSound() {
   document.getElementById('hud-snd').textContent = '♪ ' + (SND.on ? 'on' : 'off');
 }
 document.getElementById('hud-snd').addEventListener('click', toggleSound);
+document.getElementById('hud-set').addEventListener('click', () => { if (modalRoot.children.length) closeModal(); else showSettings(); });
+document.getElementById('hud-exp').addEventListener('click', () => { if (modalRoot.children.length) closeModal(); else showExpedition(); });
 
 /* resize: integer-scale canvas to viewport */
 function fit() {
@@ -1729,9 +1982,12 @@ function loop() {
   stepPlayer();
   if (state === 'world' && !player.moving) stillFrames++;
   if (frameCount % 3 === 0) updateAnimals();
+  updateCheatFx();
   render();
   requestAnimationFrame(loop);
 }
+initParticles();
+writeOpts();
 loop();
 </script>
 </body>
