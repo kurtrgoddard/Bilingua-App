@@ -120,8 +120,8 @@
   <div class="pixel-title">BILINGUA QUEST</div>
   <p class="sub">« Douze ans de français. Une vraie conversation. »</p>
   <p class="sub-en">Twelve years of school French. Time for one real conversation.</p>
-  <a class="play" href="/play/">▶ Jouer / Play</a>
-  <p class="note">Free · plays in your browser · adults 18+ · prototype v0.5 · <strong>invitation only — the founding batch is 100</strong> · <a href="/billets.html" style="color:#8fa3cc">billets</a></p>
+  <a class="play" href="play/">▶ Jouer / Play</a>
+  <p class="note">Free · plays in your browser · adults 18+ · prototype v0.5 · <strong>invitation only — the founding batch is 100</strong> · <a href="billets.html" style="color:#8fa3cc">billets</a></p>
   <img src="shots/4-world-spawn.png" alt="SNES-style pixel-art view of the Bill Thorpe Walking Bridge crossing the river into downtown Fredericton" width="1024" height="720">
 </div>
 
@@ -176,7 +176,7 @@
     <p>The future layer: scheduled, watchable, celebratory live practice — TikTok-live energy where <em>being brave in French is the show</em>. Picture Thursday 7pm at Dolan's, in-game and in-person at once: players cheering a stranger's first full sentence, an Hôte conducting, clips worth sharing. Language practice as an event you'd actually attend.</p>
     <div class="roadmap">
       <div class="rm now"><span class="v">v0.4 — now</span><h3>The prototype</h3><p>Playable Fredericton, mentor ceremonies, seasons, this page. Tell us everything.</p></div>
-      <div class="rm now"><span class="v">the pilot</span><h3>Les Expéditions</h3><p>Groups of 4–6, 45 minutes, downtown — <a href="/expedition.html">the printable quest kit</a> is ready.</p></div>
+      <div class="rm now"><span class="v">the pilot</span><h3>Les Expéditions</h3><p>Groups of 4–6, 45 minutes, downtown — <a href="expedition.html">the printable quest kit</a> is ready.</p></div>
       <div class="rm"><span class="v">v1</span><h3>Real accounts &amp; events</h3><p>Real rendez-vous listings, real Hôte volunteers, RSVP from inside the game.</p></div>
       <div class="rm"><span class="v">v1.5</span><h3>Real conversations</h3><p>Matched practice with humans behind a safety-first trust ladder; meetups in public venues.</p></div>
       <div class="rm"><span class="v">v2</span><h3>New Brunswick</h3><p>« When Moncton unlocks… » City by city, a game people visit the province to play.</p></div>
@@ -194,7 +194,7 @@
       <div class="step"><span class="ico">🎁</span><h3>Give three</h3><p>Your Passeport now holds three invitations. Choose well.</p></div>
     </div>
     <h3 id="waitlist" style="font-size:1.15rem; margin-top:2rem">No code? Join the waitlist / Pas de code ? La liste d'attente</h3>
-    <form name="waitlist" method="POST" action="/merci.html" data-netlify="true" netlify-honeypot="bot-field">
+    <form name="waitlist" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field">
       <input type="hidden" name="form-name" value="waitlist">
       <p class="hp"><label>Don't fill this out: <input name="bot-field"></label></p>
       <label for="w-name">Name</label>
@@ -212,7 +212,7 @@
     <div class="eyebrow"><span>Your turn</span><span class="moitie"></span><span class="fr">À vous</span></div>
     <h2>Tell me what you think</h2>
     <p>This is a prototype and a vision looking for accomplices — players, francophone mentors, café owners, skeptics. What would make you play? What's wrong? What's missing? En français ou en anglais.</p>
-    <form name="feedback" method="POST" action="/merci.html" data-netlify="true" netlify-honeypot="bot-field">
+    <form name="feedback" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field">
       <input type="hidden" name="form-name" value="feedback">
       <p class="hp"><label>Don't fill this out: <input name="bot-field"></label></p>
       <label for="f-name">Name (optional)</label>
@@ -230,10 +230,27 @@
     <p><strong>Bilingua Quest</strong> is a free civic prototype by Kurt Goddard (Fredericton, NB). Adults 18+. No accounts, no tracking — the game saves on your own device only.</p>
     <p>Real Fredericton venues appear with affection and without affiliation. Venue owners: if you'd like anything changed (or want a rendez-vous board of your own), <a href="mailto:kurtrgoddard@gmail.com">say the word</a>.</p>
     <p>Safety, always: real-world meetups belong in public places — tell a friend, trust your instincts.</p>
-    <p><a href="/terms.html">Terms / Conditions</a> · <a href="/privacy.html">Privacy / Vie privée</a> · <a href="/expedition.html">The expedition kit</a> · <a href="/billets.html">Billets / Tickets</a></p>
+    <p><a href="terms.html">Terms / Conditions</a> · <a href="privacy.html">Privacy / Vie privée</a> · <a href="expedition.html">The expedition kit</a> · <a href="billets.html">Billets / Tickets</a></p>
     <p>Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). / On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).</p>
   </footer>
 
 </div>
+<script>
+/* gh-pages-form-fallback: Netlify Forms only work on Netlify hosting.
+   On the GitHub Pages mirror, swap form submits for mailto so nothing silently fails. */
+if (location.hostname.endsWith('github.io')) {
+  document.querySelectorAll('form[data-netlify]').forEach(f => {
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const kind = f.getAttribute('name') === 'waitlist' ? 'Waitlist' : 'Feedback';
+      const data = new FormData(f);
+      let body = '';
+      for (const [k, v] of data.entries()) if (k !== 'form-name' && k !== 'bot-field' && v) body += k + ': ' + v + '
+';
+      location.href = 'mailto:kurtrgoddard@gmail.com?subject=' + encodeURIComponent('Bilingua Quest ' + kind) + '&body=' + encodeURIComponent(body);
+    });
+  });
+}
+</script>
 </body>
 </html>
