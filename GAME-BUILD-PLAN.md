@@ -88,3 +88,18 @@ Every principle from the strategy survives translation into play, and most get s
 - v0: headless Chromium playtest (boot → age gate → create character → walk to Jonnie Java → complete encounter → stamp appears), screenshots reviewed; console clean; mobile viewport playable (touch D-pad); EN/FR toggle sound; saves persist across reload.
 - Content: every venue pack passed a French-quality review agent; spot-check by a human francophone before any public share.
 - Map fidelity: venue relative positions eyeballed against `game/data/fredericton-pois.json` coordinates.
+
+## v0.6 — Les Injections (2026-07-14)
+
+Eight static-site injections, one per principle it serves — all client-side, no backend, honest numbers only:
+
+1. **Flamme de Confiance** — forgiving streak that dims but never dies; coming back always finds an ember *(Duolingo: smallest action consequential — minus the hostage-taking)*.
+2. **Carte Postale** — shareable canvas postcard carrying the player's last *real* French phrase *(Pikmin Bloom: the app is the memory, not the moment — and the viral loop's shareable evidence)*.
+3. **La Ville se Rallume** — stamps visibly restore the dark city; milestone glows at 5/10/18/26 *(Stardew Valley: visible restoration — the lost-stories premise made pixel)*.
+4. **Mission Secrète du Jour** — the same daily real-life micro-mission city-wide, honour system, phone pocketed *(Pokémon GO: the real city is the board; ritual simultaneity)*.
+5. **Quête à Deux / Serment du Pont** — two people verify each other's quest offline via deterministic name+date codes *(Among Us: people are the content — a small oath needs no server)*.
+6. **Rendez-vous du Jeudi** — Dolan's Pub, Thursdays 18h–20h; the venue glows in-game with a live countdown *(Fortnite: the game as cultural venue — "you had to be there" has an address)*.
+7. **Proposer une Quête** — Netlify submission form with permanent in-game author credits, seeded with 2 founding-Hôte bylines *(Roblox: players become authors)*.
+8. **Pin de l'Accueil** — using « Pouvez-vous répéter plus lentement ? » three times earns « Le courage de demander » *(Sky: kindness as mechanic — asking for patience is a decorated act, and the beginner is never a burden)*.
+
+Voir [DESIGN-PRINCIPLES.md](DESIGN-PRINCIPLES.md) — la carte complète des principes → fonctionnalités.
