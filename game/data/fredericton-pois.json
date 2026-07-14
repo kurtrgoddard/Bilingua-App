@@ -1,0 +1,40 @@
+{
+  "_meta": {
+    "source": "TomTom Search API via TomTom Maps MCP connector",
+    "fetched": "2026-07-14",
+    "note": "Real venue names, addresses, and coordinates for Downtown Fredericton (southside core) and Nashwaaksis (northside Main Street). Coordinates are [lon, lat]. Used to lay out the in-game map so relative positions are true to the city. The Fredericton Public Library position is approximate (12 Carleton St; not returned by the POI search — verify)."
+  },
+  "downtown": [
+    { "id": "jonnie", "name": "Jonnie Java Roasters", "type": "cafe", "address": "95 York Street", "coord": [-66.64409, 45.9623] },
+    { "id": "tipsymuse", "name": "The Tipsy Muse Cafe", "type": "cafe", "address": "65 Regent Street", "coord": [-66.639128, 45.960879] },
+    { "id": "chesspiece", "name": "Chess Piece Pâtisserie", "type": "cafe", "address": "361 Queen Street", "coord": [-66.64388, 45.963457] },
+    { "id": "happybaker", "name": "The Happy Baker", "type": "bakery", "address": "675 King Street", "coord": [-66.637896, 45.959647] },
+    { "id": "cafeloka", "name": "Cafe Loka & Bistro", "type": "cafe", "address": "343 York Street", "coord": [-66.648112, 45.957618] },
+    { "id": "dolans", "name": "Dolan's Pub", "type": "pub", "address": "349 King Street", "coord": [-66.644817, 45.962752] },
+    { "id": "wilsers", "name": "Wilser's Room", "type": "musicbar", "address": "366 Queen Street", "coord": [-66.644109, 45.963253] },
+    { "id": "gahan", "name": "Gahan House Riverside", "type": "pub", "address": "426 Queen Street", "coord": [-66.642613, 45.962604] },
+    { "id": "flippins", "name": "Flippins Bar/Arcade", "type": "arcadebar", "address": "375 King Street", "coord": [-66.644302, 45.96283] },
+    { "id": "brokenrecord", "name": "Broken Record Bar", "type": "musicbar", "address": "422 Queen Street", "coord": [-66.642704, 45.962657] },
+    { "id": "graystone", "name": "Graystone Brewing", "type": "taproom", "address": "221 King Street", "coord": [-66.64787, 45.963904] },
+    { "id": "boyce", "name": "Boyce Farmers Market", "type": "market", "address": "665 George Street", "coord": [-66.63983, 45.95789] },
+    { "id": "playhouse", "name": "Fredericton Playhouse", "type": "theatre", "address": "686 Queen Street", "coord": [-66.6371, 45.96] },
+    { "id": "officers", "name": "Officers' Square", "type": "park", "address": "575 Queen Street", "coord": [-66.639, 45.9617] },
+    { "id": "library", "name": "Fredericton Public Library", "type": "library", "address": "12 Carleton Street (approx.)", "coord": [-66.6445, 45.9641] }
+  ],
+  "northside": [
+    { "id": "shuyi", "name": "Shuyi Tealicious", "type": "teacafe", "address": "245 Main Street", "coord": [-66.64896, 45.977155] },
+    { "id": "fancybites", "name": "Fancy Bites By Nancy", "type": "restaurant", "address": "215 Main Street", "coord": [-66.65055, 45.97714] },
+    { "id": "timsmain", "name": "Tim Hortons (Main St)", "type": "coffeeshop", "address": "290 Main Street", "coord": [-66.646977, 45.975294] }
+  ],
+  "geography": {
+    "downtownCenter": [-66.6431, 45.9636],
+    "northsideCenter": [-66.6485, 45.9776],
+    "riverBetween": "Saint John River / Wolastoq flows between the two districts",
+    "bridges": [
+      { "name": "Westmorland Street Bridge", "type": "vehicle" },
+      { "name": "Bill Thorpe Walking Bridge", "type": "pedestrian", "note": "old railway truss bridge, iconic green" }
+    ],
+    "downtownStreets": { "riverParallel": ["Queen Street", "King Street", "Brunswick Street"], "cross": ["Smythe", "York", "Carleton", "Regent", "Westmorland (bridge approach)"] },
+    "northsideStreet": "Main Street (Nashwaaksis)"
+  }
+}
