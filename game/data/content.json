@@ -2014,5 +2014,572 @@
         "kind": "concert"
       }
     ]
+  },
+  "livingTown": {
+    "specials": [
+      {
+        "id": "vieux-du-pont",
+        "name": "Le Vieux du Pont",
+        "pages": [
+          {
+            "fr": "Toi. Approche. Tu pars sans rien, et ça, ça ne marche pas.",
+            "en": "You there. Come here. Heading out with nothing? That won't do."
+          },
+          {
+            "fr": "« C'est dangereux de parler seul. » Prends ça, ça vaut plus qu'une épée.",
+            "en": "\"It's dangerous to speak alone.\" Take this — worth more than a sword."
+          },
+          {
+            "fr": "« Comment on dit… ? » Trois mots. Dis-les, et tout étranger devient ton prof.",
+            "en": "\"How do you say...?\" Three words. Say them, and any stranger becomes your teacher."
+          },
+          {
+            "fr": "En 1969, la plus belle jasette de Fredericton fut écrite dans un carnet — le Carnet de la Grande Jasette.",
+            "en": "In 1969, Fredericton's greatest conversation was written into a notebook — the Carnet de la Grande Jasette."
+          },
+          {
+            "fr": "Le vent a éparpillé ses pages partout en ville. Ramène-les, et la ville rejasera.",
+            "en": "The wind scattered its pages across town. Bring them back, and the town will talk again."
+          }
+        ],
+        "truc": {
+          "titleFR": "Le moteur du « comment on dit »",
+          "titleEN": "The 'How Do You Say' Engine",
+          "ruleFR": "Bloqué sur un mot ? Demande « Comment on dit… ? » et pointe.",
+          "ruleEN": "Stuck on a word? Ask \"How do you say...?\" and point.",
+          "exampleFR": "Au marché Boyce : « Comment on dit ce fromage-là, en français ? »",
+          "exampleEN": "At the Boyce Market: \"How do you say that cheese, in French?\""
+        },
+        "grantsPage": false
+      },
+      {
+        "id": "mime-celeste",
+        "name": "Célèste",
+        "pages": [
+          {
+            "fr": "...",
+            "en": "(she freezes, one hand pressed to an invisible wall)"
+          },
+          {
+            "fr": "...",
+            "en": "(she mimes an enormous fish, arms stretched wide, nearly toppling)"
+          },
+          {
+            "fr": "...",
+            "en": "(she points at you, then at her ear, then gives two big thumbs up)"
+          },
+          {
+            "fr": "Tu vois? Pas un seul mot.",
+            "en": "See? Not a single word."
+          },
+          {
+            "fr": "T'as compris pareil. Le français, t'en sais déjà plus que tu penses.",
+            "en": "You understood anyway. You already know more French than you think."
+          }
+        ],
+        "truc": null,
+        "grantsPage": true
+      },
+      {
+        "id": "jumelles-boyce",
+        "name": "Les jumelles du marché",
+        "pages": [
+          {
+            "fr": "Deux jumelles identiques te bloquent le chemin du marché Boyce.",
+            "en": "Two identical twins block your path to Boyce Market."
+          },
+          {
+            "fr": "« CHOCOLATINE. » « NON. PAIN AU CHOCOLAT. » Elles se tournent vers toi.",
+            "en": "\"CHOCOLATINE.\" \"NO. PAIN AU CHOCOLAT.\" They both turn to you."
+          },
+          {
+            "fr": "« Toi. Tranche. Chocolatine ou pain au chocolat? Défends ton choix! »",
+            "en": "\"You. Decide. Chocolatine or pain au chocolat? Defend it!\""
+          },
+          {
+            "fr": "Tu argumentes en français, maladroitement, avec passion. Elles hurlent de joie.",
+            "en": "You argue in clumsy, passionate French. They shriek with delight."
+          },
+          {
+            "fr": "« Peu importe le mot — tu as DÉBATTU en français! C'est ça, la vraie victoire. »",
+            "en": "\"The word doesn't matter — you DEBATED in French! That's the real win.\""
+          }
+        ],
+        "truc": null,
+        "grantsPage": true
+      },
+      {
+        "id": "capitaine-chiac",
+        "name": "Capitaine Chiac",
+        "pages": [
+          {
+            "fr": "Ben là! Un touriste de la south side! Bienvenue sur Main Street, mon chum!",
+            "en": "Well there! A tourist from the south side! Welcome to Main Street, my friend!"
+          },
+          {
+            "fr": "Chu de Shediac, faque, euh... j'parle un p'tit peu différent, right là. Ça t'dérange?",
+            "en": "I'm from Shediac, so, uh... I talk a little different, right there. Does that bother you?"
+          },
+          {
+            "fr": "Le monde pense que 'euh' pis 'ben' c'est des erreurs. Non non! C'est la musique, faque!",
+            "en": "People think 'uh' and 'well' are mistakes. No, no! That's the music, so there!"
+          },
+          {
+            "fr": "Apprends trois mots comme ça pis, ben, tu geleras pu jamais devant le monde, right là!",
+            "en": "Learn three words like that and, well, you'll never freeze up in front of people again!"
+          },
+          {
+            "fr": "Faque vas-y, essaye! Ben, euh, là... tu vois? T'es déjà un Acadien, mon chum!",
+            "en": "So go on, try it! Well, uh, there... you see? You're already an Acadian, my friend!"
+          }
+        ],
+        "truc": {
+          "titleFR": "Le moteur à c'est",
+          "titleEN": "The Filler Engine",
+          "ruleFR": "Ben, là, faque, euh: ça meuble le silence pendant que tu penses.",
+          "ruleEN": "Well, there, so, uh: they fill the silence while your brain catches up.",
+          "exampleFR": "« Euh... ben, j'pense que... faque, oui! » — pis personne remarque le blanc.",
+          "exampleEN": "\"Uh... well, I think... so, yes!\" — and nobody notices the pause."
+        },
+        "grantsPage": false
+      },
+      {
+        "id": "prof-fougere",
+        "name": "Madame Fougère",
+        "pages": [
+          {
+            "fr": "Chut... les mésanges reviennent si on ne bouge pas. Assieds-toi une minute.",
+            "en": "Shh... the chickadees come back if we sit still. Join me a minute."
+          },
+          {
+            "fr": "J'ai enseigné le français ici quarante ans. Je me souviens de chaque élève, tu sais.",
+            "en": "I taught French here forty years. I remember every single student."
+          },
+          {
+            "fr": "Tu crois ne pas connaître de français? Tu en connais des milliers de mots, mon cœur.",
+            "en": "Think you know no French? You already know thousands of words, dear heart."
+          },
+          {
+            "fr": "Nation, question, situation... change le son, garde les lettres. C'est presque de la triche!",
+            "en": "Nation, question, situation... change the sound, keep the letters. It's almost cheating!"
+          },
+          {
+            "fr": "Reviens me voir sur le banc. Les mésanges et moi, on t'attend.",
+            "en": "Come find me on the bench again. The chickadees and I will be waiting."
+          }
+        ],
+        "truc": {
+          "titleFR": "Le moteur à -tion",
+          "titleEN": "The -tion Engine",
+          "ruleFR": "Un mot anglais en -tion? Prononce-le à la française, souvent c'est déjà bon.",
+          "ruleEN": "English word ending in -tion? Say it the French way — often already right.",
+          "exampleFR": "« Information » en anglais devient « information » en français, dit autrement.",
+          "exampleEN": "English \"information\" becomes French \"information,\" just said differently."
+        },
+        "grantsPage": false
+      },
+      {
+        "grantsPage": false,
+        "id": "dj-vinyle",
+        "name": "DJ Vinyle",
+        "pages": [
+          {
+            "fr": "Ho, salut toi. T'écoutes du vinyle ou tu magasines des mots?",
+            "en": "Hey, you. You here for vinyl, or shopping for words?"
+          },
+          {
+            "fr": "Le français, c'est comme un bon riff : deux accords pis ça marche.",
+            "en": "French is like a good riff: two chords and it just works."
+          },
+          {
+            "fr": "« C'est bon. » « C'est fou. » « C'est ça. » Trois mots, toujours propre.",
+            "en": "'C'est bon.' 'C'est fou.' 'C'est ça.' Three words, always clean."
+          },
+          {
+            "fr": "Mets n'importe quel adjectif après « c'est », pis t'as une toune complète.",
+            "en": "Drop any adjective after 'c'est' and you've got a whole track."
+          },
+          {
+            "fr": "Reviens me voir sur le Green, pratique ta ligne de basse française.",
+            "en": "Come see me on the Green, and practice your French bassline."
+          }
+        ],
+        "truc": {
+          "titleFR": "Le moteur à « c'est »",
+          "titleEN": "The C'est Engine",
+          "ruleFR": "« C'est » + adjectif = phrase correcte, complète, cool.",
+          "ruleEN": "'C'est' + adjective = correct, complete, cool sentence.",
+          "exampleFR": "Le pont piétonnier au coucher du soleil? C'est magique.",
+          "exampleEN": "The walking bridge at sunset? That's magic."
+        }
+      },
+      {
+        "grantsPage": false,
+        "id": "jardiniere-violette",
+        "name": "Violette, Fleuriste du Square",
+        "pages": [
+          {
+            "fr": "Ah, un promeneur! Tiens la terre, respire — la violette pousse mieux avec de la compagnie.",
+            "en": "Ah, a wanderer! Hold the soil, breathe — violets grow better with company."
+          },
+          {
+            "fr": "« La violette », féminin. « Le jardinage », masculin. Coïncidence? Non — c'est dans la graine!",
+            "en": "'La violette,' feminine. 'Le jardinage,' masculine. Coincidence? No — it's in the seed!"
+          },
+          {
+            "fr": "-tion, -ette, -ure : presque toujours féminins. Regarde la fin du mot, pas son cœur.",
+            "en": "-tion, -ette, -ure: almost always feminine. Look at the word's ending, not its heart."
+          },
+          {
+            "fr": "-age, -eau, -ment : masculins la plupart du temps. Le jardinage, le chapeau, le moment.",
+            "en": "-age, -eau, -ment: mostly masculine. Le jardinage, le chapeau, le moment."
+          },
+          {
+            "fr": "N'apprends pas chaque fleur par cœur, mon ami. Apprends à lire les graines, et le jardin s'ouvre.",
+            "en": "Don't memorize every flower, my friend. Learn to read the seeds, and the garden opens up."
+          }
+        ],
+        "truc": {
+          "titleFR": "Le moteur des finales",
+          "titleEN": "The Ending Engine",
+          "ruleFR": "Regarde la fin du mot : -tion/-ette féminin, -age/-eau masculin.",
+          "ruleEN": "Check the word's ending: -tion/-ette feminine, -age/-eau masculine.",
+          "exampleFR": "La violette (féminin) pousse près du jardinage (masculin) du Square.",
+          "exampleEN": "La violette (feminine) grows beside le jardinage (masculine) of the Square."
+        }
+      },
+      {
+        "id": "pecheur-du-pont",
+        "name": "Ti-Louis le Pêcheur",
+        "pages": [
+          {
+            "fr": "Pas une touche depuis six ans. La meilleure pêche de ma vie.",
+            "en": "Not a bite in six years. Best fishing of my life."
+          },
+          {
+            "fr": "Toi, t'as peur du silence. Le poisson, lui, il adore ça.",
+            "en": "You're scared of silence. The fish, though? Loves it."
+          },
+          {
+            "fr": "Dis « euh… », arrête-toi, regarde l'eau. C'est déjà du français, ça.",
+            "en": "Say \"euh…\", stop, look at the water. That's French too."
+          },
+          {
+            "fr": "Une phrase pas finie, c'est une ligne à l'eau. Attends un peu.",
+            "en": "An unfinished sentence is a line in the water. Just wait."
+          },
+          {
+            "fr": "Un jour j'attraperai quelque chose. En attendant, j'attrape le temps.",
+            "en": "One day I'll catch something. Meanwhile, I catch the time."
+          }
+        ],
+        "truc": {
+          "titleFR": "Le moteur à « euh »",
+          "titleEN": "The \"euh\" Engine",
+          "ruleFR": "Un « euh… » et une pause, c'est encore parler français.",
+          "ruleEN": "An \"euh…\" and a pause still count as speaking French.",
+          "exampleFR": "« Je voudrais... euh... » Ti-Louis hoche la tête : « Continue, j'ai tout mon temps. »",
+          "exampleEN": "\"I'd like... euh...\" Ti-Louis nods: \"Go on, I've got all day.\""
+        },
+        "grantsPage": true
+      },
+      {
+        "id": "facteur-presse",
+        "name": "Gaston Vite-Fait",
+        "pages": [
+          {
+            "fr": "Facteur Gaston, en retard, TOUJOURS en retard ! Le courrier attend pas, mon ami !",
+            "en": "Postman Gaston, late, ALWAYS late! The mail doesn't wait, my friend!"
+          },
+          {
+            "fr": "J'ai couru la rue Queen dix fois aujourd'hui. Mes bottines fument, regarde !",
+            "en": "I've run down Queen Street ten times today. My boots are smoking, look!"
+          },
+          {
+            "fr": "Dis-moi : « Pouvez-vous parler plus lentement ? » Vas-y, essaie, ça coûte rien !",
+            "en": "Tell me: \"Could you speak more slowly?\" Go on, try it, it costs nothing!"
+          },
+          {
+            "fr": "Ah, tu vois ? Ça fait chaud au cœur, ça. Un vrai cadeau, cette phrase.",
+            "en": "Ah, see? That warms the heart. That sentence is a real gift."
+          },
+          {
+            "fr": "Moi, ralentir ? Impossible, le pont piétonnier m'appelle ! Bonne journée, cours vite !",
+            "en": "Me, slow down? Impossible, the walking bridge is calling! Have a good day, run fast!"
+          }
+        ],
+        "truc": {
+          "titleFR": "Le cadeau de la lenteur",
+          "titleEN": "The Gift of Slowness",
+          "ruleFR": "Demander à ralentir, c'est offrir ton attention à l'autre.",
+          "ruleEN": "Asking someone to slow down is offering them your attention.",
+          "exampleFR": "« Plus lentement, s'il vous plaît ? » et Gaston sourit, même pressé.",
+          "exampleEN": "\"Slower, please?\" and Gaston smiles, even while rushing."
+        },
+        "grantsPage": false
+      }
+    ],
+    "carnet": {
+      "pages": [
+        {
+          "fr": "Le fleuve ne parle qu'une langue, mais il écoute les deux.",
+          "en": "The river speaks one tongue, but it listens to both."
+        },
+        {
+          "fr": "Sur le pont piétonnier, personne ne reste étranger bien longtemps.",
+          "en": "On the walking bridge, no one stays a stranger for long."
+        },
+        {
+          "fr": "Un café renversé, un mot mal dit — les deux se pardonnent vite.",
+          "en": "A spilled coffee, a fumbled word — both forgive quickly."
+        },
+        {
+          "fr": "Au Boyce Market, on troque des tomates et des syllabes.",
+          "en": "At the Boyce Market, we trade tomatoes and syllables."
+        },
+        {
+          "fr": "Le silence avant de parler français, c'est juste de la place pour le courage.",
+          "en": "The silence before speaking French is just room for courage."
+        },
+        {
+          "fr": "De Devon à Fredericton, le pont ne choisit pas de côté.",
+          "en": "From Devon to Fredericton, the bridge picks no side."
+        },
+        {
+          "fr": "Sur le Green, en 1969, deux langues se sont assises sur le même banc.",
+          "en": "On the Green, in 1969, two languages sat on the same bench."
+        },
+        {
+          "fr": "La neige tombe pareil sur les deux langues — personne n'est mieux habillé.",
+          "en": "Snow falls the same on both languages — nobody's better dressed for it."
+        }
+      ]
+    },
+    "minigames": {
+      "marketItems": [
+        {
+          "fr": "des fraises",
+          "en": "strawberries",
+          "emoji": "🍓"
+        },
+        {
+          "fr": "des têtes de violon",
+          "en": "fiddleheads",
+          "emoji": "🌿"
+        },
+        {
+          "fr": "du sirop d'érable",
+          "en": "maple syrup",
+          "emoji": "🍁"
+        },
+        {
+          "fr": "des samosas",
+          "en": "samosas",
+          "emoji": "🥟"
+        },
+        {
+          "fr": "un homard",
+          "en": "a lobster",
+          "emoji": "🦞"
+        },
+        {
+          "fr": "du fromage en grains",
+          "en": "cheese curds",
+          "emoji": "🧀"
+        },
+        {
+          "fr": "une tarte au sucre",
+          "en": "a sugar pie",
+          "emoji": "🥧"
+        },
+        {
+          "fr": "du miel",
+          "en": "honey",
+          "emoji": "🍯"
+        },
+        {
+          "fr": "des pains chauds",
+          "en": "warm loaves of bread",
+          "emoji": "🍞"
+        },
+        {
+          "fr": "des cornichons à l'aneth",
+          "en": "dill pickles",
+          "emoji": "🥒"
+        },
+        {
+          "fr": "du café",
+          "en": "coffee",
+          "emoji": "☕"
+        },
+        {
+          "fr": "des fleurs coupées",
+          "en": "cut flowers",
+          "emoji": "💐"
+        },
+        {
+          "fr": "des confitures maison",
+          "en": "homemade jam",
+          "emoji": "🫙"
+        },
+        {
+          "fr": "du cidre de pomme",
+          "en": "apple cider",
+          "emoji": "🍎"
+        }
+      ],
+      "simonRounds": [
+        {
+          "fr": "Jacques dit : à gauche !",
+          "en": "Simon says: left!",
+          "dir": "left",
+          "simonSays": true
+        },
+        {
+          "fr": "À droite !",
+          "en": "Right!",
+          "dir": "right",
+          "simonSays": false
+        },
+        {
+          "fr": "Jacques dit : en haut !",
+          "en": "Simon says: up!",
+          "dir": "up",
+          "simonSays": true
+        },
+        {
+          "fr": "Jacques dit : en bas !",
+          "en": "Simon says: down!",
+          "dir": "down",
+          "simonSays": true
+        },
+        {
+          "fr": "En haut !",
+          "en": "Up!",
+          "dir": "up",
+          "simonSays": false
+        },
+        {
+          "fr": "Jacques dit : à droite !",
+          "en": "Simon says: right!",
+          "dir": "right",
+          "simonSays": true
+        },
+        {
+          "fr": "Jacques dit : en bas !",
+          "en": "Simon says: down!",
+          "dir": "down",
+          "simonSays": true
+        },
+        {
+          "fr": "À gauche !",
+          "en": "Left!",
+          "dir": "left",
+          "simonSays": false
+        },
+        {
+          "fr": "Jacques dit : en haut !",
+          "en": "Simon says: up!",
+          "dir": "up",
+          "simonSays": true
+        },
+        {
+          "fr": "Jacques dit : à gauche !",
+          "en": "Simon says: left!",
+          "dir": "left",
+          "simonSays": true
+        }
+      ],
+      "tintamarreLines": [
+        {
+          "fr": "On est encore là !",
+          "en": "We're still here!"
+        },
+        {
+          "fr": "Fais du bruit, on existe !",
+          "en": "Make noise, we exist!"
+        },
+        {
+          "fr": "Sors tes chaudrons, cousin !",
+          "en": "Grab your pots, cousin!"
+        },
+        {
+          "fr": "Vive l'Acadie, ensemble on chante !",
+          "en": "Long live Acadie, together we sing!"
+        }
+      ],
+      "catLines": [
+        {
+          "fr": "Ronron. Rester, c'est déjà réussir.",
+          "en": "Purr. Staying is already succeeding."
+        },
+        {
+          "fr": "T'inquiète pas pour l'accent, gratte plus fort.",
+          "en": "Don't worry about the accent, scratch harder."
+        },
+        {
+          "fr": "Un café, une caresse, une phrase à la fois.",
+          "en": "One coffee, one pet, one sentence at a time."
+        }
+      ],
+      "deerLesson": {
+        "fr": "Reste immobile. Le cerf approche seulement quand plus rien ne presse.",
+        "en": "Stay still. The deer only comes close when nothing is rushing."
+      }
+    },
+    "finale": {
+      "pages": [
+        {
+          "speaker": "BILINGUA",
+          "fr": "Le kiosque. Le vrai monde. Tout le monde t'a suivi jusqu'ici.",
+          "en": "The gazebo. The real world. Everyone followed you here."
+        },
+        {
+          "speaker": "Le Vieux du Pont",
+          "fr": "Ah, te v'là! Le carnet est presque plein, mon ami.",
+          "en": "There you are! The notebook's nearly full, my friend."
+        },
+        {
+          "speaker": "Chantal ★",
+          "fr": "J'ai fermé le kiosque plus tôt juste pour ça. Ça vaut la peine.",
+          "en": "I closed my stand early just for this. Worth it."
+        },
+        {
+          "speaker": "La Ville",
+          "fr": "Chaque pont, chaque banc, chaque marché — ça jasait déjà avant toi.",
+          "en": "Every bridge, every bench, every market — it was already talking before you."
+        },
+        {
+          "speaker": "Le Vieux du Pont",
+          "fr": "On pensait que la jasette s'était tue. Non. Elle attendait.",
+          "en": "We thought the conversation had gone quiet. No. It was waiting."
+        },
+        {
+          "speaker": "Le Vieux du Pont",
+          "fr": "Elle attendait quelqu'un d'assez brave pour dire « bonjour » pareil.",
+          "en": "Waiting for someone brave enough to say 'hello' anyway."
+        },
+        {
+          "speaker": "La Ville",
+          "fr": "Colle la dernière page. Là. Regarde comme le carnet respire.",
+          "en": "Stick in the last page. There. Watch the notebook breathe."
+        },
+        {
+          "speaker": "Chantal ★",
+          "fr": "T'es nommé, astheure. Pas juste un joueur — un voisin.",
+          "en": "You're named now. Not just a player — a neighbour."
+        },
+        {
+          "speaker": "Le Vieux du Pont",
+          "fr": "La suite arrive pas dans un jeu. Elle arrive à une vraie table.",
+          "en": "The sequel doesn't happen in a game. It happens at a real table."
+        },
+        {
+          "speaker": "BILINGUA",
+          "fr": "Regarde le babillard des rendez-vous. Prends tes trois invitations. On jase.",
+          "en": "Check the rendez-vous board. Grab your three invitations. Let's talk."
+        }
+      ]
+    }
   }
 }
