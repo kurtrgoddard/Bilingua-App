@@ -97,7 +97,7 @@
 <body>
 
 <div class="hero">
-  <p class="crumb"><a href="/">Bilingua Quest</a> · Fredericton</p>
+  <p class="crumb"><a href="./">Bilingua Quest</a> · Fredericton</p>
   <div class="pixel-title">PROPOSE UNE QUÊTE</div>
   <p class="sub">« Le jeu est écrit par la ville. À ton tour. »</p>
   <p class="sub-en">Propose a quest — the game is written by the city. Your turn.</p>
@@ -132,7 +132,7 @@
     <div class="eyebrow"><span>Your quest</span><span class="moitie"></span><span class="fr">Ta quête</span></div>
     <h2>Envoie-nous ton idée</h2>
     <p class="en-sub">Send us your idea — in French or in English. Both are welcome here; that's rather the point.</p>
-    <form name="proposer-quete" method="POST" action="/merci.html" data-netlify="true" netlify-honeypot="bot-field">
+    <form name="proposer-quete" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field">
       <input type="hidden" name="form-name" value="proposer-quete">
       <p class="hp"><label>Don't fill this out: <input name="bot-field"></label></p>
       <label for="q-nom">Ton nom, tel qu'il apparaîtra <span class="en">Your name, exactly as it will be credited in the game</span></label>
@@ -149,11 +149,27 @@
   </section>
 
   <footer>
-    <p><a href="/play/">▶ Jouer / Play the game</a> · <a href="/">La vision / Home</a> · <a href="/expedition.html">The expedition kit</a></p>
+    <p><a href="play/">▶ Jouer / Play the game</a> · <a href="./">La vision / Home</a> · <a href="expedition.html">The expedition kit</a></p>
     <p>Real Fredericton venues appear with affection and without affiliation. Quests are edited with you, credited to you, and kind by design.</p>
     <p>Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). / On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).</p>
   </footer>
 
 </div>
+<script>
+/* form-fallback: Netlify Forms only capture on Netlify hosting.
+   Everywhere else (GitHub Pages — github.io or the bilingua.app custom domain),
+   swap form submits for mailto so nothing silently fails. */
+if (!location.hostname.endsWith('netlify.app')) {
+  document.querySelectorAll('form[data-netlify]').forEach(f => {
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(f);
+      let body = '';
+      for (const [k, v] of data.entries()) if (k !== 'form-name' && k !== 'bot-field' && v) body += k + ': ' + v + '\n';
+      location.href = 'mailto:kurtrgoddard@gmail.com?subject=' + encodeURIComponent('Bilingua Quest — Quête proposée') + '&body=' + encodeURIComponent(body);
+    });
+  });
+}
+</script>
 </body>
 </html>

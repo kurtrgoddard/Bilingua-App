@@ -1,50 +1,32 @@
-# Ce soir : mettre bilingua.app en ligne — la checklist de 5 minutes
+# bilingua.app — ONE step left, ~2 minutes
 
-Everything in the repo is ready. Two web dashboards need ~5 minutes of clicks that
-can't be automated from the build sandbox (its egress policy blocks direct uploads,
-and there's no Squarespace API access). Do these in order.
+Everything else is done and automated: the site (v0.6) deploys itself to GitHub
+Pages on every push to `main`, and the custom domain is claimed by the
+`site/CNAME` file — no dashboards, no linking, no build settings.
 
-## 1. Netlify — connect the repo (~2 min, one-time, auto-deploys forever)
+## The one step: Squarespace DNS
 
-1. Open https://app.netlify.com/projects/bilingua-quest
-2. **Site configuration → Build & deploy → Link repository**
-3. GitHub → `kurtrgoddard/Bilingua-App` → branch **`main`**
-   (merge the v0.6 pull request first — or pick branch `claude/bilingual-game-setup-kpmm4q`
-   now and switch to `main` after merging).
-4. Base directory: **`site`** · Build command: *(leave empty)* · Publish directory: **`site`**
-5. Deploy → the site goes live at https://bilingua-quest.netlify.app (game at `/play/`).
-
-## 2. Netlify — attach the domain (~1 min)
-
-1. Same project → **Domain management → Add a domain** → `bilingua.app`
-2. Also add `www.bilingua.app` when prompted (Netlify handles the redirect).
-3. Ignore the "check DNS configuration" warning until step 3 below is done.
-   SSL certificate provisions itself automatically once DNS points here.
-
-## 3. Squarespace — repoint the DNS (~2 min)
-
-Squarespace account → **Domains → bilingua.app → DNS settings**:
+**Squarespace → Domains → bilingua.app → DNS settings:**
 
 | Action | Type | Host | Value |
 |---|---|---|---|
-| **Delete** | A | `@` | `185.158.133.1` *(the old Lovable record)* |
-| **Delete** | any other Lovable A/CNAME records pointing at 185.158.133.x | | |
-| **Add** | A | `@` | **`75.2.60.5`** |
-| **Add** | CNAME | `www` | **`bilingua-quest.netlify.app`** |
+| **Delete** | A | `@` | `185.158.133.1` *(old Lovable)* — and ANY other A records on `@` |
+| **Add** | A | `@` | `185.199.108.153` |
+| **Add** | A | `@` | `185.199.109.153` |
+| **Add** | A | `@` | `185.199.110.153` |
+| **Add** | A | `@` | `185.199.111.153` |
+| **Add** | CNAME | `www` | `kurtrgoddard.github.io` |
 
-Propagation is usually minutes for A-record swaps. Test: https://bilingua.app/play/
+That's it. Propagation is usually minutes. GitHub then auto-verifies the domain
+and issues the SSL certificate (can take a few more minutes — plain-http works
+immediately, the padlock follows).
 
-Optional cleanup (not required for the switch to work): in Lovable → project
-settings → domains, remove `bilingua.app` so it stops trying to renew a
-certificate for a domain it no longer serves.
-
-## 4. Netlify Forms — turn on email notifications (~1 min)
-
-Project → **Forms** (they register on the first deploy that contains them):
-`waitlist`, `feedback`, and the new **`proposer-quete`** (player-submitted quests).
-Forms → Settings → **Notifications** → email to kurtrgoddard@gmail.com.
-
----
+- Test: **https://bilingua.app/play/**
+- Works right now, before DNS: https://kurtrgoddard.github.io/Bilingua-App/play/
+  (it will redirect to bilingua.app once the domain is live)
+- Optional, later: repo **Settings → Pages → Enforce HTTPS** checkbox once the
+  cert shows issued. And in Lovable → project settings → domains, remove
+  bilingua.app so it stops renewing a certificate it no longer serves.
 
 ## Les 24 codes d'invitation (fresh batch, valid in-game)
 
@@ -59,7 +41,7 @@ HARVEST-ACADIE-59     MOITIE-CAFE-76        VELO-CAFE-71
 VELO-ACADIE-92        MOITIE-CANOT-32       VIOLET-TINTAMARRE-74
 ```
 
-More anytime: open `/atelier.html` on the live site (unlisted printing room).
+More anytime: `/atelier.html` on the live site (unlisted printing room).
 
 ## Message à partager ce soir (suggestion)
 
@@ -75,7 +57,15 @@ More anytime: open `/atelier.html` on the live site (unlisted printing room).
 > *Fredericton has lost its stories. Every real French conversation brings one
 > back. Free, in your browser, 18+.*
 
-Give each person their own code from the batch above — the game grants every
-new citizen 3 codes of their own to pass along (that's the invitation economy).
+Give each person their own code — every new citizen gets 3 codes of their own
+to pass along (that's the invitation economy). The link unfurls with the
+pixel-art title screen (og tags are in).
 
-Backup link while DNS propagates: https://bilingua-quest.netlify.app/play/
+## Later, optional: Netlify (only if you want form submissions in a dashboard)
+
+Forms currently open a pre-filled email to kurtrgoddard@gmail.com on every
+host except Netlify — nothing is lost. If you ever want real form capture:
+link the repo in https://app.netlify.com/projects/bilingua-quest (base &
+publish dir `site`, no build command), move the domain there, and update the
+form-fallback hostname check in `site/index.html` + `site/proposer.html`.
+Details in `DEPLOY-SITE.md`.
