@@ -20,6 +20,16 @@ for its first deploy: https://app.netlify.com/projects/bilingua-quest → will s
 **https://bilingua-quest.netlify.app**. The sandboxed build environment couldn't upload
 directly (egress policy), so finish with either option — both take about two minutes:
 
+## Option 0 — one secret, zero clicks after (NEW, easiest)
+1. Get a Netlify personal access token: app.netlify.com → User settings →
+   Applications → Personal access tokens → New token.
+2. In GitHub: repo → Settings → Secrets and variables → Actions →
+   **New repository secret** → name `NETLIFY_AUTH_TOKEN`, paste the token.
+3. Done. `.github/workflows/netlify.yml` deploys `site/` to the existing
+   bilingua-quest project on every push to main (and you can trigger it
+   immediately from the Actions tab → "Deploy site to Netlify" → Run workflow).
+   Until the secret exists, the workflow skips harmlessly.
+
 ## Option A — connect the GitHub repo (recommended: auto-deploys forever)
 1. Open https://app.netlify.com/projects/bilingua-quest → **Site configuration → Build & deploy → Link repository**.
 2. Choose GitHub → `kurtrgoddard/Bilingua-App`, branch `main` (after merging PR #1).
