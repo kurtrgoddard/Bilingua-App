@@ -332,6 +332,7 @@ function loadSave() {
   if (save && save.pages === undefined) { save.pages = []; save.trucs = []; save.pins = []; save.metSpecials = {}; save.minigamesWon = {}; save.plotStage = null; }  /* migrate v0.2 saves */
   if (save && save.correction === undefined) save.correction = 1;  /* migrate v0.3 saves */
   if (save && save.flame === undefined) { save.flame = { last: null, heat: 0 }; save.missions = {}; save.duos = []; save.lastQuote = null; save.braveAsks = 0; }  /* migrate pre-v0.6 saves */
+  if (save && save.parcours === undefined) save.parcours = null;  /* migrate pre-parcours saves — voluntary French-journey self-ID, local only */
 }
 function writeSave() { if (save) localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
 loadSave();
@@ -2278,6 +2279,32 @@ function showGate(invite) {
   go.addEventListener('click', () => { const nm = name.value.trim(); closeModal(); showCreate(nm, invite || {}); });
 }
 
+/* Ton français aujourd'hui — a voluntary, warm self-ID. Never gates anything,
+   never ranked. Stored as save.parcours (one of these ids, or null = skipped /
+   prefer-not-to-answer-by-silence). Used only to warm a line of copy: a
+   francophone is reminded the Accueil is theirs to give; a learner is reminded
+   that asking to slow down is a decorated act. Local-only — no network. */
+const PARCOURS = [
+  { id: 'francophone', ico: '🌟', fr: 'Francophone',            en: 'Francophone' },
+  { id: 'apprenant',   ico: '🌱', fr: 'Apprenant·e',            en: 'Learner' },
+  { id: 'entre',       ico: '🌗', fr: 'Entre les deux',         en: 'In between' },
+  { id: 'prefere',     ico: '🕊️', fr: 'Je préfère ne pas dire', en: 'Prefer not to say' },
+];
+function parcoursOf(id) { return PARCOURS.find(p => p.id === id) || null; }
+/* the one warm touch parcours buys — a line of copy, never a mechanic */
+function parcoursWelcome() {
+  if (!save) return null;
+  if (save.parcours === 'francophone')
+    return LANG === 'fr'
+      ? '🌟 L’Accueil est à toi — accueillir un·e apprenant·e, ça se fête ici.'
+      : '🌟 The Accueil is yours — welcoming a learner is celebrated here.';
+  if (save.parcours === 'apprenant')
+    return LANG === 'fr'
+      ? '🌱 Demander « plus lentement, s’il te plaît » est un acte de courage — décoré ici.'
+      : '🌱 Asking “slower, please” is an act of courage — decorated here.';
+  return null;
+}
+
 const CONSENT_LEVELS = [
   { ico: '✅', fr: 'Corrige-moi souvent, ça m’aide', en: 'Correct me often — it helps' },
   { ico: '⚖️', fr: 'Corrige-moi seulement si on ne se comprend pas', en: 'Correct me only when meaning breaks' },
@@ -2285,7 +2312,7 @@ const CONSENT_LEVELS = [
   { ico: '🕊️', fr: 'Ce soir, je veux juste parler', en: 'Tonight, I just want to speak' },
 ];
 function showCreate(name, invite) {
-  let sel = 0, conf = 1, consent = 1;
+  let sel = 0, conf = 1, consent = 1, parc = null;
   function html() {
     const chips = HERO_STYLES.map((s, i) =>
       '<button class="btn' + (i === sel ? '' : ' alt') + '" data-i="' + i + '" style="padding:6px 10px">' +
@@ -2294,9 +2321,15 @@ function showCreate(name, invite) {
       '<button class="btn' + (i === conf ? '' : ' alt') + '" data-conf="' + i + '" style="display:block;width:100%;text-align:left;margin:6px 0;font-weight:normal">' + c + '</button>').join('');
     const consents = CONSENT_LEVELS.map((c, i) =>
       '<button class="btn' + (i === consent ? '' : ' alt') + '" data-cons="' + i + '" style="display:block;width:100%;text-align:left;margin:6px 0;font-weight:normal">' + c.ico + ' ' + (LANG === 'fr' ? c.fr : c.en) + '</button>').join('');
+    const parcours = PARCOURS.map(p =>
+      '<button class="btn' + (p.id === parc ? '' : ' alt') + '" data-parc="' + p.id + '" style="display:block;width:100%;text-align:left;margin:6px 0;font-weight:normal">' + p.ico + ' ' + (LANG === 'fr' ? p.fr : p.en) + '</button>').join('');
     return '<h2>' + t('createT') + '</h2><div class="btnrow" style="justify-content:center">' + chips + '</div>' +
       '<h3>' + t('confQ') + '</h3>' + confs +
       '<h3>' + (LANG === 'fr' ? 'Et pour les corrections ? (Tout le monde respectera ton choix — promis.)' : 'And corrections? (Everyone will honour your choice — promised.)') + '</h3>' + consents +
+      '<h3>' + (LANG === 'fr' ? 'Ton français aujourd’hui' : 'Your French today') + '</h3>' +
+      '<p style="font-size:12px; opacity:0.7; margin:-2px 0 4px">' + (LANG === 'fr'
+        ? 'Facultatif — tu peux passer, et le changer plus tard dans le Passeport. Ça ne débloque rien; ça sert juste à t’accueillir comme il faut.'
+        : 'Optional — you can skip, and change it later in the Passeport. It unlocks nothing; it just helps us welcome you rightly.') + '</p>' + parcours +
       '<div class="btnrow"><button class="btn" id="c-go">' + t('begin') + ' ▶</button></div>';
   }
   function paint(w) {
@@ -2307,8 +2340,10 @@ function showCreate(name, invite) {
     w.querySelectorAll('[data-i]').forEach(b => b.addEventListener('click', () => { sel = +b.dataset.i; rerender(); }));
     w.querySelectorAll('[data-conf]').forEach(b => b.addEventListener('click', () => { conf = +b.dataset.conf; rerender(); }));
     w.querySelectorAll('[data-cons]').forEach(b => b.addEventListener('click', () => { consent = +b.dataset.cons; rerender(); }));
+    /* clicking the highlighted choice again un-picks it — skipping stays a first-class move */
+    w.querySelectorAll('[data-parc]').forEach(b => b.addEventListener('click', () => { parc = (parc === b.dataset.parc) ? null : b.dataset.parc; rerender(); }));
     w.querySelector('#c-go').addEventListener('click', () => {
-      save = { name, styleIdx: sel, confStart: conf, confidence: conf * 2, correction: consent, level: 0, recognizedBy: [], stamps: {}, hotesMet: [], myCodes: [], codeUsed: (invite && invite.codeUsed) || null, invitedBy: (invite && invite.invitedBy) || null, pages: [], trucs: [], pins: [], metSpecials: {}, minigamesWon: {}, plotStage: null, flame: { last: null, heat: 0 }, missions: {}, duos: [], lastQuote: null, braveAsks: 0, lang: LANG, created: new Date().toISOString() };
+      save = { name, styleIdx: sel, confStart: conf, confidence: conf * 2, correction: consent, parcours: parc, level: 0, recognizedBy: [], stamps: {}, hotesMet: [], myCodes: [], codeUsed: (invite && invite.codeUsed) || null, invitedBy: (invite && invite.invitedBy) || null, pages: [], trucs: [], pins: [], metSpecials: {}, minigamesWon: {}, plotStage: null, flame: { last: null, heat: 0 }, missions: {}, duos: [], lastQuote: null, braveAsks: 0, lang: LANG, created: new Date().toISOString() };
       writeSave();
       closeModal(); beginWorld();
     });
@@ -2447,6 +2482,13 @@ function showPassport() {
     (save.pins.length
       ? '<h3>' + (LANG === 'fr' ? 'Épinglettes' : 'Pins') + '</h3><p>' + save.pins.map(p => '✶ ' + (LANG === 'fr' ? p.fr : p.en)).join(' · ') + '</p>'
       : '') +
+    '<h3>' + (LANG === 'fr' ? 'Ton français aujourd’hui' : 'Your French today') + '</h3>' +
+    '<p style="font-size:12px; opacity:0.7">' + (LANG === 'fr'
+      ? 'Facultatif, et modifiable quand tu veux. Rien n’en dépend — ça reste sur ton appareil.'
+      : 'Optional, and changeable whenever. Nothing depends on it — it stays on your device.') + '</p>' +
+    PARCOURS.map(p =>
+      '<button class="btn' + (p.id === (save.parcours || null) ? '' : ' alt') + '" data-ppparc="' + p.id + '" style="display:block;width:100%;text-align:left;margin:5px 0;font-weight:normal;font-size:13px">' + p.ico + ' ' + (LANG === 'fr' ? p.fr : p.en) + '</button>').join('') +
+    '<button class="btn alt" data-ppparc="" style="display:block;width:100%;text-align:left;margin:5px 0;font-weight:normal;font-size:13px;opacity:0.7">↩ ' + (LANG === 'fr' ? 'Effacer ma réponse' : 'Clear my answer') + '</button>' +
     '<h3>' + t('safety') + '</h3><ul>' + safety + '</ul>' +
     '<div class="btnrow"><button class="btn" onclick="document.getElementById(\'modal-root\').innerHTML=\'\'">' + t('close') + '</button></div>'
   );
@@ -2458,6 +2500,13 @@ function showPassport() {
   if (pcBtn) pcBtn.addEventListener('click', () => { closeModal(); showPostcard(); });
   const duoBtn = document.getElementById('pp-duo');
   if (duoBtn) duoBtn.addEventListener('click', () => { closeModal(); showDuo(); });
+  /* set/clear the voluntary parcours from the Passeport — stays correctable, stays local */
+  modalRoot.querySelectorAll('[data-ppparc]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.ppparc;
+    /* clicking the current choice again clears it; empty value clears too */
+    save.parcours = (v && v !== save.parcours) ? v : null;
+    writeSave(); SND.confirm(); closeModal(); showPassport();
+  }));
   modalRoot.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
     const codeText = b.dataset.copy + (LANG === 'fr'
       ? ' — ton invitation à Bilingua Quest, de la part de ' + save.name
@@ -2587,6 +2636,11 @@ function beginWorld() {
   document.getElementById('hud').classList.remove('hidden');
   updateHud();
   showBanner(LANG === 'fr' ? 'Bienvenue à Fredericton, ' + save.name + ' !' : 'Welcome to Fredericton, ' + save.name + '!');
+  /* a warm, non-punitive second banner keyed to the voluntary parcours — francophones
+     are reminded the Accueil is theirs to give; learners that asking to slow down is
+     celebrated. Nothing is gated; skipped/prefer-not-to-say get no extra line. */
+  const parcLine = parcoursWelcome();
+  if (parcLine) setTimeout(() => { if (state === 'world') showBanner(parcLine); }, 3400);
   /* la mission du jour: one gentle nudge, only while it's still undone */
   if (!(save.missions && save.missions[todayStr()])) {
     setTimeout(() => {

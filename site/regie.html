@@ -96,6 +96,26 @@
   ol.rythme .en { font-size: 0.8rem; font-style: italic; color: var(--muted); }
   footer { margin-top: 3.5rem; padding: 2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.9rem; color: var(--muted); }
 
+  /* ---- Le Tableau de bord ---- */
+  #tableau-de-bord h4 { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 0.98rem; }
+  .factgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; margin: 0.9rem 0; }
+  .fact { background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 0.9rem 1rem; }
+  .fact .n { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 1.7rem; color: var(--acadie); line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .fact .l { font-size: 0.8rem; color: var(--muted); margin-top: 0.35rem; line-height: 1.4; }
+  .local-badge { display: inline-block; font-family: ui-monospace, Menlo, monospace; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; border: 1.5px solid var(--stella); color: var(--stella); border-radius: 999px; padding: 0.1rem 0.6rem; vertical-align: middle; }
+  .tally-row { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
+  .tally-row:last-child { border-bottom: none; }
+  .tally-row .lbl { flex: 1; font-size: 0.92rem; }
+  .tally-row .lbl .en { font-size: 0.8rem; font-style: italic; color: var(--muted); }
+  .counter { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .counter button { padding: 0.2rem 0.7rem; font-size: 1.1rem; line-height: 1; }
+  .counter .val { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.2rem; min-width: 2.2rem; text-align: center; font-variant-numeric: tabular-nums; }
+  .sdt-item { padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
+  .sdt-item:last-child { border-bottom: none; }
+  .sdt-item .head { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-family: inherit; font-size: 0.95rem; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: bold; cursor: pointer; }
+  .sdt-item .head input { width: auto; }
+  .sdt-item textarea { margin-top: 0.4rem; min-height: 50px; }
+
   @media print {
     body { background: white; color: black; padding: 0.5rem; }
     header, footer, .controls, .panel, .note, section:not(#codes), #codes .eyebrow, #codes h2, #codes p, .card .ops { display: none !important; }
@@ -230,6 +250,76 @@
     <li><a href="atelier.html">L'Atelier des invitations</a><span class="note">L'ancienne salle d'impression — mêmes maths que « Les Codes » ci-dessus, sans QR ni CSV. <span class="gloss">The original print room; same code math, fewer tools.</span></span></li>
     <li><a href="mailto:kurtrgoddard@gmail.com?subject=Re%C2%A0%3A%20Bilingua%20Quest%20%E2%80%94%20ta%20question&body=Bonjour%2C%0A%0AMerci%20d%27avoir%20%C3%A9crit%20%C3%A0%20Bilingua%20Quest.%0A%0A">Répondre à un joueur / reply to a player</a><span class="note">Ouvre un courriel pré-rempli depuis ta propre boîte — les réponses partent de toi, pas d'un robot. <span class="gloss">Prefilled mailto; replies come from you, not a bot.</span></span></li>
   </ul>
+</section>
+
+<!-- ============================ LE TABLEAU DE BORD ============================ -->
+<section id="tableau-de-bord">
+  <div class="eyebrow"><span class="fr">Le Tableau de bord</span><span class="moitie"></span><span>dashboard</span></div>
+  <h2>Le Tableau de bord <span class="gloss">/ the honest operator cockpit</span></h2>
+  <p class="note">Un cockpit manuel et honnête. <strong>Aucune analytique, aucun script de suivi, aucune donnée de joueur n'est récupérée ici</strong> — la page ne fait que t'aider à compter, à la main, ce que tu as vu de tes yeux. <span class="gloss">A manual, honest cockpit. It never embeds analytics and never fetches player data — it only helps you tally, by hand, what you saw yourself.</span></p>
+
+  <!-- b1 — les chiffres fixes -->
+  <div class="panel">
+    <h3>📌 Les chiffres fixes <span class="gloss">/ the fixed reference numbers</span></h3>
+    <p class="note">Des faits de conception, pas des mesures. Ils ne bougent pas. <span class="gloss">Design facts, not measurements — they don't move.</span></p>
+    <div class="factgrid">
+      <div class="fact"><div class="n">3</div><div class="l">invitations par joueur·se, remises à la nomination <span class="gloss">invitations per player, granted on naming</span></div></div>
+      <div class="fact"><div class="n">100</div><div class="l">le lot fondateur <span class="gloss">the founding batch</span></div></div>
+      <div class="fact"><div class="n">5 · 10 · 18 · 25</div><div class="l">paliers de « La Ville se Rallume » <span class="gloss">restoration milestones</span></div></div>
+    </div>
+    <p style="margin-top:0.6rem"><strong>« Exclusif par le sens, pas par l'accès. »</strong> <span class="gloss">The invitation principle: exclusive in meaning, not in access.</span></p>
+  </div>
+
+  <!-- b2 — ce qui se mesure honnêtement -->
+  <div class="panel">
+    <h3>📊 Ce qui se mesure honnêtement <span class="gloss">/ what can be measured honestly</span></h3>
+    <p class="note">Les seuls compteurs réels sont ceux des formulaires Netlify — et seulement pour les envois faits sur le miroir netlify.app. <span class="gloss">The only real counters are the Netlify form dashboards, and only for submissions made on the netlify.app mirror.</span></p>
+    <ul class="links">
+      <li><a href="https://app.netlify.com/projects/bilingua-quest/forms">Formulaire « waitlist »</a><span class="note">Nombre d'inscriptions à la liste d'attente. <span class="gloss">Waitlist sign-up count.</span></span></li>
+      <li><a href="https://app.netlify.com/projects/bilingua-quest/forms">Formulaire « feedback »</a><span class="note">Nombre de retours envoyés. <span class="gloss">Feedback submission count.</span></span></li>
+      <li><a href="https://app.netlify.com/projects/bilingua-quest/forms">Formulaire « proposer-quete »</a><span class="note">Nombre de quêtes proposées. <span class="gloss">Proposed-quest count.</span></span></li>
+      <li><a href="https://app.netlify.com/projects/bilingua-quest/forms">Formulaire « proposer-rdv »</a><span class="note">Nombre de rendez-vous proposés. <span class="gloss">Proposed-meetup count.</span></span></li>
+    </ul>
+    <p class="note">Le champ <strong>parcours</strong> (facultatif) présent sur les quatre formulaires donne la répartition <em>francophones vs apprenant·es</em> — <strong>avec le consentement</strong> de la personne, jamais autrement. C'est la seule mesure du pont francophone ↔ apprenant·e, et elle reste volontaire. <span class="gloss">The optional « parcours » field on all four forms gives the francophone-vs-learner split — with consent only, never otherwise.</span></p>
+    <p class="note">⚠️ Mise en garde honnête : les envois faits sur <strong>bilingua.app</strong> arrivent par <strong>courriel</strong> (mailto), pas dans le tableau Netlify — ils ne sont donc pas comptés là. <span class="gloss">Honest caveat: bilingua.app submissions arrive by email, not in the Netlify dashboard.</span></p>
+  </div>
+
+  <!-- b3 — le registre de l'opérateur (localStorage) -->
+  <div class="panel">
+    <h3>📓 Le registre de l'opérateur <span class="local-badge">reste sur ton appareil</span></h3>
+    <p class="note">Compté à la main, gardé dans le localStorage de <em>ce</em> navigateur (clé <code>regie_tally</code>). Rien n'est envoyé nulle part ; efface les données du navigateur et le registre disparaît. <span class="gloss">Hand-counted, kept in this browser's localStorage (key regie_tally). Nothing is sent anywhere — clear browser data and it's gone.</span></p>
+
+    <h4 style="margin:1.1rem 0 0.2rem">Les quatre phrases cultes <span class="gloss">/ the four cult-classic sentences — tally one each time you truly hear it</span></h4>
+    <div id="tally-sentences"></div>
+
+    <h4 style="margin:1.3rem 0 0.2rem">Têtes comptées aux expéditions <span class="gloss">/ head-counts at expeditions</span></h4>
+    <div id="tally-heads"></div>
+
+    <h4 style="margin:1.3rem 0 0.2rem">Les trois signaux (ADD) <span class="gloss">/ the three Self-Determination signals — observed this week?</span></h4>
+    <div id="tally-sdt"></div>
+
+    <div class="controls" style="margin-top:1rem"><button class="ghost" id="tally-reset">Réinitialiser la semaine / reset week</button><span class="note" id="tally-saved"></span></div>
+  </div>
+
+  <!-- b4 — carte de stats à partager -->
+  <div class="panel">
+    <h3>🃏 Carte de stats à partager <span class="gloss">/ a shareable buzz snapshot</span></h3>
+    <p class="note">Tape quelques chiffres <strong>vrais, d'aujourd'hui</strong>. La carte se rédige toute seule dans la voix honnête, sans gonflage. Les champs vides sont simplement omis. <span class="gloss">Type a few true, current numbers; the card writes itself in the honest, no-inflation voice. Blank fields are left out.</span></p>
+    <div class="cols">
+      <div>
+        <label for="snap-named">Personnes nommées par un·e Hôte / players named</label><input type="text" id="snap-named" inputmode="numeric" autocomplete="off" placeholder="ex. 12">
+        <label for="snap-codes">Invitations remises à la main / codes passed</label><input type="text" id="snap-codes" inputmode="numeric" autocomplete="off" placeholder="ex. 31">
+        <label for="snap-exped">Expéditions tenues / expeditions held</label><input type="text" id="snap-exped" inputmode="numeric" autocomplete="off" placeholder="ex. 4">
+      </div>
+      <div>
+        <label for="snap-franco">Francophones à la table / francophones</label><input type="text" id="snap-franco" inputmode="numeric" autocomplete="off" placeholder="ex. 9">
+        <label for="snap-appr">Apprenant·es à la table / learners</label><input type="text" id="snap-appr" inputmode="numeric" autocomplete="off" placeholder="ex. 14">
+      </div>
+    </div>
+    <div class="controls"><button id="snap-gen">Rédiger la carte / write the card</button><button class="ghost" id="snap-copy">Copier</button></div>
+    <pre id="snap-out">—</pre>
+    <p class="note">🚫 Ne gonfle jamais un chiffre. Une petite carte honnête bat une grosse carte inventée — toujours. <span class="gloss">Never fake a number. A small honest card beats a big invented one, every time.</span></p>
+  </div>
 </section>
 
 <!-- ============================ LE RYTHME ============================ -->
@@ -700,11 +790,129 @@ $('can-gen').addEventListener('click', () => {
 });
 $('can-copy').addEventListener('click', (e) => copyText($('can-out').textContent, e.target));
 
+/* ----- Le Tableau de bord : registre local (localStorage only) ----- */
+const TALLY_KEY = 'regie_tally';
+const SENTENCES = [
+  { k: 'met',      fr: '« I met someone interesting. »' },
+  { k: 'object',   fr: '« I need to know what happens to this object. »' },
+  { k: 'version',  fr: '« My version of the story is different from yours. »' },
+  { k: 'thursday', fr: '« You should come with me next Thursday. »' },
+];
+const HEADS = [
+  { k: 'francophone', fr: 'Francophones', en: 'francophones' },
+  { k: 'learner',     fr: 'Apprenant·es', en: 'learners' },
+  { k: 'mixed',       fr: 'Tables mixtes', en: 'mixed tables' },
+];
+const SDT = [
+  { k: 'autonomie',   fr: 'Autonomie', en: 'autonomy — someone chose freely, declined freely' },
+  { k: 'competence',  fr: 'Compétence', en: 'competence — one brave sentence visibly mattered' },
+  { k: 'relatedness', fr: 'Appartenance', en: 'relatedness — someone was remembered, expected, welcomed' },
+];
+function blankTally() {
+  return {
+    sentences: { met: 0, object: 0, version: 0, thursday: 0 },
+    heads: { francophone: 0, learner: 0, mixed: 0 },
+    sdt: {
+      autonomie: { observed: false, note: '' },
+      competence: { observed: false, note: '' },
+      relatedness: { observed: false, note: '' },
+    },
+  };
+}
+let tally = blankTally();
+function loadTally() {
+  try {
+    const raw = localStorage.getItem(TALLY_KEY);
+    if (!raw) return;
+    const p = JSON.parse(raw);
+    const t = blankTally();
+    if (p && p.sentences) for (const k in t.sentences) if (typeof p.sentences[k] === 'number') t.sentences[k] = p.sentences[k];
+    if (p && p.heads) for (const k in t.heads) if (typeof p.heads[k] === 'number') t.heads[k] = p.heads[k];
+    if (p && p.sdt) for (const k in t.sdt) if (p.sdt[k]) { t.sdt[k].observed = !!p.sdt[k].observed; t.sdt[k].note = String(p.sdt[k].note || ''); }
+    tally = t;
+  } catch (e) { /* private mode or corrupt — keep the blank tally */ }
+}
+function saveTally() {
+  const el = $('tally-saved');
+  try {
+    localStorage.setItem(TALLY_KEY, JSON.stringify(tally));
+    if (el) { el.textContent = '✓ gardé sur cet appareil'; clearTimeout(saveTally._t); saveTally._t = setTimeout(() => { el.textContent = ''; }, 1500); }
+  } catch (e) {
+    if (el) el.textContent = '⚠ localStorage indisponible (navigation privée ?)';
+  }
+}
+function counterRow(labelHtml, val, onDelta) {
+  const row = document.createElement('div');
+  row.className = 'tally-row';
+  const lbl = document.createElement('div'); lbl.className = 'lbl'; lbl.innerHTML = labelHtml;
+  const c = document.createElement('div'); c.className = 'counter';
+  const minus = document.createElement('button'); minus.className = 'ghost'; minus.type = 'button'; minus.textContent = '−';
+  const v = document.createElement('span'); v.className = 'val'; v.textContent = val;
+  const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+';
+  minus.addEventListener('click', () => { v.textContent = onDelta(-1); });
+  plus.addEventListener('click', () => { v.textContent = onDelta(1); });
+  c.appendChild(minus); c.appendChild(v); c.appendChild(plus);
+  row.appendChild(lbl); row.appendChild(c);
+  return row;
+}
+function renderTally() {
+  const s = $('tally-sentences'); s.innerHTML = '';
+  SENTENCES.forEach(r => s.appendChild(counterRow(r.fr, tally.sentences[r.k], (d) => {
+    tally.sentences[r.k] = Math.max(0, tally.sentences[r.k] + d); saveTally(); return tally.sentences[r.k];
+  })));
+  const h = $('tally-heads'); h.innerHTML = '';
+  HEADS.forEach(r => h.appendChild(counterRow(r.fr + ' <span class="en">' + r.en + '</span>', tally.heads[r.k], (d) => {
+    tally.heads[r.k] = Math.max(0, tally.heads[r.k] + d); saveTally(); return tally.heads[r.k];
+  })));
+  const d = $('tally-sdt'); d.innerHTML = '';
+  SDT.forEach(r => {
+    const item = document.createElement('div'); item.className = 'sdt-item';
+    const head = document.createElement('label'); head.className = 'head';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = tally.sdt[r.k].observed;
+    const en = document.createElement('span'); en.className = 'en'; en.style.cssText = 'font-style:italic;color:var(--muted);font-weight:normal;font-size:0.8rem';
+    en.textContent = ' — ' + r.en;
+    head.appendChild(cb); head.appendChild(document.createTextNode(' ' + r.fr)); head.appendChild(en);
+    const note = document.createElement('textarea'); note.placeholder = 'Noté cette semaine… / noted this week…'; note.value = tally.sdt[r.k].note;
+    cb.addEventListener('change', () => { tally.sdt[r.k].observed = cb.checked; saveTally(); });
+    note.addEventListener('input', () => { tally.sdt[r.k].note = note.value; saveTally(); });
+    item.appendChild(head); item.appendChild(note);
+    d.appendChild(item);
+  });
+}
+$('tally-reset').addEventListener('click', () => {
+  if (confirm('Réinitialiser le registre de la semaine ? / Reset this week\'s tally?')) {
+    tally = blankTally(); saveTally(); renderTally();
+  }
+});
+
+/* ----- Carte de stats à partager (buzz snapshot) ----- */
+$('snap-gen').addEventListener('click', () => {
+  const get = (id) => ($(id).value || '').trim();
+  const named = get('snap-named'), codes = get('snap-codes'), exped = get('snap-exped');
+  const franco = get('snap-franco'), appr = get('snap-appr');
+  const date = new Intl.DateTimeFormat('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+  const lines = [];
+  lines.push('BILINGUA QUEST — Fredericton');
+  lines.push(date + ' · sur invitation · des chiffres honnêtes, rien de gonflé');
+  lines.push('');
+  if (named) lines.push('· ' + named + ' personne(s) nommée(s) par un·e Hôte / named by a Host');
+  if (codes) lines.push('· ' + codes + ' invitation(s) remise(s) à la main / codes passed by hand');
+  if (exped) lines.push('· ' + exped + ' expédition(s) tenue(s) au centre-ville / expeditions downtown');
+  if (franco || appr) lines.push('· la table : ' + (franco || '0') + ' francophone(s) · ' + (appr || '0') + ' apprenant·e(s) / at the table');
+  lines.push('');
+  lines.push('« Exclusif par le sens, pas par l\'accès. »');
+  lines.push('bilingua.app · 18+');
+  $('snap-out').textContent = lines.join('\n');
+});
+$('snap-copy').addEventListener('click', (e) => copyText($('snap-out').textContent, e.target));
+
 /* ----- boot ----- */
 renderBatch(12);
 renderToday();
 renderThursday();
 setInterval(renderThursday, 30000);
+loadTally();
+renderTally();
 </script>
 </body>
 </html>

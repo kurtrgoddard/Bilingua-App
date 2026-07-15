@@ -90,6 +90,16 @@
   button[type="submit"]:hover { opacity: 0.92; }
   .hp { position: absolute; left: -9999px; }
 
+  /* optional self-ID (parcours) radio group */
+  .parcours-group { border: none; padding: 0; margin: 0; }
+  .parcours-group legend { font-size: 0.85rem; color: var(--muted); margin: 0.9rem 0 0.35rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; text-transform: uppercase; padding: 0; }
+  .parcours-group legend .opt-tag { text-transform: none; letter-spacing: 0; font-style: italic; }
+  .parcours { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; }
+  .parcours label { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0; font-family: inherit; font-size: 0.95rem; text-transform: none; letter-spacing: 0; color: var(--ink); cursor: pointer; }
+  .parcours input[type="radio"] { width: auto; }
+  .parcours label span { color: var(--muted); font-style: italic; font-size: 0.85em; }
+  .parcours-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
   footer { margin-top: 3.5rem; padding: 2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
   footer p { margin-bottom: 0.6rem; }
 </style>
@@ -143,6 +153,16 @@
       <input type="text" id="q-lieu" name="lieu" required placeholder="Ex. : le kiosque d'Officers' Square, Dolan's, le pont vert…">
       <label for="q-quete">Ta quête, ton énigme, ton histoire — en français ou en anglais <span class="en">Your quest, your riddle, your story — French or English</span></label>
       <textarea id="q-quete" name="quete" required placeholder="Il était une fois, sur la rue Queen… / Once upon a time on Queen Street…"></textarea>
+      <fieldset class="parcours-group">
+        <legend>Tu es… / You are… <span class="opt-tag">(facultatif / optional)</span></legend>
+        <div class="parcours">
+          <label><input type="radio" name="parcours" value="francophone"> Francophone</label>
+          <label><input type="radio" name="parcours" value="apprenant"> Apprenant·e <span>/ learner</span></label>
+          <label><input type="radio" name="parcours" value="entre-les-deux"> Entre les deux <span>/ in between</span></label>
+          <label><input type="radio" name="parcours" value="prefere-ne-pas-dire"> Je préfère ne pas dire <span>/ prefer not to say</span></label>
+        </div>
+      </fieldset>
+      <p class="parcours-note">Facultatif — ça nous aide à savoir si on rapproche vraiment francophones et apprenant·es. / Optional — it helps us know if we are truly bringing francophones and learners together.</p>
       <button type="submit">Envoyer ma quête</button>
     </form>
     <p style="font-size:0.85rem; color:var(--muted)">Prefer email? <a href="mailto:kurtrgoddard@gmail.com?subject=Bilingua%20Quest%20—%20ma%20qu%C3%AAte">kurtrgoddard@gmail.com</a></p>
