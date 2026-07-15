@@ -1948,7 +1948,8 @@
         "when": "Tuesdays 7pm",
         "descFR": "Rejoignez le cercle chaque mardi pour jaser en français, tout niveau bienvenu.",
         "descEN": "Join the weekly circle to chat in French, every level welcome.",
-        "kind": "conversation-night"
+        "kind": "conversation-night",
+        "author": "Marie-Claude, Hôte fondatrice"
       },
       {
         "titleFR": "Café-jasette du mercredi",
@@ -2002,7 +2003,8 @@
         "when": "Thursdays 8pm",
         "descFR": "Questions moitié anglais, moitié français — les équipes mixtes gagnent souvent.",
         "descEN": "Half-English, half-French questions — mixed teams often win.",
-        "kind": "trivia"
+        "kind": "trivia",
+        "author": "Réjean, Hôte fondateur"
       },
       {
         "titleFR": "Vendredis musique sur la Broken Record",

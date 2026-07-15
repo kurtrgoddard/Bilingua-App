@@ -10,8 +10,28 @@ from the `gh-pages` branch, kept in sync automatically by
 `.github/workflows/pages.yml` on every push to `main`. Nothing to do.
 
 Known limitation of the Pages mirror: **Netlify Forms don't run there** — the
-waitlist/feedback forms fall back to opening a pre-filled email. For real form
-capture (submissions in a dashboard), finish the Netlify hookup below.
+waitlist/feedback/proposer forms fall back to opening a pre-filled email
+(the fallback fires on every hostname except `*.netlify.app` — if the site
+ever moves to Netlify under the custom domain, update that hostname check in
+`site/index.html` and `site/proposer.html`). For real form capture
+(submissions in a dashboard), finish the Netlify hookup below.
+
+## Custom domain: bilingua.app (via GitHub Pages)
+
+The domain is claimed by **`site/CNAME`** (published to the gh-pages root by
+the workflow) — GitHub reads it and configures the Pages custom domain
+automatically; no dashboard steps. The only manual piece is DNS, at
+Squarespace (Domains → bilingua.app → DNS settings):
+
+- **Delete** the old Lovable record `A @ 185.158.133.1` (and any other `A @` records)
+- **Add** four A records on `@`: `185.199.108.153`, `185.199.109.153`,
+  `185.199.110.153`, `185.199.111.153`
+- **Add** `CNAME www → kurtrgoddard.github.io`
+
+GitHub auto-verifies and provisions the SSL cert once the records propagate.
+Afterwards (optional): repo **Settings → Pages → Enforce HTTPS**, and remove
+the domain from the old Lovable project so it stops renewing its certificate.
+The github.io URL 301-redirects to bilingua.app once the domain is active.
 
 ## Netlify (recommended as the eventual canonical home — real forms, custom domain)
 

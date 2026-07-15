@@ -6,6 +6,12 @@
 <title>Bilingua Quest — an SNES game the size of Fredericton</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>✶</text></svg>">
 <meta name="description" content="Douze ans de français. Une vraie conversation. A cozy SNES-style game set in real Fredericton where you practice French — and real people unlock your levels.">
+<meta property="og:title" content="Bilingua Quest — Fredericton">
+<meta property="og:description" content="Douze ans de français. Une vraie conversation. A cozy SNES-style game set in real Fredericton where you practice French — and real people unlock your levels.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bilingua.app/">
+<meta property="og:image" content="https://bilingua.app/shots/1-title.png">
+<meta name="twitter:card" content="summary_large_image">
 <style>
   :root {
     --paper: #F8F4EC; --ink: #2A2118; --muted: #6E6357;
@@ -52,6 +58,10 @@
   .play:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(0,0,0,0.45); }
   .hero .note { font-size: 0.8rem; color: #8fa3cc; margin-bottom: 2.4rem; }
   .hero img { display: block; max-width: min(680px, 100%); margin: 0 auto; border-radius: 10px 10px 0 0; border: 3px solid var(--navy2); border-bottom: none; image-rendering: pixelated; }
+
+  .ribbon { background: var(--navy); color: var(--cream); text-align: center; padding: 0.55rem 1.25rem 0.65rem; border-top: 1px solid var(--navy2); font-size: 0.95rem; }
+  .ribbon p { margin: 0; }
+  .ribbon .en { font-size: 0.78rem; font-style: italic; color: #8fa3cc; }
 
   section { padding: 3.2rem 0 0.5rem; }
   .eyebrow {
@@ -121,8 +131,13 @@
   <p class="sub">« Douze ans de français. Une vraie conversation. »</p>
   <p class="sub-en">Twelve years of school French. Time for one real conversation.</p>
   <a class="play" href="play/">▶ Jouer / Play</a>
-  <p class="note">Free · plays in your browser · adults 18+ · prototype v0.5 · <strong>invitation only — the founding batch is 100</strong> · <a href="billets.html" style="color:#8fa3cc">billets</a></p>
+  <p class="note">Free · plays in your browser · adults 18+ · prototype v0.6 · <strong>invitation only — the founding batch is 100</strong> · <a href="billets.html" style="color:#8fa3cc">billets</a></p>
   <img src="shots/4-world-spawn.png" alt="SNES-style pixel-art view of the Bill Thorpe Walking Bridge crossing the river into downtown Fredericton" width="1024" height="720">
+</div>
+
+<div class="ribbon">
+  <p>🎻 <strong>Rendez-vous du jeudi</strong> — Dolan's Pub, 18 h. Chaque semaine.</p>
+  <p class="en">Thursday rendez-vous — Dolan's Pub, 6 pm. Every week.</p>
 </div>
 
 <div class="wrap">
@@ -230,23 +245,23 @@
     <p><strong>Bilingua Quest</strong> is a free civic prototype by Kurt Goddard (Fredericton, NB). Adults 18+. No accounts, no tracking — the game saves on your own device only.</p>
     <p>Real Fredericton venues appear with affection and without affiliation. Venue owners: if you'd like anything changed (or want a rendez-vous board of your own), <a href="mailto:kurtrgoddard@gmail.com">say the word</a>.</p>
     <p>Safety, always: real-world meetups belong in public places — tell a friend, trust your instincts.</p>
-    <p><a href="terms.html">Terms / Conditions</a> · <a href="privacy.html">Privacy / Vie privée</a> · <a href="expedition.html">The expedition kit</a> · <a href="billets.html">Billets / Tickets</a></p>
+    <p><a href="terms.html">Terms / Conditions</a> · <a href="privacy.html">Privacy / Vie privée</a> · <a href="expedition.html">The expedition kit</a> · <a href="proposer.html">Proposer une quête</a> · <a href="billets.html">Billets / Tickets</a></p>
     <p>Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). / On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).</p>
   </footer>
 
 </div>
 <script>
-/* gh-pages-form-fallback: Netlify Forms only work on Netlify hosting.
-   On the GitHub Pages mirror, swap form submits for mailto so nothing silently fails. */
-if (location.hostname.endsWith('github.io')) {
+/* form-fallback: Netlify Forms only capture on Netlify hosting.
+   Everywhere else (GitHub Pages — github.io or the bilingua.app custom domain),
+   swap form submits for mailto so nothing silently fails. */
+if (!location.hostname.endsWith('netlify.app')) {
   document.querySelectorAll('form[data-netlify]').forEach(f => {
     f.addEventListener('submit', (e) => {
       e.preventDefault();
-      const kind = f.getAttribute('name') === 'waitlist' ? 'Waitlist' : 'Feedback';
+      const kind = ({waitlist:'Waitlist', feedback:'Feedback', 'proposer-quete':'Quête proposée'})[f.getAttribute('name')] || f.getAttribute('name');
       const data = new FormData(f);
       let body = '';
-      for (const [k, v] of data.entries()) if (k !== 'form-name' && k !== 'bot-field' && v) body += k + ': ' + v + '
-';
+      for (const [k, v] of data.entries()) if (k !== 'form-name' && k !== 'bot-field' && v) body += k + ': ' + v + '\n';
       location.href = 'mailto:kurtrgoddard@gmail.com?subject=' + encodeURIComponent('Bilingua Quest ' + kind) + '&body=' + encodeURIComponent(body);
     });
   });
