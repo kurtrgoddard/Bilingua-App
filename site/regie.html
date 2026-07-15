@@ -538,6 +538,24 @@ function fallbackCopy(txt, done) {
 
 /* ----- Les Codes ----- */
 const PLAY_URL = 'https://bilingua.app/play/?code=';
+
+/* Pre-filled invitation email. The deep-link opens the game with the code
+   already in the gate. Operator sends from their own mail client. */
+function emailInvite(code, whom) {
+  const link = PLAY_URL + code;
+  const subject = 'Une invitation à Bilingua Quest / An invitation';
+  const hi = whom && whom.trim() ? 'Bonjour ' + whom.trim() + ',\n\n' : '';
+  const body =
+    hi +
+    'Je te garde une clé de la ville. / I\'m holding a key to the city for you.\n\n' +
+    'Bilingua Quest — un jeu sur les vraies conversations en français à Fredericton. Sur invitation seulement.\n' +
+    'A game about real French conversations in Fredericton. Invitation only. 18+.\n\n' +
+    'Ton code / Your code : ' + code + '\n' +
+    'Entre par ici (le code se remplit tout seul) / Start here (the code fills itself in):\n' + link + '\n\n' +
+    'On se voit dans la ville. / See you in the city.';
+  window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+}
+
 let batch = [];
 function renderBatch(n) {
   batch = makeBatch(n);
@@ -553,14 +571,16 @@ function renderBatch(n) {
       '<div class="code"></div>' +
       '<div class="url">bilingua.app/play · 18+</div>' +
       '<div class="from">de la part de / from <span>&nbsp;</span></div>' +
-      '<div class="ops"><input type="text" placeholder="pour qui ? / for whom?" aria-label="note"><button type="button">copier</button></div>';
+      '<div class="ops"><input type="text" placeholder="pour qui ? / for whom?" aria-label="note"><button type="button" data-act="copy">copier</button><button type="button" data-act="email">✉ courriel</button></div>';
     card.querySelector('.code').textContent = code;
     const cv = document.createElement('canvas');
     cv.setAttribute('role', 'img');
     cv.setAttribute('aria-label', 'QR — ' + PLAY_URL + code);
     QR.draw(cv, PLAY_URL + code, 3);
     card.insertBefore(cv, card.querySelector('.url'));
-    card.querySelector('.ops button').addEventListener('click', (e) => copyText(code, e.target));
+    const noteInput = card.querySelector('.ops input');
+    card.querySelector('[data-act="copy"]').addEventListener('click', (e) => copyText(code, e.target));
+    card.querySelector('[data-act="email"]').addEventListener('click', () => emailInvite(code, noteInput.value));
     sheet.appendChild(card);
   });
   $('batch-info').textContent = batch.length + ' codes · ' + todayStr();

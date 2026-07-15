@@ -2433,7 +2433,7 @@ function showPassport() {
     (save.myCodes && save.myCodes.length
       ? '<h3>' + (LANG === 'fr' ? 'Mes invitations ✶' : 'My invitations ✶') + '</h3>' +
         '<p style="font-size:12px; opacity:0.75">' + (LANG === 'fr' ? 'Trois clés de la ville. Donne-les à des gens qui essaieraient.' : 'Three keys to the city. Give them to people who would try.') + '</p>' +
-        save.myCodes.map((c, i) => '<p style="font-family:ui-monospace,Menlo,monospace"><b>' + c + '</b> <button class="btn alt" style="padding:2px 10px; font-size:11px" data-copy="' + c + '">' + (LANG === 'fr' ? 'copier' : 'copy') + '</button></p>').join('')
+        save.myCodes.map((c, i) => '<p style="font-family:ui-monospace,Menlo,monospace"><b>' + c + '</b> <button class="btn alt" style="padding:2px 10px; font-size:11px" data-copy="' + c + '">' + (LANG === 'fr' ? 'copier' : 'copy') + '</button> <button class="btn alt" style="padding:2px 10px; font-size:11px" data-share="' + c + '">' + (LANG === 'fr' ? '✉ partager' : '✉ share') + '</button></p>').join('')
       : '') +
     (save.invitedBy ? '<p style="font-size:12px; opacity:0.75">' + (LANG === 'fr' ? 'Invité·e par' : 'Invited by') + ' <b>' + save.invitedBy.replace(/</g, '&lt;') + '</b></p>' : '') +
     '<h3>' + (LANG === 'fr' ? 'Le Carnet de la Grande Jasette' : 'The Notebook of the Great Conversation') + ' (' + save.pages.length + '/8)</h3>' +
@@ -2466,6 +2466,25 @@ function showPassport() {
       () => { b.textContent = LANG === 'fr' ? 'copié ✶' : 'copied ✶'; SND.confirm(); },
       () => { b.textContent = b.dataset.copy; }
     );
+  }));
+  /* Share an invitation: native share sheet where available (phones), else a
+     pre-filled email. The deep-link opens the game with the code already in the gate. */
+  modalRoot.querySelectorAll('[data-share]').forEach(b => b.addEventListener('click', () => {
+    const code = b.dataset.share;
+    const link = 'https://bilingua.app/play/?code=' + encodeURIComponent(code);
+    const who = (save.name || '').replace(/[<>]/g, '');
+    const subject = LANG === 'fr'
+      ? 'Une invitation à Bilingua Quest'
+      : 'An invitation to Bilingua Quest';
+    const body = LANG === 'fr'
+      ? 'Je te garde une des trois clés de la ville.\n\nBilingua Quest, c’est un jeu sur les vraies conversations en français à Fredericton. Sur invitation seulement — et j’ai pensé à toi.\n\nTon code : ' + code + '\nEntre par ici (le code se remplit tout seul) :\n' + link + '\n\nOn se voit dans la ville. — ' + who
+      : 'I’m holding one of my three keys to the city for you.\n\nBilingua Quest is a game about real French conversations in Fredericton. Invitation only — and I thought of you.\n\nYour code: ' + code + '\nStart here (the code fills itself in):\n' + link + '\n\nSee you in the city. — ' + who;
+    if (navigator.share) {
+      navigator.share({ title: subject, text: body, url: link }).then(() => SND.confirm(), () => {});
+    } else {
+      location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      SND.confirm();
+    }
   }));
 }
 function showSettings() {
