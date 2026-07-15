@@ -67,6 +67,14 @@ function makeInvite(exclude) {
   }
   return null;
 }
+/* cards always carry the URL of the site they were printed from —
+   never a hardcoded host that might not be live yet */
+function siteUrl() {
+  if (location.protocol.startsWith('http')) {
+    return location.host + location.pathname.replace(/atelier\.html$/, '').replace(/\/$/, '') || location.host;
+  }
+  return 'kurtrgoddard.github.io/Bilingua-App';
+}
 function render() {
   const n = Math.min(100, Math.max(1, parseInt(document.getElementById('count').value, 10) || 12));
   const seen = new Set();
@@ -80,7 +88,7 @@ function render() {
       '<h2>You are invited to Fredericton.</h2>' +
       '<div class="fr">Tu es invité·e à Fredericton.</div>' +
       '<div class="code">' + code + '</div>' +
-      '<div class="url">bilingua-quest.netlify.app · 18+</div>' +
+      '<div class="url">' + siteUrl() + ' · 18+</div>' +
       '<div class="from">de la part de / from <span>&nbsp;</span></div>' +
       '</div>'
     );

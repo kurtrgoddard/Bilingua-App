@@ -1,0 +1,40 @@
+name: Deploy site to Netlify
+
+# One-secret activation: add NETLIFY_AUTH_TOKEN in
+# Settings → Secrets and variables → Actions, and this deploys site/
+# to the existing bilingua-quest project on every push to main.
+# (Get a token at app.netlify.com → User settings → Applications →
+# Personal access tokens.) Until the secret exists, the job skips
+# gracefully — nothing fails.
+
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', '.github/workflows/netlify.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: netlify
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: 2e4f2cb4-2285-4201-8a39-b12c43310fa1
+    steps:
+      - name: Check for token
+        id: gate
+        run: |
+          if [ -n "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "NETLIFY_AUTH_TOKEN secret not set — skipping Netlify deploy (GitHub Pages remains live)."
+          fi
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.ready == 'true'
+      - name: Deploy to Netlify
+        if: steps.gate.outputs.ready == 'true'
+        run: npx --yes netlify-cli@latest deploy --prod --dir site --site "$NETLIFY_SITE_ID" --message "Deploy from GitHub Actions ($GITHUB_SHA)"
