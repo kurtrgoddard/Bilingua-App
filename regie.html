@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Régie — Bilingua Quest</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🎛️</text></svg>">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root {
+    --paper: #F8F4EC; --ink: #2A2118; --muted: #6E6357;
+    --acadie: #1F4FA8; --stella: #C89512;
+    --card: #FFFDF8; --line: #E3DACB; --soft: #F0EADD;
+    --ok: #2c7a3d; --bad: #a63a2a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #211913; --ink: #EFE7DA; --muted: #A79A8A; --acadie: #8FB0E8; --stella: #E0B93F; --card: #2A211A; --line: #3D332A; --soft: #2E251D; --ok: #7fc98f; --bad: #e58a76; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+    font-size: 1rem; line-height: 1.6; padding: 2rem 1.25rem 0;
+  }
+  .wrap { max-width: 58rem; margin: 0 auto; }
+  h1, h2, h3 { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.45rem; margin-bottom: 0.8rem; }
+  h3 { font-size: 1.05rem; margin: 1.1rem 0 0.4rem; }
+  p { margin: 0.6rem 0; }
+  a { color: var(--acadie); }
+  .gloss { font-size: 0.72em; font-style: italic; color: var(--muted); font-weight: normal; }
+  .eyebrow {
+    display: flex; align-items: center; gap: 0.75rem; margin: 0 0 0.7rem;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  .moitie { flex: 1; height: 2px; min-width: 3rem; background: linear-gradient(to right, var(--acadie) 50%, var(--stella) 50%); border-radius: 1px; }
+  section { padding: 2.6rem 0 0.4rem; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.3rem; margin: 1rem 0; }
+  .note { font-size: 0.85rem; color: var(--muted); }
+  .mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+  button {
+    font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 0.95rem;
+    background: var(--acadie); color: var(--paper); border: none; border-radius: 8px;
+    padding: 0.5rem 1.1rem; cursor: pointer;
+  }
+  @media (prefers-color-scheme: dark) { button { color: #16110c; } }
+  button.alt { background: var(--stella); color: #201a08; }
+  button.ghost { background: var(--soft); color: var(--ink); border: 1.5px solid var(--line); }
+  button:hover { opacity: 0.92; }
+  input[type="text"], input[type="date"], textarea, select {
+    width: 100%; font-family: inherit; font-size: 1rem; color: var(--ink);
+    background: var(--paper); border: 1.5px solid var(--line); border-radius: 8px; padding: 0.5rem 0.7rem;
+  }
+  textarea { min-height: 90px; resize: vertical; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--acadie); border-color: var(--acadie); }
+  label { display: block; font-size: 0.78rem; color: var(--muted); margin: 0.8rem 0 0.2rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; text-transform: uppercase; }
+  .controls { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin: 0.9rem 0; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+  @media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+
+  /* code cards — coaster styling carried over from atelier.html */
+  .sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.8rem; margin-top: 1rem; }
+  .card {
+    border: 2.5px solid var(--acadie); border-radius: 14px; background: var(--card);
+    padding: 1rem 1.1rem; text-align: center; break-inside: avoid; page-break-inside: avoid;
+  }
+  .card .star { color: var(--stella); font-size: 1.2rem; }
+  .card h4 { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 1rem; margin: 0.2rem 0; }
+  .card .fr { font-style: italic; font-size: 0.76rem; color: var(--muted); }
+  .card .code { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1rem; letter-spacing: 0.04em; margin: 0.6rem 0; padding: 0.4rem; border: 2px dashed var(--stella); border-radius: 8px; }
+  .card canvas { display: block; margin: 0.4rem auto; image-rendering: pixelated; background: #fff; }
+  .card .url { font-size: 0.7rem; color: var(--muted); overflow-wrap: anywhere; }
+  .card .from { font-size: 0.72rem; margin-top: 0.5rem; color: var(--muted); }
+  .card .from span { display: inline-block; border-bottom: 1px solid var(--ink); min-width: 8rem; }
+  .card .ops { margin-top: 0.55rem; display: flex; gap: 0.4rem; }
+  .card .ops input { font-size: 0.78rem; padding: 0.3rem 0.5rem; }
+  .card .ops button { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: ui-monospace, Menlo, monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .tablewrap { overflow-x: auto; }
+
+  .big { font-size: 1.35rem; }
+  .ok { color: var(--ok); font-weight: bold; }
+  .bad { color: var(--bad); font-weight: bold; }
+  .result { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.2rem; margin: 0.5rem 0; }
+  pre { background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 0.9rem; font-size: 0.82rem; overflow-x: auto; line-height: 1.45; }
+  ul.links { list-style: none; padding: 0; }
+  ul.links li { padding: 0.55rem 0; border-bottom: 1px solid var(--line); }
+  ul.links .note { display: block; }
+  ol.rythme { padding-left: 1.3rem; }
+  ol.rythme li { margin: 0.35rem 0; }
+  ol.rythme .en { font-size: 0.8rem; font-style: italic; color: var(--muted); }
+  footer { margin-top: 3.5rem; padding: 2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.9rem; color: var(--muted); }
+
+  @media print {
+    body { background: white; color: black; padding: 0.5rem; }
+    header, footer, .controls, .panel, .note, section:not(#codes), #codes .eyebrow, #codes h2, #codes p, .card .ops { display: none !important; }
+    .sheet { gap: 0.5rem; }
+    .card { background: white; border-color: #1F4FA8; }
+    .card .fr, .card .url, .card .from { color: #6E6357; }
+  }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <h1>🎛️ La Régie <span class="gloss">/ mission control — operator panel</span></h1>
+  <p class="note">Page non indiquée, pour l'opérateur seulement. Tout se calcule ici, dans ton navigateur — aucun secret n'est embarqué, aucun script de suivi. <span class="gloss">Unlisted page, operator only. Everything computes client-side; no secrets embedded, no tracking scripts — the links to real dashboards need your own logins.</span></p>
+</header>
+
+<main class="wrap">
+
+<!-- ============================ LES CODES ============================ -->
+<section id="codes">
+  <div class="eyebrow"><span class="fr">Les Codes</span><span class="moitie"></span><span>invitation codes</span></div>
+  <h2>Les Codes <span class="gloss">/ invitation-code tooling</span></h2>
+  <p class="note">Chaque code est valide dans le jeu — même somme de contrôle, copiée octet pour octet. <strong>Un code n'est pas révocable :</strong> c'est un calcul, pas une liste sur un serveur. Traite chaque lot comme des billets imprimés — note à qui ils partent (la colonne CSV existe pour ça). La v1 déplace la validation côté serveur. <span class="gloss">Codes are checksum math, not a server list — they cannot be revoked. Treat batches like printed tickets; v1 moves redemption server-side.</span></p>
+  <div class="controls">
+    <span class="note">Générer / generate :</span>
+    <button data-n="12">12</button>
+    <button data-n="24">24</button>
+    <button data-n="48">48</button>
+    <button data-n="100">100</button>
+    <span class="moitie" style="max-width:2rem"></span>
+    <button class="ghost" id="copy-all">Tout copier / copy all</button>
+    <button class="ghost" id="csv">Télécharger CSV</button>
+    <button class="alt" onclick="window.print()">Feuille à imprimer / print sheet</button>
+    <span class="note" id="batch-info"></span>
+  </div>
+  <div class="sheet" id="sheet"></div>
+</section>
+
+<!-- ============================ AUJOURD'HUI ============================ -->
+<section id="aujourdhui">
+  <div class="eyebrow"><span class="fr">Aujourd'hui</span><span class="moitie"></span><span>the operator's daily sheet</span></div>
+  <h2>Aujourd'hui <span class="gloss">/ today, as the game sees it</span></h2>
+  <div class="cols">
+    <div class="panel">
+      <h3>📅 La date du jeu <span class="gloss">/ game date string</span></h3>
+      <p class="result" id="today-str"></p>
+      <p class="note">C'est la chaîne exacte que <code>todayStr()</code> produit sur l'appareil d'un joueur dans ce fuseau. <span class="gloss">Exact string the game hashes for missions and duo words (device-local time).</span></p>
+      <h3>🎻 Prochain Rendez-vous du Jeudi <span class="gloss">/ next Thursday rendez-vous</span></h3>
+      <p><strong>Dolan's Pub, jeudi 18 h – 20 h.</strong></p>
+      <p class="result" id="thursday"></p>
+    </div>
+    <div class="panel">
+      <h3>🎴 Mission Secrète du jour <span class="gloss">/ today's secret mission</span></h3>
+      <p class="big" id="mission-fr"></p>
+      <p class="note" id="mission-en"></p>
+      <p class="note">Toute la ville a la même mission — sur l'honneur, personne ne vérifie. <span class="gloss">Whole city, same mission, honour system.</span></p>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>🗓️ Les 7 prochains jours <span class="gloss">/ next 7 days — prep ahead</span></h3>
+    <div class="tablewrap"><table id="mission-week"><thead><tr><th>Date</th><th>Jour</th><th>Mission (FR)</th><th>Mission (EN)</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</section>
+
+<!-- ============================ DÉPANNAGE ============================ -->
+<section id="depannage">
+  <div class="eyebrow"><span class="fr">Dépannage</span><span class="moitie"></span><span>support tools</span></div>
+  <h2>Dépannage <span class="gloss">/ player support</span></h2>
+  <div class="cols">
+    <div class="panel">
+      <h3>🤝 Calculateur de mot du jour <span class="gloss">/ duo-code calculator (Serment du Pont)</span></h3>
+      <p class="note">Deux joueurs n'arrivent pas à prêter serment ? Entre le prénom d'un joueur (tel qu'il apparaît dans SON jeu) et la date : voici le mot que son appareil affiche. Chaque partenaire tape le prénom et le mot de <em>l'autre</em>. <span class="gloss">Recovers the exact word a player's device shows, using the game's own math.</span></p>
+      <label for="duo-nom">Prénom du joueur / player's name in-game</label>
+      <input type="text" id="duo-nom" maxlength="24" autocomplete="off" spellcheck="false" placeholder="Aurélie">
+      <label for="duo-date">Date (défaut : aujourd'hui)</label>
+      <input type="date" id="duo-date">
+      <p class="result" id="duo-out">—</p>
+    </div>
+    <div class="panel">
+      <h3>✉️ Validateur de code d'invitation <span class="gloss">/ invitation-code validator</span></h3>
+      <p class="note">Colle un code (photo floue, carte mouillée…) : valide ou non, selon les maths exactes du jeu. <span class="gloss">Valid/invalid per the game's own <code>validateInvite</code>.</span></p>
+      <label for="val-code">Code</label>
+      <input type="text" id="val-code" autocomplete="off" spellcheck="false" autocapitalize="characters" placeholder="WOLASTOQ-SIROP-42">
+      <p class="result" id="val-out">—</p>
+      <h3>💾 Sauvegarde perdue <span class="gloss">/ lost save</span></h3>
+      <p class="note">La vérité, sans détour : la sauvegarde vit dans le navigateur du joueur, clé <code>bq_save_v1</code> du localStorage, sur son appareil seulement. Effacer les données du navigateur (ou jouer en navigation privée) l'efface. <strong>Il n'existe aucune récupération en v0.</strong> Offre un nouveau code d'invitation et des excuses honnêtes. Détails : <a href="https://github.com/kurtrgoddard/Bilingua-App/blob/main/OPERATIONS.md">OPERATIONS.md</a>. <span class="gloss">Saves are device-local localStorage; no recovery exists at v0 — say so honestly.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CANONISATION ============================ -->
+<section id="canonisation">
+  <div class="eyebrow"><span class="fr">Canonisation</span><span class="moitie"></span><span>quest submissions → game events</span></div>
+  <h2>Canonisation <span class="gloss">/ turn a Proposer-une-Quête submission into a game event</span></h2>
+  <div class="panel">
+    <h3>1. Colle la soumission <span class="gloss">/ paste the raw submission (Netlify email or form dump)</span></h3>
+    <textarea id="can-paste" placeholder="nom: Marie-Ève L.&#10;lieu: le kiosque d'Officers' Square&#10;quete: Il était une fois, sur la rue Queen…"></textarea>
+    <div class="controls"><button class="ghost" id="can-parse">Lire les champs / parse fields</button><span class="note" id="can-parsed"></span></div>
+    <h3>2. Rédige l'événement <span class="gloss">/ write the event (schema of content.json → events.events)</span></h3>
+    <div class="cols">
+      <div>
+        <label for="can-titlefr">titleFR</label><input type="text" id="can-titlefr" placeholder="Soirée de conversation française">
+        <label for="can-titleen">titleEN</label><input type="text" id="can-titleen" placeholder="French Conversation Night">
+        <label for="can-venue">venueId</label><input type="text" id="can-venue" list="venues" placeholder="officers">
+        <datalist id="venues"><option>fancybites</option><option>shuyi</option><option>timsmain</option><option>wilsers</option><option>brokenrecord</option><option>gahan</option><option>graystone</option><option>jonnie</option><option>library</option><option>chesspiece</option><option>dolans</option><option>flippins</option><option>playhouse</option><option>cafeloka</option><option>tipsymuse</option><option>happybaker</option><option>boyce</option><option>officers</option></datalist>
+        <label for="can-when">when</label><input type="text" id="can-when" placeholder="Tuesdays 7pm">
+      </div>
+      <div>
+        <label for="can-descfr">descFR</label><textarea id="can-descfr"></textarea>
+        <label for="can-descen">descEN</label><textarea id="can-descen"></textarea>
+        <label for="can-kind">kind</label><input type="text" id="can-kind" list="kinds" placeholder="conversation-night">
+        <datalist id="kinds"><option>conversation-night</option><option>festival</option><option>market-hour</option><option>trivia</option><option>concert</option></datalist>
+        <label for="can-author">author <span style="text-transform:none">(le nom reste dans le jeu / their name stays in the game)</span></label>
+        <input type="text" id="can-author" placeholder="Marie-Ève L., quête proposée">
+      </div>
+    </div>
+    <div class="controls"><button id="can-gen">Générer le JSON</button><button class="ghost" id="can-copy">Copier</button></div>
+    <pre id="can-out">{ }</pre>
+    <p class="note">⚠️ Rappel de build : le contenu vit à <strong>deux</strong> endroits — la constante <code>EVENTS_DATA</code> dans <code>game/index.html</code> (~ligne 645) <em>et</em> <code>game/data/content.json</code> (<code>events.events</code>) — puis la copie déployée <code>site/play/index.html</code>. Colle le snippet aux deux, à la main. Rien n'est automatisé ici. <span class="gloss">A build note, not automation: paste into both places, then redeploy the play copy.</span></p>
+  </div>
+</section>
+
+<!-- ============================ LES TABLEAUX ============================ -->
+<section id="tableaux">
+  <div class="eyebrow"><span class="fr">Les Tableaux</span><span class="moitie"></span><span>dashboards</span></div>
+  <h2>Les Tableaux <span class="gloss">/ where the real levers live (your own logins)</span></h2>
+  <ul class="links">
+    <li><a href="https://app.netlify.com/projects/bilingua-quest/forms">Netlify Forms</a><span class="note">Capture les formulaires (liste d'attente, feedback, proposer-une-quête) soumis depuis le miroir bilingua-quest.netlify.app seulement. Les soumissions faites sur bilingua.app arrivent par courriel (mailto), pas ici. <span class="gloss">Only catches the netlify.app mirror; bilingua.app submissions arrive as email.</span></span></li>
+    <li><a href="https://github.com/kurtrgoddard/Bilingua-App/actions">GitHub Actions</a><span class="note">Les runs de déploiement du site. Montre si le déploiement est vert — ne montre rien sur les joueurs. <span class="gloss">Deploy runs only; says nothing about players.</span></span></li>
+    <li><a href="https://github.com/kurtrgoddard/Bilingua-App/settings/pages">GitHub Pages — réglages</a><span class="note">Domaine bilingua.app et état du certificat HTTPS. À vérifier si le site tombe. <span class="gloss">Custom domain + cert status.</span></span></li>
+    <li><a href="https://dashboard.stripe.com/test/dashboard">Stripe (mode test)</a><span class="note">Billets en mode test seulement — aucun vrai argent ne circule en v0. <span class="gloss">Test-mode tickets; no real money at v0.</span></span></li>
+    <li><a href="https://github.com/kurtrgoddard/Bilingua-App">Le dépôt / the repo</a><span class="note">La source de tout : jeu, site, runbooks. <span class="gloss">Source of everything.</span></span></li>
+    <li><a href="atelier.html">L'Atelier des invitations</a><span class="note">L'ancienne salle d'impression — mêmes maths que « Les Codes » ci-dessus, sans QR ni CSV. <span class="gloss">The original print room; same code math, fewer tools.</span></span></li>
+    <li><a href="mailto:kurtrgoddard@gmail.com?subject=Re%C2%A0%3A%20Bilingua%20Quest%20%E2%80%94%20ta%20question&body=Bonjour%2C%0A%0AMerci%20d%27avoir%20%C3%A9crit%20%C3%A0%20Bilingua%20Quest.%0A%0A">Répondre à un joueur / reply to a player</a><span class="note">Ouvre un courriel pré-rempli depuis ta propre boîte — les réponses partent de toi, pas d'un robot. <span class="gloss">Prefilled mailto; replies come from you, not a bot.</span></span></li>
+  </ul>
+</section>
+
+<!-- ============================ LE RYTHME ============================ -->
+<section id="rythme">
+  <div class="eyebrow"><span class="fr">Le Rythme</span><span class="moitie"></span><span>the weekly beat</span></div>
+  <h2>Le Rythme <span class="gloss">/ compressed operator checklist</span></h2>
+  <div class="panel">
+    <ol class="rythme">
+      <li><strong>Chaque jour (2 min)</strong> — un œil sur la boîte courriel (formulaires + réponses), un œil sur la mission du jour ci-dessus. <span class="en">Daily glance: inbox + today's mission.</span></li>
+      <li><strong>Jeudi 17 h 30</strong> — arriver à Dolan's, cartes d'invitation en poche (« Les Codes »), étoile dorée visible. <span class="en">Arrive early with printed codes.</span></li>
+      <li><strong>Jeudi 18 h – 20 h</strong> — le Rendez-vous : accueillir, présenter, laisser les Serments du Pont se prêter (« Dépannage » si un code bloque). <span class="en">Host the rendez-vous; troubleshoot oaths.</span></li>
+      <li><strong>Jeudi soir</strong> — noter la présence réelle dans le carnet. Des chiffres honnêtes, rien d'autre. <span class="en">Record honest attendance numbers.</span></li>
+      <li><strong>Vendredi</strong> — canoniser la meilleure quête proposée (« Canonisation »), remercier l'auteur par courriel. <span class="en">Canonise one quest, thank its author.</span></li>
+      <li><strong>Lundi</strong> — vérifier Netlify Forms et que le dernier déploiement GitHub Actions est vert. <span class="en">Check forms + green deploys.</span></li>
+      <li><strong>Chaque mois, 20 h 02</strong> — le rituel mensuel (réservé — à définir). <span class="en">Monthly 20h02 placeholder.</span></li>
+      <li><strong>Fin de saison</strong> — exporter le CSV des codes imprimés, photographier les cartes restantes, écrire la rétro. <span class="en">Season close: CSV export, photo of leftover cards, retro notes.</span></li>
+      <li>Le grand cahier de régie complet : <a href="https://github.com/kurtrgoddard/Bilingua-App/blob/main/OPERATIONS.md">OPERATIONS.md</a> (à la racine du dépôt). <span class="en">Full runbook, at the repo root.</span></li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <p>« La Régie n'est pas une porte verrouillée — c'est une pièce non indiquée. »</p>
+  <p class="gloss">An unlisted room is not a locked door: obscurity is not authentication. Nothing here is secret — it's the same math the game ships to every player. v1 puts the operator panel behind a real login.</p>
+</footer>
+
+<script>
+'use strict';
+/* ====== EXACT game math — copied byte-for-byte from game/index.html ======
+   INVITE_WORDS + inviteChecksum + validateInvite + makeInvite : lines 280–300
+   todayStr + daysBetween                                      : lines 904–908
+   DAILY_MISSIONS + dailyMission                               : lines 942–965
+   duoHash + duoCode                                           : lines 995–1000
+   Do not edit here. If the game changes, re-copy from the source. */
+const INVITE_WORDS = ['VIOLET','WOLASTOQ','FOUGERE','ACADIE','STELLA','POUTINE','RIVIERE','PONT','CAFE','VELO','HARVEST','FROSTIVAL','TINTAMARRE','MARIGOLD','CHICKADEE','MOITIE','BRUME','HOMARD','SIROP','CANOT','LILAS','PICNIC','AURORE','SENTIER'];
+function inviteChecksum(w1, w2) {
+  const s = (w1 + '-' + w2).toUpperCase();
+  let v = 0;
+  for (let i = 0; i < s.length; i++) v = (v * 31 + s.charCodeAt(i)) % 1000000;
+  return 10 + (v % 89);
+}
+function validateInvite(raw) {
+  const parts = String(raw || '').trim().toUpperCase().replace(/\s+/g, '-').split('-').filter(Boolean);
+  if (parts.length !== 3) return false;
+  const [w1, w2, nn] = parts;
+  if (!INVITE_WORDS.includes(w1) || !INVITE_WORDS.includes(w2) || w1 === w2) return false;
+  return parseInt(nn, 10) === inviteChecksum(w1, w2);
+}
+function makeInvite() {
+  const i = Math.floor(Math.random() * INVITE_WORDS.length);
+  let j = Math.floor(Math.random() * INVITE_WORDS.length);
+  if (j === i) j = (j + 1) % INVITE_WORDS.length;
+  const w1 = INVITE_WORDS[i], w2 = INVITE_WORDS[j];
+  return w1 + '-' + w2 + '-' + inviteChecksum(w1, w2);
+}
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function daysBetween(a, b) { return Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 86400000); }
+const DAILY_MISSIONS = [
+  { fr: 'Dis « bonjour » avant qu’on te le dise.', en: 'Say bonjour before anyone says it to you.' },
+  { fr: 'Trouve quelqu’un qui a déjà vécu dans une autre province.', en: 'Find someone who has lived in another province.' },
+  { fr: 'Apprends le prénom d’une personne qui te sert un café.', en: 'Learn the first name of someone who serves you a coffee.' },
+  { fr: 'Demande à quelqu’un son mot préféré en français.', en: 'Ask someone their favourite word in French.' },
+  { fr: 'Présente deux personnes l’une à l’autre.', en: 'Introduce two people to each other.' },
+  { fr: 'Commande quelque chose entièrement en français.', en: 'Order something entirely in French.' },
+  { fr: 'Apprends une expression que tes grands-parents disaient.', en: 'Learn an expression your grandparents used to say.' },
+  { fr: 'Souhaite « bonne journée ! » à un inconnu.', en: 'Wish a stranger a “bonne journée!”' },
+  { fr: 'Demande à quelqu’un son coin préféré de Fredericton.', en: 'Ask someone their favourite corner of Fredericton.' },
+  { fr: 'Remercie quelqu’un avec un « merci beaucoup » bien senti.', en: 'Thank someone with a heartfelt “merci beaucoup.”' },
+  { fr: 'Demande « comment on dit… ? » pour une chose que tu vois.', en: 'Ask “comment on dit…?” about something you can see.' },
+  { fr: 'Salue quelqu’un sur le pont piétonnier — n’importe quelle langue, un mot de français en bonus.', en: 'Greet someone on the walking bridge — any language, one French word for bonus.' },
+  { fr: 'Fais un compliment — en français, bien sûr.', en: 'Give a compliment — in French, of course.' },
+  { fr: 'Demande à quelqu’un quelle musique il ou elle écoute ces temps-ci.', en: 'Ask someone what music they’re listening to these days.' },
+  { fr: 'Demande à quelqu’un s’il connaît un mot de chiac.', en: 'Ask someone if they know a word of Chiac.' },
+  { fr: 'Texte « bonne journée ! » à un ami — en français.', en: 'Text a friend “bonne journée!” — in French.' },
+];
+function dailyMission() {
+  const s = todayStr();
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 1000000;
+  return DAILY_MISSIONS[h % DAILY_MISSIONS.length];
+}
+function duoHash(s) { let v = 0; for (let i = 0; i < s.length; i++) v = (v * 31 + s.charCodeAt(i)) % 1000000; return v; }
+function duoCode(name, dateStr) {
+  const n = String(name || '').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const word = INVITE_WORDS[duoHash(n + dateStr) % INVITE_WORDS.length];
+  return word + '-' + (10 + (duoHash(word + '-' + n) % 89));
+}
+/* ---------------- Régie helpers (not game code) ---------------- */
+/* Same hash as dailyMission() (game/index.html ~947), parameterized by date string. */
+function missionForDateStr(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 1000000;
+  return DAILY_MISSIONS[h % DAILY_MISSIONS.length];
+}
+/* Mirrors todayStr() (game/index.html ~891) for an arbitrary Date. */
+function dateStrFor(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+/* Batch of unique codes via the game's own makeInvite(). 24 words → 552 possible codes, so 100 unique is easy. */
+function makeBatch(n) {
+  const seen = new Set(); const out = [];
+  let guard = 0;
+  while (out.length < n && guard++ < 20000) {
+    const c = makeInvite();
+    if (!seen.has(c)) { seen.add(c); out.push(c); }
+  }
+  return out;
+}
+
+/* ---------------- tiny QR encoder ----------------
+   Byte mode, error-correction level L, versions 1-5 (single Reed-Solomon
+   block each) — written inline for La Régie, no external libraries.
+   v4-L holds 78 bytes; our longest URL is ~55. Structure follows the
+   QR spec (ISO/IEC 18004); placement/format routines after Nayuki's
+   public-domain qrcodegen reference. */
+const QR = (() => {
+  /* [data codewords, EC codewords] at level L, versions 1..5 */
+  const VER = [null, [19, 7], [34, 10], [55, 15], [80, 20], [108, 26]];
+  const ALIGN = [0, 0, 18, 22, 26, 30];
+  const EXP = new Uint8Array(512), LOG = new Uint8Array(256);
+  (function () {
+    let x = 1;
+    for (let i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 0x100) x ^= 0x11d; }
+    for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+  })();
+  const gmul = (a, b) => (a && b) ? EXP[LOG[a] + LOG[b]] : 0;
+  function rsDivisor(degree) {
+    const r = new Array(degree - 1).fill(0); r.push(1);
+    let root = 1;
+    for (let i = 0; i < degree; i++) {
+      for (let j = 0; j < r.length; j++) {
+        r[j] = gmul(r[j], root);
+        if (j + 1 < r.length) r[j] ^= r[j + 1];
+      }
+      root = gmul(root, 2);
+    }
+    return r;
+  }
+  function rsRemainder(data, divisor) {
+    const res = divisor.map(() => 0);
+    for (const b of data) {
+      const f = b ^ res.shift();
+      res.push(0);
+      divisor.forEach((c, i) => { res[i] ^= gmul(c, f); });
+    }
+    return res;
+  }
+  function codewords(text) {
+    const bytes = Array.from(new TextEncoder().encode(text));
+    let ver = 0;
+    for (let v = 1; v <= 5; v++) if (bytes.length <= VER[v][0] - 2) { ver = v; break; }
+    if (!ver) throw new Error('QR: payload too long for v5-L (' + bytes.length + ' bytes)');
+    const dataCW = VER[ver][0], ecCW = VER[ver][1];
+    const bits = [];
+    const push = (val, n) => { for (let i = n - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+    push(4, 4); push(bytes.length, 8);
+    bytes.forEach(b => push(b, 8));
+    push(0, Math.min(4, dataCW * 8 - bits.length));
+    while (bits.length % 8) bits.push(0);
+    const cw = [];
+    for (let i = 0; i < bits.length; i += 8) { let b = 0; for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; cw.push(b); }
+    for (let pad = 0xEC; cw.length < dataCW; pad ^= 0xFD) cw.push(pad);
+    return { ver, all: cw.concat(rsRemainder(cw, rsDivisor(ecCW))) };
+  }
+  function matrix(text) {
+    const { ver, all } = codewords(text);
+    const size = 17 + 4 * ver;
+    const M = Array.from({ length: size }, () => new Int8Array(size).fill(-1));
+    const F = Array.from({ length: size }, () => new Uint8Array(size));
+    const set = (y, x, d) => { M[y][x] = d ? 1 : 0; F[y][x] = 1; };
+    /* finders + separators */
+    for (const [fy, fx] of [[0, 0], [0, size - 7], [size - 7, 0]]) {
+      for (let dy = -1; dy < 8; dy++) for (let dx = -1; dx < 8; dx++) {
+        const y = fy + dy, x = fx + dx;
+        if (y < 0 || x < 0 || y >= size || x >= size) continue;
+        const inF = dy >= 0 && dy <= 6 && dx >= 0 && dx <= 6;
+        set(y, x, inF && (dy === 0 || dy === 6 || dx === 0 || dx === 6 || (dy >= 2 && dy <= 4 && dx >= 2 && dx <= 4)));
+      }
+    }
+    /* timing */
+    for (let i = 8; i < size - 8; i++) {
+      if (M[6][i] === -1) set(6, i, i % 2 === 0);
+      if (M[i][6] === -1) set(i, 6, i % 2 === 0);
+    }
+    /* alignment (v2+): candidates on [6,p]x[6,p]; any whose centre is already
+       a function module overlaps a finder and is skipped per spec */
+    if (ver >= 2) {
+      const p = ALIGN[ver];
+      for (const cy of [6, p]) for (const cx of [6, p]) {
+        if (M[cy][cx] !== -1) continue;
+        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++)
+          set(cy + dy, cx + dx, Math.max(Math.abs(dy), Math.abs(dx)) !== 1);
+      }
+    }
+    /* reserve format areas + dark module */
+    const reserve = (y, x) => { F[y][x] = 1; if (M[y][x] === -1) M[y][x] = 0; };
+    for (let i = 0; i <= 8; i++) { if (i !== 6) { reserve(i, 8); reserve(8, i); } }
+    for (let i = 0; i < 8; i++) { reserve(size - 1 - i, 8); reserve(8, size - 8 + i); }
+    M[size - 8][8] = 1; F[size - 8][8] = 1;
+    /* zigzag data placement */
+    let bi = 0; const total = all.length * 8;
+    for (let right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (let vert = 0; vert < size; vert++) {
+        for (let j = 0; j < 2; j++) {
+          const x = right - j;
+          const y = ((right + 1) & 2) === 0 ? size - 1 - vert : vert;
+          if (!F[y][x] && bi < total) {
+            M[y][x] = (all[bi >> 3] >>> (7 - (bi & 7))) & 1;
+            bi++;
+          }
+        }
+      }
+    }
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (M[y][x] === -1) M[y][x] = 0;
+    /* masking */
+    const MASK = [
+      (y, x) => (x + y) % 2 === 0, (y, x) => y % 2 === 0, (y, x) => x % 3 === 0,
+      (y, x) => (x + y) % 3 === 0, (y, x) => (Math.floor(y / 2) + Math.floor(x / 3)) % 2 === 0,
+      (y, x) => (x * y) % 2 + (x * y) % 3 === 0, (y, x) => ((x * y) % 2 + (x * y) % 3) % 2 === 0,
+      (y, x) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0,
+    ];
+    const applyMask = (m) => { for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!F[y][x] && MASK[m](y, x)) M[y][x] ^= 1; };
+    const drawFormat = (mask) => {
+      const data = (0b01 << 3) | mask;   /* EC level L = 01 */
+      let rem = data;
+      for (let i = 0; i < 10; i++) rem = (rem << 1) ^ (((rem >>> 9) & 1) * 0x537);
+      const bits = ((data << 10) | rem) ^ 0x5412;
+      const b = (i) => (bits >>> i) & 1;
+      for (let i = 0; i <= 5; i++) M[i][8] = b(i);
+      M[7][8] = b(6); M[8][8] = b(7); M[8][7] = b(8);
+      for (let i = 9; i < 15; i++) M[8][14 - i] = b(i);
+      for (let i = 0; i < 8; i++) M[8][size - 1 - i] = b(i);
+      for (let i = 8; i < 15; i++) M[size - 15 + i][8] = b(i);
+      M[size - 8][8] = 1;
+    };
+    const penalty = () => {
+      let pen = 0;
+      const lines = [];
+      for (let y = 0; y < size; y++) { let r = ''; for (let x = 0; x < size; x++) r += M[y][x]; lines.push(r); }
+      for (let x = 0; x < size; x++) { let c = ''; for (let y = 0; y < size; y++) c += M[y][x]; lines.push(c); }
+      for (const L of lines) {
+        let run = 1;
+        for (let i = 1; i <= L.length; i++) {
+          if (i < L.length && L[i] === L[i - 1]) run++;
+          else { if (run >= 5) pen += 3 + run - 5; run = 1; }
+        }
+        for (const pat of ['00001011101', '10111010000']) {
+          let idx = L.indexOf(pat);
+          while (idx !== -1) { pen += 40; idx = L.indexOf(pat, idx + 1); }
+        }
+      }
+      for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++)
+        if (M[y][x] === M[y][x + 1] && M[y][x] === M[y + 1][x] && M[y][x] === M[y + 1][x + 1]) pen += 3;
+      let dark = 0;
+      for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) dark += M[y][x];
+      const total2 = size * size;
+      for (let k = 0; dark * 20 < (9 - k) * total2 || dark * 20 > (11 + k) * total2; k++) pen += 10;
+      return pen;
+    };
+    let best = 0, bestPen = Infinity;
+    for (let m = 0; m < 8; m++) {
+      applyMask(m); drawFormat(m);
+      const p = penalty();
+      if (p < bestPen) { bestPen = p; best = m; }
+      applyMask(m);
+    }
+    applyMask(best); drawFormat(best);
+    return { size, M };
+  }
+  function draw(canvas, text, scale) {
+    const { size, M } = matrix(text);
+    const q = 4, s = scale || 3, px = (size + 2 * q) * s;
+    canvas.width = px; canvas.height = px;
+    canvas.style.width = px + 'px'; canvas.style.height = px + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, px, px);
+    ctx.fillStyle = '#000000';
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++)
+      if (M[y][x]) ctx.fillRect((x + q) * s, (y + q) * s, s, s);
+    return canvas;
+  }
+  return { matrix, draw };
+})();
+/*__END_PURE__*/
+
+/* ---------------- interface ---------------- */
+const $ = (id) => document.getElementById(id);
+function copyText(txt, btn) {
+  const done = () => { if (btn) { const o = btn.textContent; btn.textContent = '✓'; setTimeout(() => { btn.textContent = o; }, 900); } };
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, () => fallbackCopy(txt, done)); }
+  else fallbackCopy(txt, done);
+}
+function fallbackCopy(txt, done) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta); done();
+}
+
+/* ----- Les Codes ----- */
+const PLAY_URL = 'https://bilingua.app/play/?code=';
+let batch = [];
+function renderBatch(n) {
+  batch = makeBatch(n);
+  const sheet = $('sheet');
+  sheet.innerHTML = '';
+  batch.forEach((code) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="star">✶</div>' +
+      '<h4>Tu es invité·e à Fredericton.</h4>' +
+      '<div class="fr">You are invited to Fredericton.</div>' +
+      '<div class="code"></div>' +
+      '<div class="url">bilingua.app/play · 18+</div>' +
+      '<div class="from">de la part de / from <span>&nbsp;</span></div>' +
+      '<div class="ops"><input type="text" placeholder="pour qui ? / for whom?" aria-label="note"><button type="button">copier</button></div>';
+    card.querySelector('.code').textContent = code;
+    const cv = document.createElement('canvas');
+    cv.setAttribute('role', 'img');
+    cv.setAttribute('aria-label', 'QR — ' + PLAY_URL + code);
+    QR.draw(cv, PLAY_URL + code, 3);
+    card.insertBefore(cv, card.querySelector('.url'));
+    card.querySelector('.ops button').addEventListener('click', (e) => copyText(code, e.target));
+    sheet.appendChild(card);
+  });
+  $('batch-info').textContent = batch.length + ' codes · ' + todayStr();
+}
+document.querySelectorAll('#codes .controls button[data-n]').forEach((b) =>
+  b.addEventListener('click', () => renderBatch(parseInt(b.dataset.n, 10))));
+$('copy-all').addEventListener('click', (e) => copyText(batch.join('\n'), e.target));
+$('csv').addEventListener('click', () => {
+  const esc = (s) => '"' + String(s).replace(/"/g, '""') + '"';
+  const notes = Array.from(document.querySelectorAll('#sheet .ops input')).map((i) => i.value);
+  const rows = ['code,generated-date,note-for-who-received'];
+  batch.forEach((c, i) => rows.push([esc(c), esc(todayStr()), esc(notes[i] || '')].join(',')));
+  const blob = new Blob([rows.join('\n') + '\n'], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bilingua-codes-' + todayStr() + '.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+});
+
+/* ----- Aujourd'hui ----- */
+function renderToday() {
+  $('today-str').textContent = todayStr();
+  const m = dailyMission();
+  $('mission-fr').textContent = m.fr;
+  $('mission-en').textContent = m.en;
+  const tb = $('mission-week').querySelector('tbody');
+  tb.innerHTML = '';
+  for (let i = 1; i <= 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    const s = dateStrFor(d);
+    const mi = missionForDateStr(s);
+    const tr = document.createElement('tr');
+    const day = d.toLocaleDateString('fr-CA', { weekday: 'long' });
+    [s, day, mi.fr, mi.en].forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.appendChild(td); });
+    tb.appendChild(tr);
+  }
+}
+function renderThursday() {
+  const now = new Date();
+  const add = (4 - now.getDay() + 7) % 7;   /* Thursday = 4 */
+  let start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + add, 18, 0, 0);
+  let end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + add, 20, 0, 0);
+  if (now >= end) { start.setDate(start.getDate() + 7); end.setDate(end.getDate() + 7); }
+  if (now >= start && now < end) {
+    $('thursday').textContent = '🎻 En ce moment ! Jusqu’à 20 h. / Happening now — until 8 pm.';
+    return;
+  }
+  let ms = start - now;
+  const dj = Math.floor(ms / 86400000); ms -= dj * 86400000;
+  const hh = Math.floor(ms / 3600000); ms -= hh * 3600000;
+  const mm = Math.floor(ms / 60000);
+  $('thursday').textContent = 'Dans ' + dj + ' j ' + hh + ' h ' + mm + ' min — ' +
+    start.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' }) + ', 18 h.';
+}
+
+/* ----- Dépannage ----- */
+function renderDuo() {
+  const name = $('duo-nom').value;
+  const date = $('duo-date').value || todayStr();
+  $('duo-out').textContent = name.trim() ? ('🤝 ' + duoCode(name, date)) : '—';
+}
+$('duo-nom').addEventListener('input', renderDuo);
+$('duo-date').addEventListener('input', renderDuo);
+$('duo-date').value = todayStr();
+
+function renderVal() {
+  const raw = $('val-code').value;
+  const out = $('val-out');
+  if (!raw.trim()) { out.textContent = '—'; out.className = 'result'; return; }
+  if (validateInvite(raw)) {
+    out.textContent = '✶ VALIDE / valid';
+    out.className = 'result ok';
+  } else {
+    const parts = String(raw).trim().toUpperCase().replace(/\s+/g, '-').split('-').filter(Boolean);
+    let why = 'somme de contrôle incorrecte / checksum mismatch';
+    if (parts.length !== 3) why = 'il faut MOT-MOT-NN / needs WORD-WORD-NN';
+    else if (!INVITE_WORDS.includes(parts[0]) || !INVITE_WORDS.includes(parts[1])) why = 'mot hors liste / word not on the list';
+    else if (parts[0] === parts[1]) why = 'deux fois le même mot / same word twice';
+    out.textContent = '✗ INVALIDE — ' + why;
+    out.className = 'result bad';
+  }
+}
+$('val-code').addEventListener('input', renderVal);
+
+/* ----- Canonisation ----- */
+$('can-parse').addEventListener('click', () => {
+  const txt = $('can-paste').value;
+  const grab = (keys) => {
+    for (const k of keys) {
+      const m = txt.match(new RegExp('^\\s*' + k + '\\s*[:=]\\s*(.+)$', 'im'));
+      if (m) return m[1].trim();
+    }
+    return '';
+  };
+  const nom = grab(['nom', 'name']);
+  const lieu = grab(['lieu', 'place', 'venue']);
+  const quete = grab(['quete', 'quête', 'quest']);
+  if (nom) $('can-author').value = nom + ', quête proposée';
+  if (quete) { if (!$('can-descfr').value) $('can-descfr').value = quete; }
+  $('can-parsed').textContent = 'nom: ' + (nom || '—') + ' · lieu: ' + (lieu || '—') + ' · quête: ' + (quete ? quete.slice(0, 60) + (quete.length > 60 ? '…' : '') : '—');
+});
+$('can-gen').addEventListener('click', () => {
+  const ev = {
+    titleFR: $('can-titlefr').value.trim(),
+    titleEN: $('can-titleen').value.trim(),
+    venueId: $('can-venue').value.trim(),
+    when: $('can-when').value.trim(),
+    descFR: $('can-descfr').value.trim(),
+    descEN: $('can-descen').value.trim(),
+    kind: $('can-kind').value.trim() || 'conversation-night',
+  };
+  const author = $('can-author').value.trim();
+  if (author) ev.author = author;
+  $('can-out').textContent = JSON.stringify(ev, null, 2) + ',';
+});
+$('can-copy').addEventListener('click', (e) => copyText($('can-out').textContent, e.target));
+
+/* ----- boot ----- */
+renderBatch(12);
+renderToday();
+renderThursday();
+setInterval(renderThursday, 30000);
+</script>
+</body>
+</html>
