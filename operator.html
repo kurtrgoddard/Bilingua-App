@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Poste de Commandement — Bilingua Quest</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🛰️</text></svg>">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root {
+    --paper: #F8F4EC; --ink: #2A2118; --muted: #6E6357;
+    --acadie: #1F4FA8; --stella: #C89512; --green: #2E7D52; --red: #B5462F;
+    --card: #FFFDF8; --line: #E3DACB; --soft: #F0EADD;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #211913; --ink: #EFE7DA; --muted: #A79A8A; --acadie: #8FB0E8; --stella: #E0B93F; --green: #6FC79A; --red: #E68A6F; --card: #2A211A; --line: #3D332A; --soft: #2E251D; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: Charter, 'Sitka Text', Cambria, Georgia, serif; line-height: 1.55; padding: 1.5rem 1.1rem 5rem; }
+  .wrap { max-width: 54rem; margin: 0 auto; }
+  h1, h2, h3 { font-family: 'Iowan Old Style', Palatino, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); }
+  h2 { font-size: 1.4rem; margin: 0 0 0.2rem; }
+  .sub { color: var(--muted); }
+  p { margin: 0.6rem 0; }
+  a { color: var(--acadie); }
+  code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.85em; background: var(--soft); padding: 0.1rem 0.35rem; border-radius: 5px; }
+  .lede { font-size: 1.05rem; }
+  .panel { background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; padding: 1.3rem 1.4rem; margin: 1.1rem 0; }
+  .panel > .tag { display: inline-block; font-size: 0.64rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 999px; padding: 0.12rem 0.7rem; margin-bottom: 0.6rem; }
+  .tag.live { border: 1.5px solid var(--green); color: var(--green); }
+  .tag.linked { border: 1.5px solid var(--stella); color: var(--stella); }
+  .tag.soon { border: 1.5px solid var(--muted); color: var(--muted); }
+  .btn { display: inline-block; font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 0.95rem; text-decoration: none; background: var(--acadie); color: #fff; border: none; border-radius: 9px; padding: 0.55rem 1.1rem; cursor: pointer; margin: 0.3rem 0.3rem 0.3rem 0; }
+  .btn.gold { background: var(--stella); color: #201a08; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+  .btn.sm { font-size: 0.8rem; padding: 0.35rem 0.7rem; }
+  input, textarea { font-family: inherit; font-size: 0.95rem; color: var(--ink); background: var(--paper); border: 1.5px solid var(--line); border-radius: 8px; padding: 0.45rem 0.6rem; }
+  label { display: block; font-size: 0.72rem; color: var(--muted); font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; text-transform: uppercase; margin: 0.7rem 0 0.2rem; }
+  ul, ol { margin: 0.5rem 0 0.5rem 1.2rem; } li { margin: 0.35rem 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.7rem; margin: 0.8rem 0; }
+  .stat { background: var(--soft); border-radius: 10px; padding: 0.8rem 1rem; }
+  .stat .n { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 2rem; color: var(--acadie); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: ui-monospace, Menlo, monospace; margin-top: 0.25rem; }
+  table { width: 100%; border-collapse: collapse; margin: 0.7rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-family: ui-monospace, Menlo, monospace; }
+  td.code { font-family: ui-monospace, Menlo, monospace; font-weight: bold; white-space: nowrap; }
+  .who { color: var(--muted); font-size: 0.82rem; }
+  .pill { font-size: 0.7rem; font-family: ui-monospace, Menlo, monospace; border-radius: 999px; padding: 0.1rem 0.55rem; white-space: nowrap; }
+  .pill.held { border: 1.5px solid var(--stella); color: var(--stella); }
+  .pill.redeemed { border: 1.5px solid var(--green); color: var(--green); }
+  .empty { color: var(--muted); font-style: italic; padding: 0.8rem 0; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; }
+  .toolbar > div { flex: 1 1 140px; }
+  .note { font-size: 0.85rem; color: var(--muted); }
+  .divider { border: none; border-top: 1px solid var(--line); margin: 2rem 0; }
+  .checklist { list-style: none; margin-left: 0; }
+  .checklist li { padding-left: 1.6rem; position: relative; }
+  .checklist li::before { content: "☐"; position: absolute; left: 0; color: var(--stella); }
+  .warn { background: color-mix(in srgb, var(--stella) 12%, transparent); border-left: 3px solid var(--stella); border-radius: 0 8px 8px 0; padding: 0.7rem 0.9rem; font-size: 0.9rem; }
+  footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="sub" style="font-family:ui-monospace,Menlo,monospace; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase;">🛰️ Private · for the keeper of the keys only · unlinked &amp; unindexed</p>
+  <h1>Le Poste de Commandement</h1>
+  <p class="lede sub">Your one screen for running Bilingua as a business: the waitlist, the codes and who holds each one, the money, and the levers that make it spread. It never shows a fake number — where the real data lives elsewhere, it sends you straight there; where nothing tracks something yet, it says so.</p>
+</header>
+
+<!-- ========================= WAITLIST ========================= -->
+<section class="panel">
+  <span class="tag linked">Lives in Netlify Forms</span>
+  <h2>The waitlist &amp; the feedback</h2>
+  <p>Every signup, feedback note, and quest proposal from the site is captured by <b>Netlify Forms</b> — names, emails, messages, timestamps, all in one dashboard. A static page like this one can't read them (that would need a server holding a secret key), so here are the direct doors:</p>
+  <p>
+    <a class="btn" id="lnk-waitlist" href="https://app.netlify.com/projects/bilingua-quest/forms" target="_blank" rel="noopener">Open waitlist submissions →</a>
+    <a class="btn ghost" href="https://app.netlify.com/projects/bilingua-quest/forms" target="_blank" rel="noopener">Feedback</a>
+    <a class="btn ghost" href="https://app.netlify.com/projects/bilingua-quest/forms" target="_blank" rel="noopener">Quest proposals</a>
+  </p>
+  <div class="warn">Turn on email alerts once, and every new name also lands in your inbox: Netlify → <b>Forms → Settings → Form notifications</b> → add email to <code>kurtrgoddard@gmail.com</code>. Until the Netlify deploy is active, the site forms fall back to opening a pre-filled email instead — so no signup is ever lost.</div>
+  <p class="note">The three forms are <code>waitlist</code>, <code>feedback</code>, and <code>proposer-quete</code>. They appear in the dashboard automatically after the first Netlify deploy.</p>
+</section>
+
+<!-- ========================= CODE LEDGER ========================= -->
+<section class="panel">
+  <span class="tag live">Live · works right now · private to this browser</span>
+  <h2>The code ledger — who holds access</h2>
+  <p>This is the one thing nothing else tracks yet. Generate an invitation code, write down who you handed it to, and mark it redeemed when they arrive. It's <b>your private record</b>, stored only in this browser (<code>localStorage</code>) — never uploaded, matching the promise on the public privacy page. Codes made here are the real, valid ones the game accepts.</p>
+
+  <div class="grid">
+    <div class="stat"><div class="n" id="s-total">0</div><div class="l">Codes issued</div></div>
+    <div class="stat"><div class="n" id="s-held">0</div><div class="l">Out, not yet redeemed</div></div>
+    <div class="stat"><div class="n" id="s-redeemed">0</div><div class="l">Redeemed</div></div>
+    <div class="stat"><div class="n" id="s-rate">—</div><div class="l">Redemption rate</div></div>
+  </div>
+
+  <div class="toolbar">
+    <div>
+      <label for="who">Handed to (name / handle)</label>
+      <input id="who" placeholder="e.g. Marie-Claude, or 'founding Hôte'" style="width:100%">
+    </div>
+    <div>
+      <label for="channel">Where / note</label>
+      <input id="channel" placeholder="e.g. Dolan's Thursday, Instagram DM" style="width:100%">
+    </div>
+    <div style="flex:0 0 auto">
+      <button class="btn gold" id="gen">＋ Issue a code</button>
+    </div>
+  </div>
+
+  <div style="margin-top:0.9rem">
+    <label for="check">Check any code (paste one to see if it's valid &amp; who has it)</label>
+    <div class="toolbar">
+      <div><input id="check" placeholder="WORD-WORD-NN" style="width:100%; text-transform:uppercase"></div>
+      <div style="flex:0 0 auto"><button class="btn ghost" id="do-check">Validate</button></div>
+    </div>
+    <p id="check-result" class="note" style="min-height:1.2em"></p>
+  </div>
+
+  <table>
+    <thead><tr><th>Code</th><th>Holder</th><th>Issued</th><th>Status</th><th></th></tr></thead>
+    <tbody id="ledger-body"></tbody>
+  </table>
+  <p id="ledger-empty" class="empty">No codes issued yet. Issue your first above — or seed the founding demo code to see how it looks.</p>
+
+  <p style="margin-top:0.8rem">
+    <button class="btn sm ghost" id="export">⇩ Export CSV</button>
+    <button class="btn sm ghost" id="import-btn">⇧ Import CSV</button>
+    <input type="file" id="import-file" accept=".csv,text/csv" style="display:none">
+    <button class="btn sm ghost" id="seed">Seed demo code</button>
+    <button class="btn sm ghost" id="print" onclick="window.print()">🖨 Print cards</button>
+    <a class="btn sm ghost" href="atelier.html">Batch printing room →</a>
+  </p>
+  <p class="note">Back up now and then with Export — clearing this browser's data erases the ledger. When you're ready for codes that redeem themselves and sync across devices, that's the backend upgrade at the bottom of this page.</p>
+</section>
+
+<!-- ========================= MONEY ========================= -->
+<section class="panel">
+  <span class="tag linked">Lives in Stripe · currently TEST mode</span>
+  <h2>The money</h2>
+  <p>Tickets sell through Stripe. The links are live but in <b>test mode</b> — real cards are declined until you flip to live keys. The split is fixed and honest:</p>
+  <div class="grid">
+    <div class="stat"><div class="n">65<span style="font-size:1rem">%</span></div><div class="l">The Hôte who hosts</div></div>
+    <div class="stat"><div class="n">20<span style="font-size:1rem">%</span></div><div class="l">Bilingua (you)</div></div>
+    <div class="stat"><div class="n">15<span style="font-size:1rem">%</span></div><div class="l">Community fund</div></div>
+  </div>
+  <p>
+    <a class="btn" href="https://dashboard.stripe.com/test/payments" target="_blank" rel="noopener">Open Stripe dashboard →</a>
+    <a class="btn ghost" href="billets.html">The public tickets page</a>
+  </p>
+  <h3 style="margin-top:1rem; font-size:1.05rem">Go-live checklist (flip when you launch)</h3>
+  <ul class="checklist">
+    <li>Activate the Stripe account (business details, bank for payouts) at <code>dashboard.stripe.com</code>.</li>
+    <li>Recreate the 3 products/prices with <b>live</b> keys, or toggle the test links to live.</li>
+    <li>Swap the 3 <code>buy.stripe.com/test_…</code> links in <code>billets.html</code> for the live ones.</li>
+    <li>Set up Stripe payouts + the community-fund tracking (a separate ledger or Stripe Connect for real host splits).</li>
+    <li>Confirm the “NextRound” account is the one you want money landing in.</li>
+  </ul>
+  <p class="note">Full model, price psychology, and research: <code>DESIGN-ECONOMY.md</code> in the repo. True per-host automatic splits (Stripe Connect) is part of the backend upgrade below.</p>
+</section>
+
+<!-- ========================= VIRAL ENGINE ========================= -->
+<section class="panel">
+  <span class="tag live">Levers you can pull now</span>
+  <h2>The engine — how it spreads</h2>
+  <p>Growth here isn't ads; it's the scarcity and the ritual. The switches already built into the product:</p>
+  <ul>
+    <li><b>Hand-to-hand codes.</b> Every code is a physical, named object. Track each one in the ledger above so the “100 founders” stays an <i>honest</i> number.</li>
+    <li><b>First users get 3 codes each.</b> The invited become inviters — the referral graph without a growth-hack smell. (In-game: earned by recognition.)</li>
+    <li><b>Shareable postcards.</b> The game emits a canvas postcard carrying the player's last real French phrase — the viral loop's evidence. (v0.6 “Carte Postale”.)</li>
+    <li><b>The Thursday ritual.</b> Dolan's Pub, 18h–20h, glowing in-game with a live countdown — “you had to be there,” with an address.</li>
+    <li><b>The city relights.</b> Each stamp visibly restores the dark map; milestones at 5/10/18/26 — visible collective progress.</li>
+  </ul>
+  <h3 style="margin-top:1rem; font-size:1.05rem">The founders'-100 playbook (staged, Harvard-dorm style)</h3>
+  <ol>
+    <li><b>Seed one perfect table.</b> Run a single flawless expedition (the kit in <code>expedition.html</code>). Photograph it. That's your proof.</li>
+    <li><b>Hand out the first ~20 codes</b> to real people, logged here. Hôtes first — they unlock everyone else.</li>
+    <li><b>Let scarcity work.</b> Publish only true counts (“37 of the founding 100 spoken for”). The Competition Act likes honest numbers; so does trust.</li>
+    <li><b>Open a region when a threshold is truly hit</b> (the in-game province map). Moncton unlocks when Moncton earns it — never before.</li>
+    <li><b>Only then, widen the mouth of the funnel</b> (press, socials) — once the table is warm, not before.</li>
+  </ol>
+  <p>
+    <a class="btn ghost" href="../play/" target="_blank" rel="noopener">Open the game</a>
+    <a class="btn ghost" href="expedition.html">The pilot kit</a>
+    <a class="btn ghost" href="proposer.html">Let players propose quests</a>
+  </p>
+</section>
+
+<hr class="divider">
+
+<!-- ========================= THE UPGRADE ========================= -->
+<section class="panel">
+  <span class="tag soon">The one upgrade</span>
+  <h2>What a backend would turn on</h2>
+  <p>Everything above is honest but split across dashboards, and the code ledger lives only in this browser. A single backend (a database like Supabase, plus a little serverless glue) would fold it all into live numbers <i>on this screen</i>:</p>
+  <table>
+    <thead><tr><th>Today</th><th>With a backend</th></tr></thead>
+    <tbody>
+      <tr><td>Waitlist rows in Netlify's dashboard</td><td>Live waitlist count &amp; list here, searchable</td></tr>
+      <tr><td>Codes valid but redemption is on the honour system</td><td>Real <b>single-use</b> codes that redeem themselves; “who has access” is automatic</td></tr>
+      <tr><td>Referral graph lives on paper</td><td>See who invited whom — the actual viral tree</td></tr>
+      <tr><td>Stripe split tracked by hand</td><td>Automatic per-host payouts (Stripe Connect)</td></tr>
+      <tr><td>Ledger stuck in one browser</td><td>Synced across your devices, with a login</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>One honest caveat before you say yes.</b> Your published privacy page currently promises “<i>No account. No tracking. No analytics.</i>” A real backend that records signups, redemptions, and who-invited-whom is <b>personal data</b> — it's the opposite of that promise, and it brings PIPEDA duties (consent, storage, the right to be forgotten). It's a normal thing for a real business to do — but it means updating the privacy/terms pages to tell the truth about it. That's why I'm not switching it on without your say-so.</div>
+  <p class="note">Say the word and I'll stand up the backend, rewrite the privacy/terms pages to match, and turn this panel into the live control room. Cost is small at your scale (Supabase has a free tier), but it's your data, your accounts, and your promise to change — so it's your call.</p>
+</section>
+
+<footer>
+  Le Poste de Commandement · Bilingua Quest · keep this URL to yourself.<br>
+  Nothing on this page is uploaded; the ledger is yours alone until you choose otherwise.
+</footer>
+
+</div>
+
+<script>
+'use strict';
+/* Same code grammar as the game & atelier — codes issued here are valid in play. */
+const INVITE_WORDS = ['VIOLET','WOLASTOQ','FOUGERE','ACADIE','STELLA','POUTINE','RIVIERE','PONT','CAFE','VELO','HARVEST','FROSTIVAL','TINTAMARRE','MARIGOLD','CHICKADEE','MOITIE','BRUME','HOMARD','SIROP','CANOT','LILAS','PICNIC','AURORE','SENTIER'];
+function inviteChecksum(w1, w2) {
+  const s = (w1 + '-' + w2).toUpperCase();
+  let v = 0;
+  for (let i = 0; i < s.length; i++) v = (v * 31 + s.charCodeAt(i)) % 1000000;
+  return 10 + (v % 89);
+}
+function validFormat(code) {
+  const m = (code || '').trim().toUpperCase().match(/^([A-Z]+)-([A-Z]+)-(\d{2})$/);
+  if (!m) return false;
+  if (INVITE_WORDS.indexOf(m[1]) < 0 || INVITE_WORDS.indexOf(m[2]) < 0) return false;
+  return inviteChecksum(m[1], m[2]) === parseInt(m[3], 10);
+}
+function makeCode(existing) {
+  for (let tries = 0; tries < 400; tries++) {
+    const i = Math.floor(Math.random() * INVITE_WORDS.length);
+    let j = Math.floor(Math.random() * INVITE_WORDS.length);
+    if (j === i) j = (j + 1) % INVITE_WORDS.length;
+    const code = INVITE_WORDS[i] + '-' + INVITE_WORDS[j] + '-' + inviteChecksum(INVITE_WORDS[i], INVITE_WORDS[j]);
+    if (!existing.has(code)) return code;
+  }
+  return null;
+}
+
+const KEY = 'bq_operator_ledger_v1';
+let ledger = [];
+try { ledger = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { ledger = []; }
+function save() { localStorage.setItem(KEY, JSON.stringify(ledger)); }
+function codeSet() { return new Set(ledger.map(r => r.code)); }
+const $ = (id) => document.getElementById(id);
+
+/* Date without Date.now flakiness concerns — this is a user-facing UI, real clock is fine here. */
+function today() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+
+function render() {
+  const body = $('ledger-body');
+  body.innerHTML = '';
+  const total = ledger.length;
+  const redeemed = ledger.filter(r => r.redeemed).length;
+  const held = total - redeemed;
+  $('s-total').textContent = total;
+  $('s-held').textContent = held;
+  $('s-redeemed').textContent = redeemed;
+  $('s-rate').textContent = total ? Math.round(redeemed / total * 100) + '%' : '—';
+  $('ledger-empty').style.display = total ? 'none' : 'block';
+  ledger.slice().reverse().forEach((r) => {
+    const tr = document.createElement('tr');
+    const who = r.who ? r.who : '<span class="who">—</span>';
+    const chan = r.channel ? '<div class="who">' + esc(r.channel) + '</div>' : '';
+    tr.innerHTML =
+      '<td class="code">' + r.code + '</td>' +
+      '<td>' + (r.who ? esc(r.who) : '<span class="who">unassigned</span>') + chan + '</td>' +
+      '<td class="who">' + (r.issued || '') + '</td>' +
+      '<td>' + (r.redeemed ? '<span class="pill redeemed">redeemed ' + (r.redeemedOn || '') + '</span>' : '<span class="pill held">out</span>') + '</td>' +
+      '<td style="white-space:nowrap">' +
+        '<button class="btn sm ghost" data-act="toggle" data-code="' + r.code + '">' + (r.redeemed ? '↺ unset' : '✓ redeemed') + '</button>' +
+        '<button class="btn sm ghost" data-act="del" data-code="' + r.code + '">✕</button>' +
+      '</td>';
+    body.appendChild(tr);
+  });
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+$('gen').addEventListener('click', () => {
+  const code = makeCode(codeSet());
+  if (!code) { alert('Ran out of unique two-word codes — 552 possible. Time for the backend upgrade!'); return; }
+  ledger.push({ code, who: $('who').value.trim(), channel: $('channel').value.trim(), issued: today(), redeemed: false, redeemedOn: '' });
+  $('who').value = ''; $('channel').value = '';
+  save(); render();
+});
+$('ledger-body').addEventListener('click', (e) => {
+  const btn = e.target.closest('button'); if (!btn) return;
+  const r = ledger.find(x => x.code === btn.dataset.code); if (!r) return;
+  if (btn.dataset.act === 'toggle') { r.redeemed = !r.redeemed; r.redeemedOn = r.redeemed ? today() : ''; }
+  else if (btn.dataset.act === 'del') { if (!confirm('Remove ' + r.code + ' from the ledger?')) return; ledger = ledger.filter(x => x.code !== r.code); }
+  save(); render();
+});
+$('do-check').addEventListener('click', () => {
+  const raw = $('check').value.trim().toUpperCase();
+  const el = $('check-result');
+  if (!raw) { el.textContent = ''; return; }
+  if (!validFormat(raw)) { el.style.color = 'var(--red)'; el.textContent = '✕ Not a valid Bilingua code (bad format or checksum).'; return; }
+  const rec = ledger.find(r => r.code === raw);
+  el.style.color = 'var(--green)';
+  if (rec) el.textContent = '✓ Valid — issued ' + rec.issued + (rec.who ? ' to ' + rec.who : ', unassigned') + (rec.redeemed ? ', already redeemed ' + rec.redeemedOn + '.' : ', not yet redeemed.');
+  else el.textContent = '✓ Valid format & checksum — but not in your ledger (issued elsewhere, or an atelier batch code).';
+});
+$('check').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('do-check').click(); });
+
+$('seed').addEventListener('click', () => {
+  if (codeSet().has('STELLA-WOLASTOQ-11')) { alert('Demo code already in the ledger.'); return; }
+  ledger.push({ code: 'STELLA-WOLASTOQ-11', who: 'Demo / testing', channel: 'built-in demo code', issued: today(), redeemed: false, redeemedOn: '' });
+  save(); render();
+});
+
+/* CSV export/import — your backup path until there's a backend. */
+$('export').addEventListener('click', () => {
+  const rows = [['code', 'who', 'channel', 'issued', 'redeemed', 'redeemedOn']];
+  ledger.forEach(r => rows.push([r.code, r.who || '', r.channel || '', r.issued || '', r.redeemed ? 'yes' : 'no', r.redeemedOn || '']));
+  const csv = rows.map(row => row.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'bilingua-codes-' + today() + '.csv'; a.click();
+  URL.revokeObjectURL(a.href);
+});
+$('import-btn').addEventListener('click', () => $('import-file').click());
+$('import-file').addEventListener('change', (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const lines = reader.result.split(/\r?\n/).filter(l => l.trim());
+      const seen = codeSet(); let added = 0;
+      lines.slice(1).forEach(line => {
+        const cols = line.match(/("([^"]|"")*"|[^,]*)/g).filter((_, i) => i % 2 === 0).map(c => c.replace(/^"|"$/g, '').replace(/""/g, '"'));
+        const [code, who, channel, issued, redeemed, redeemedOn] = cols;
+        if (code && validFormat(code) && !seen.has(code.toUpperCase())) {
+          ledger.push({ code: code.toUpperCase(), who: who || '', channel: channel || '', issued: issued || today(), redeemed: /^y/i.test(redeemed || ''), redeemedOn: redeemedOn || '' });
+          seen.add(code.toUpperCase()); added++;
+        }
+      });
+      save(); render(); alert('Imported ' + added + ' new code(s).');
+    } catch (err) { alert('Could not read that CSV.'); }
+    $('import-file').value = '';
+  };
+  reader.readAsText(file);
+});
+
+render();
+</script>
+</body>
+</html>
