@@ -313,6 +313,19 @@ function loadSave() {
 function writeSave() { if (save) localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
 loadSave();
 
+/* QR deep-link: ?code=WORD-WORD-NN pre-fills the invitation gate (hash #code=... accepted
+   too — some QR scanners mangle query strings). The code is stripped from the visible URL
+   right away so shared screenshots don't leak invitations. */
+let urlInviteCode = null;
+(function () {
+  const fromSearch = new URLSearchParams(location.search).get('code');
+  const fromHash = new URLSearchParams(location.hash.replace(/^#/, '')).get('code');
+  const raw = fromSearch || fromHash;
+  if (!raw) return;
+  urlInviteCode = raw.trim().toUpperCase();
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+})();
+
 /* ---------------- audio (tiny chip bleeps, off by default) ---------------- */
 const SND = {
   on: false, ctx: null,
@@ -2136,9 +2149,19 @@ function showInvitation() {
     '<p style="margin-top:10px; opacity:0.6; font-size:11px">' + (LANG === 'fr' ? 'La fondation compte 100 invitations. Les Hôtes en détiennent la plupart.' : 'The founding batch is 100 invitations. Most are held by Hôtes.') + '</p>'
   );
   const code = w.querySelector('#i-code'), err = w.querySelector('#i-err'), go = w.querySelector('#i-go');
+  /* QR deep-link pre-fill: keep the ritual — the player still presents the invitation. */
+  if (urlInviteCode) {
+    code.value = urlInviteCode;
+    if (validateInvite(urlInviteCode)) {
+      err.style.color = '#8fd49a';
+      err.textContent = LANG === 'fr' ? '« Code reconnu ✶ »' : '« Code reconnu ✶ » — code recognized';
+    }
+    /* invalid: leave the gate exactly as-is, prefilled so a typo is easy to fix */
+  }
   const submit = () => {
     const val = code.value;
     if (!validateInvite(val)) {
+      err.style.color = '#e58a76';
       err.textContent = LANG === 'fr' ? 'Hmm — ce code ne semble pas valide. Vérifie les tirets et les chiffres.' : 'Hmm — that code doesn’t look valid. Check the dashes and digits.';
       code.focus();
       return;

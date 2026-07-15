@@ -42,6 +42,7 @@ VELO-ACADIE-92        MOITIE-CANOT-32       VIOLET-TINTAMARRE-74
 ```
 
 More anytime: `/atelier.html` on the live site (unlisted printing room).
+Codes and daily ops: `/regie.html` + `OPERATIONS.md` in the repo.
 
 ## Message à partager ce soir (suggestion)
 
