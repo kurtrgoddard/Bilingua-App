@@ -103,3 +103,31 @@ Eight static-site injections, one per principle it serves — all client-side, n
 8. **Pin de l'Accueil** — using « Pouvez-vous répéter plus lentement ? » three times earns « Le courage de demander » *(Sky: kindness as mechanic — asking for patience is a decorated act, and the beginner is never a burden)*.
 
 Voir [DESIGN-PRINCIPLES.md](DESIGN-PRINCIPLES.md) — la carte complète des principes → fonctionnalités.
+
+## Le Générique (v0.5.1) — the title screen is the first playable moment
+
+**The improved prompt (round eight):**
+> The title screen is the first playable moment, not a menu. When someone opens
+> Bilingua Quest — on a phone at a bar or a laptop at home — the first three
+> seconds must do what an SNES cartridge did on Christmas morning: the town
+> itself, alive with *right now's* real weather, season and hour, slowly
+> drifting behind a glowing logo, saying *this world was already running before
+> you arrived* (the arcade attract-mode principle: show the world playing
+> itself). Nostalgia comes from the grammar — pixel type, blinking PRESS START,
+> gold sparkles; the never-experienced-before comes from the content — it's
+> *your actual city, live*. One tap or keystroke goes fullscreen; the game must
+> be genuinely playable on a phone and flawless with a keyboard on desktop.
+> The golden mean: every ounce of juice serves the two goals — get in, feel the
+> magic, walk toward a real conversation.
+
+**What shipped:** attract-tour camera (a slow canoe-speed drift through
+downtown, across the river, around the northside — townsfolk, deer, weather and
+streetlamps all live behind the logo); cinematic gradient bands instead of a
+flat dark overlay; layered bobbing logo with a sheen sweep and twinkling gold
+stars (all still under `prefers-reduced-motion`); a live "Fredericton, right
+now — season, time" line; device-aware start prompt (TAP THE SCREEN on touch);
+fullscreen via ⛶ button and F key (hidden where the API doesn't exist);
+edge-to-edge canvas on phones with device-pixel snapping at mid scales and
+integer scaling on desktop; compact two-row HUD under 640px; touch controls
+hidden until play begins; and a typing guard so letters in name/code fields
+never trigger game shortcuts (Escape still always escapes).

@@ -156,9 +156,30 @@
     padding: 3px 14px; opacity: 0; transition: opacity 0.5s; pointer-events: none;
   }
 
-  /* touch controls */
+  /* compact HUD on narrow screens: two tidy rows to the right of ⛶,
+     never off-screen, banner tucked underneath */
+  @media (max-width: 640px) {
+    #hud {
+      left: 60px; right: 8px; transform: none;
+      flex-wrap: wrap; justify-content: flex-end; gap: 5px;
+      font-size: 11px;
+    }
+    #hud .pill { padding: 2px 8px; white-space: nowrap; }
+    #hud button.pill { font-size: 11px; }
+    #loc-banner { top: 72px; font-size: 11px; max-width: calc(100vw - 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  }
+
+  /* touch controls (only once you're walking the town — the title stays clean) */
   #touch { position: fixed; inset: 0; z-index: 25; pointer-events: none; display: none; }
-  body.touch #touch { display: block; }
+  body.touch.playing #touch { display: block; }
+
+  /* fullscreen toggle — hidden by JS where the API doesn't exist (iPhone Safari) */
+  #fs-btn {
+    position: fixed; left: 14px; top: 12px; z-index: 22;
+    font-size: 14px; line-height: 1; color: var(--ui-gold);
+    background: rgba(26,35,64,0.88); border: 2px solid var(--ui-cream);
+    border-radius: 999px; padding: 5px 12px; cursor: pointer; font-family: inherit;
+  }
   #dpad {
     position: absolute; left: 14px; bottom: max(120px, calc(env(safe-area-inset-bottom) + 120px));
     width: 132px; height: 132px; pointer-events: auto;
@@ -194,6 +215,8 @@
 </head>
 <body>
 <div id="stage"><canvas id="game" width="480" height="320" aria-label="Bilingua Quest game world"></canvas></div>
+
+<button id="fs-btn" type="button" aria-label="Fullscreen" title="Fullscreen [F]">⛶</button>
 
 <a id="vision-link" href="../" style="position:fixed; right:14px; top:12px; z-index:22; font-size:12px; color:var(--ui-gold); background:rgba(26,35,64,0.88); border:2px solid var(--ui-cream); border-radius:999px; padding:3px 12px; text-decoration:none; font-family:inherit;">La vision →</a>
 
@@ -404,7 +427,7 @@ function drawWeather() {
   else if (phase === 'night') {
     cx.fillStyle = 'rgba(10,16,48,0.42)'; cx.fillRect(0, 0, 480, 320);
     /* streetlamps at the downtown intersections */
-    if (state === 'world') {
+    if (state !== 'interior') {
       [[10, 29], [22, 29], [36, 29], [48, 29], [64, 29], [80, 29], [10, 37], [36, 37], [64, 37], [22, 45], [48, 45], [80, 45]].forEach(([lx, ly]) => {
         const sx = lx * TILE - camera.x + 8, sy = ly * TILE - camera.y + 8;
         if (sx < -40 || sx > 520 || sy < -40 || sy > 360) return;
@@ -1571,8 +1594,12 @@ function render() {
   const grid = state === 'interior' ? interior.grid : map;
   const gw = state === 'interior' ? ROOM_W : MAP_W, gh = state === 'interior' ? ROOM_H : MAP_H;
   /* camera */
-  camera.x = Math.max(0, Math.min(player.px - W / 2 + 8, gw * TILE - W));
-  camera.y = Math.max(0, Math.min(player.py - H / 2 + 10, gh * TILE - H));
+  if (state === 'title') {
+    titleTourCamera(W, H, gw, gh);
+  } else {
+    camera.x = Math.max(0, Math.min(player.px - W / 2 + 8, gw * TILE - W));
+    camera.y = Math.max(0, Math.min(player.py - H / 2 + 10, gh * TILE - H));
+  }
   if (gw * TILE < W) camera.x = -(W - gw * TILE) / 2;
   if (gh * TILE < H) camera.y = -(H - gh * TILE) / 2;
   const waterFrame = REDUCED ? 0 : Math.floor(frameCount / 32) % 2;
@@ -1583,7 +1610,7 @@ function render() {
     const id = tileAt(grid, x, y);
     const sx = Math.round(x * TILE - camera.x), sy = Math.round(y * TILE - camera.y);
     drawTile(id, sx, sy, id === TL.WATER ? waterFrame : 0);
-    if (state === 'world') {
+    if (state !== 'interior') {
       if (season === 'winter') {
         if (id === TL.GRASS || id === TL.GRASS2 || id === TL.PATH || id === TL.FLOWER || id === TL.BANK) { cx.fillStyle = 'rgba(240,246,252,0.55)'; cx.fillRect(sx, sy, TILE, TILE); }
         else if (id === TL.WATER) { cx.fillStyle = 'rgba(210,230,248,0.35)'; cx.fillRect(sx, sy, TILE, TILE); }
@@ -1595,8 +1622,8 @@ function render() {
       }
     }
   }
-  /* venue icons + names over doors (world only) */
-  if (state === 'world') {
+  /* venue icons + names over doors (world + the title's attract tour) */
+  if (state !== 'interior') {
     cx.font = '9px monospace'; cx.textAlign = 'center';
     const drawLabel = (v) => {
       const sx = (v.x + v.w / 2) * TILE - camera.x, sy = v.y * TILE - camera.y - 3;
@@ -1707,9 +1734,9 @@ function render() {
         const nm = (s.host ? '🎪 ' : '') + s.name;
         const nw = cx.measureText(nm).width + 8;
         cx.fillStyle = 'rgba(10,14,26,0.8)'; cx.fillRect(sx + 8 - nw / 2, sy - 13, nw, 11);
-        cx.fillStyle = save.metSpecials && save.metSpecials[s.id] ? '#f4ead2' : '#ffd94a';
+        cx.fillStyle = save && save.metSpecials && save.metSpecials[s.id] ? '#f4ead2' : '#ffd94a';
         cx.fillText(nm, sx + 8, sy - 4);
-      } else if (!(save.metSpecials && save.metSpecials[s.id])) {
+      } else if (!(save && save.metSpecials && save.metSpecials[s.id])) {
         cx.fillStyle = '#ffd94a'; cx.fillText('!', sx + 8, sy - 4);
       }
     });
@@ -1745,11 +1772,13 @@ function render() {
     cx.fillStyle = interior.pack.npc.isHote ? '#ffd94a' : '#f4ead2';
     cx.fillText(nm, 7.5 * TILE - camera.x, 1.4 * TILE - camera.y + 9);
   }
-  /* player */
-  const walkFrame = player.moving ? Math.floor(frameCount / 8) % 2 : 0;
-  drawChar(cx, Math.round(player.px - camera.x), Math.round(player.py - camera.y - 4), HERO_STYLES[player.styleIdx], player.dir, walkFrame, {});
+  /* player (the hero doesn't exist yet on the title — the town does) */
+  if (state !== 'title') {
+    const walkFrame = player.moving ? Math.floor(frameCount / 8) % 2 : 0;
+    drawChar(cx, Math.round(player.px - camera.x), Math.round(player.py - camera.y - 4), HERO_STYLES[player.styleIdx], player.dir, walkFrame, {});
+  }
   drawTornado();
-  if (state === 'world') drawWeather();
+  if (state !== 'interior') drawWeather();
   /* interaction hint */
   const target = interactTarget();
   if (target && !dialogueActive) {
@@ -1760,24 +1789,83 @@ function render() {
   /* title screen */
   if (state === 'title') renderTitle();
 }
+/* The attract tour: the town plays itself behind the title. Slow drift
+   along a scenic loop — downtown, the river, the northside, back. */
+const TITLE_TOUR = [[16, 30], [36, 31], [58, 27], [70, 18], [56, 8], [36, 6], [22, 17], [10, 25]];
+let tourIdx = 1, tourX = null, tourY = null;
+function titleTourCamera(W, H, gw, gh) {
+  const camX = (tx) => Math.max(0, Math.min(tx * TILE - W / 2, gw * TILE - W));
+  const camY = (ty) => Math.max(0, Math.min(ty * TILE - H / 2, gh * TILE - H));
+  if (tourX === null || REDUCED) {
+    tourX = camX(TITLE_TOUR[0][0]); tourY = camY(TITLE_TOUR[0][1]);
+    if (REDUCED) { camera.x = tourX; camera.y = tourY; return; }
+  }
+  const gx = camX(TITLE_TOUR[tourIdx][0]), gy = camY(TITLE_TOUR[tourIdx][1]);
+  const dx = gx - tourX, dy = gy - tourY, d = Math.hypot(dx, dy);
+  const sp = 0.35;                              /* gentle — a canoe, not a car */
+  if (d < 1) tourIdx = (tourIdx + 1) % TITLE_TOUR.length;
+  else { tourX += dx / d * Math.min(sp, d); tourY += dy / d * Math.min(sp, d); }
+  camera.x = tourX; camera.y = tourY;
+}
 function renderTitle() {
   const W = cv.width, H = cv.height;
-  cx.fillStyle = 'rgba(8, 11, 22, 0.55)'; cx.fillRect(0, 0, W, H);
-  /* mini skyline: river + bridge silhouette */
-  cx.fillStyle = '#16203a'; cx.fillRect(0, H - 70, W, 70);
-  cx.fillStyle = '#233158'; for (let i = 0; i < 9; i++) cx.fillRect(20 + i * 52, H - 70 - (i % 3) * 14 - 18, 34, (i % 3) * 14 + 18);
-  cx.fillStyle = '#3f7d51'; cx.fillRect(60, H - 108, 360, 5); for (let i = 0; i < 8; i++) cx.fillRect(70 + i * 44, H - 128, 4, 24);
+  /* cinematic bands: the living town stays visible through the middle */
+  let g = cx.createLinearGradient(0, 0, 0, 148);
+  g.addColorStop(0, 'rgba(6,9,20,0.94)'); g.addColorStop(1, 'rgba(6,9,20,0)');
+  cx.fillStyle = g; cx.fillRect(0, 0, W, 148);
+  g = cx.createLinearGradient(0, H - 96, 0, H);
+  g.addColorStop(0, 'rgba(6,9,20,0)'); g.addColorStop(1, 'rgba(6,9,20,0.94)');
+  cx.fillStyle = g; cx.fillRect(0, H - 96, W, 96);
   cx.textAlign = 'center';
-  cx.font = 'bold 34px monospace';
-  cx.fillStyle = '#1a2340'; cx.fillText(t('title'), W / 2 + 2, 92 + 2);
-  cx.fillStyle = '#e8c04a'; cx.fillText(t('title'), W / 2, 92);
-  cx.font = 'bold 16px monospace';
-  cx.fillStyle = '#f4ead2'; cx.fillText('— ' + t('subtitle') + ' —', W / 2, 116);
-  cx.font = '11px monospace'; cx.fillStyle = '#6fa3e8';
-  cx.fillText('Douze ans de français. Une vraie conversation.', W / 2, 138);
+  const bob = REDUCED ? 0 : Math.sin(frameCount / 42) * 3;
+  const ty = 64 + bob;
+  /* twinkling gold stars around the logo */
+  if (!REDUCED) {
+    for (let i = 0; i < 12; i++) {
+      const a = Math.abs(Math.sin(frameCount / 34 + i * 2.4));
+      if (a < 0.3) continue;
+      const sx = W / 2 + Math.sin(i * 2.1) * (140 + (i % 3) * 26);
+      const sy = 52 + bob + Math.cos(i * 3.7) * 30;
+      cx.fillStyle = 'rgba(255,217,74,' + (a * 0.85).toFixed(2) + ')';
+      cx.fillRect(sx - 1, sy - 3, 2, 6); cx.fillRect(sx - 3, sy - 1, 6, 2);
+    }
+  }
+  /* the logo: shadow, gold face, a slow sheen sweeping across */
+  cx.font = 'bold 36px monospace';
+  cx.fillStyle = '#0c1226'; cx.fillText(t('title'), W / 2 + 3, ty + 3);
+  cx.fillStyle = '#e8c04a'; cx.fillText(t('title'), W / 2, ty);
+  if (!REDUCED) {
+    const sheen = ((frameCount % 300) / 300) * (W + 240) - 120;
+    cx.save();
+    cx.beginPath(); cx.rect(sheen - 24, ty - 34, 48, 44); cx.clip();
+    cx.fillStyle = '#fff2b8'; cx.fillText(t('title'), W / 2, ty);
+    cx.restore();
+  }
+  cx.font = 'bold 15px monospace';
+  cx.fillStyle = '#f4ead2'; cx.fillText('— ' + t('subtitle') + ' —', W / 2, ty + 24);
+  cx.font = '11px monospace'; cx.fillStyle = '#8db8f2';
+  cx.fillText('Douze ans de français. Une vraie conversation.', W / 2, ty + 43);
+  /* right now, in the real town — the clock and season are live */
+  const SEA = LANG === 'fr'
+    ? { winter: 'hiver', spring: 'printemps', summer: 'été', fall: 'automne' }
+    : { winter: 'winter', spring: 'spring', summer: 'summer', fall: 'autumn' };
+  const PHA = LANG === 'fr'
+    ? { dawn: 'à l’aube', day: 'en plein jour', dusk: 'au crépuscule', night: 'sous les étoiles' }
+    : { dawn: 'at dawn', day: 'in daylight', dusk: 'at dusk', night: 'under the stars' };
+  const sIco = { winter: '❄', spring: '🌱', summer: '☀', fall: '🍁' }[seasonOf()];
+  const chip = sIco + ' ' + (LANG === 'fr' ? 'Fredericton, en ce moment — ' : 'Fredericton, right now — ')
+    + SEA[seasonOf()] + ', ' + PHA[dayPhase()];
+  cx.font = '10px monospace';
+  cx.fillStyle = 'rgba(6,9,20,0.8)'; cx.fillText(chip, W / 2 + 1, 139 + bob + 1);
+  cx.fillStyle = 'rgba(244,234,210,0.9)'; cx.fillText(chip, W / 2, 139 + bob);
+  /* press start */
   if (Math.floor(frameCount / 30) % 2 === 0 || REDUCED) {
-    cx.font = 'bold 13px monospace'; cx.fillStyle = '#f4ead2';
-    cx.fillText(t('pressStart'), W / 2, 196);
+    const ps = document.body.classList.contains('touch')
+      ? (LANG === 'fr' ? 'TOUCHE L’ÉCRAN' : 'TAP THE SCREEN')
+      : t('pressStart');
+    cx.font = 'bold 13px monospace';
+    cx.fillStyle = 'rgba(6,9,20,0.85)'; cx.fillText(ps, W / 2 + 1, 201);
+    cx.fillStyle = '#ffd94a'; cx.fillText(ps, W / 2, 200);
   }
   cx.font = '9px monospace'; cx.fillStyle = 'rgba(244,234,210,0.6)';
   cx.fillText('v0.6 « Les Injections » — ' + t('demoNote'), W / 2, H - 12);
@@ -2448,6 +2536,7 @@ function updateHud() {
 }
 function beginWorld() {
   state = 'world';
+  document.body.classList.add('playing');
   document.getElementById('vision-link').style.display = 'none';
   player.styleIdx = save.styleIdx || 0;
   player.x = 59; player.y = 23; player.px = player.x * TILE; player.py = player.y * TILE;
@@ -2478,8 +2567,12 @@ function titleAction() {
   } else showInvitation();
 }
 document.addEventListener('keydown', (e) => {
+  /* typing a name or a code? letters belong to the field, not the game.
+     (Escape always escapes — that promise outranks this one.) */
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.key !== 'Escape') return;
   if (e.repeat && ['Enter', ' ', 'z', 'Z'].includes(e.key)) return;
   keys[e.key] = true;
+  if ((e.key === 'f' || e.key === 'F') && !modalRoot.children.length) { toggleFullscreen(); return; }
   if (state === 'title' && (e.key === 'Enter' || e.key === ' ')) { titleAction(); return; }
   if ((e.key === 'z' || e.key === 'Z' || e.key === 'Enter' || e.key === ' ') && state !== 'title') {
     if (!modalRoot.children.length) { e.preventDefault(); interact(); }
@@ -2530,17 +2623,43 @@ document.getElementById('hud-set').addEventListener('click', () => { if (modalRo
 document.getElementById('hud-exp').addEventListener('click', () => { if (modalRoot.children.length) closeModal(); else showExpedition(); });
 document.getElementById('hud-mission').addEventListener('click', () => { if (modalRoot.children.length) closeModal(); else if (save) showMission(); });
 
-/* resize: integer-scale canvas to viewport */
+/* resize: scale canvas to viewport.
+   Desktop (2x and up): integer scale, perfectly square pixels.
+   Phones & small windows: snap to the device-pixel grid instead of
+   wasting up to half the screen on letterboxing. */
 function fit() {
   let scale = Math.min(window.innerWidth / 480, window.innerHeight / 320);
-  if (scale >= 1) scale = Math.floor(scale);          /* integer upscale for crispness */
+  const dpr = window.devicePixelRatio || 1;
+  if (scale >= 2) scale = Math.floor(scale);                      /* desktop: square pixels */
+  else if (scale >= 1) scale = Math.floor(scale * dpr) / dpr;     /* mid: snap to device grid */
+  /* below 1 (phones in portrait): exact — fill the screen edge to edge */
   cv.style.width = (480 * scale) + 'px'; cv.style.height = (320 * scale) + 'px';
 }
 window.addEventListener('resize', fit); fit();
 
+/* fullscreen: one tap on ⛶ (or F). Hidden where the API doesn't exist. */
+const fsBtn = document.getElementById('fs-btn');
+function fsOn() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function toggleFullscreen() {
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen;
+  const exit = document.exitFullscreen || document.webkitExitFullscreen;
+  if (!req) return;
+  if (fsOn()) exit.call(document); else req.call(el);
+}
+if (!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)) {
+  fsBtn.style.display = 'none';
+} else {
+  fsBtn.addEventListener('click', toggleFullscreen);
+  ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev =>
+    document.addEventListener(ev, () => { fsBtn.textContent = fsOn() ? '⤢' : '⛶'; fit(); }));
+}
+
 /* main loop */
 buildAtlas();
 buildWorld();
+placeFolk();          /* the town is alive before anyone presses start — */
+placeLivingTown();    /* that's the whole point of the attract tour */
 function loop() {
   pollKeys();
   stepPlayer();
