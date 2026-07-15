@@ -105,6 +105,16 @@
   button[type="submit"]:hover { opacity: 0.92; }
   .hp { position: absolute; left: -9999px; }
 
+  /* optional self-ID (parcours) radio group */
+  .parcours-group { border: none; padding: 0; margin: 0; }
+  .parcours-group legend { font-size: 0.85rem; color: var(--muted); margin: 0.9rem 0 0.35rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; text-transform: uppercase; padding: 0; }
+  .parcours-group legend .opt-tag { text-transform: none; letter-spacing: 0; font-style: italic; }
+  .parcours { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; }
+  .parcours label { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0; font-family: inherit; font-size: 0.95rem; text-transform: none; letter-spacing: 0; color: var(--ink); cursor: pointer; }
+  .parcours input[type="radio"] { width: auto; }
+  .parcours label span { color: var(--muted); font-style: italic; font-size: 0.85em; }
+  .parcours-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
   /* salon */
   .salon-card {
     background: var(--card); border: 3px solid var(--acadie); border-radius: 12px;
@@ -204,6 +214,16 @@
       </select>
       <label for="r-msg">Ton rendez-vous, en deux phrases <span class="en">Your meetup, in a sentence or two — what happens, who it's for</span></label>
       <textarea id="r-msg" name="message" placeholder="Ex. : Une table tranquille au fond, on parle de nos semaines, en français tout croche et fier de l'être…"></textarea>
+      <fieldset class="parcours-group">
+        <legend>Tu es… / You are… <span class="opt-tag">(facultatif / optional)</span></legend>
+        <div class="parcours">
+          <label><input type="radio" name="parcours" value="francophone"> Francophone</label>
+          <label><input type="radio" name="parcours" value="apprenant"> Apprenant·e <span>/ learner</span></label>
+          <label><input type="radio" name="parcours" value="entre-les-deux"> Entre les deux <span>/ in between</span></label>
+          <label><input type="radio" name="parcours" value="prefere-ne-pas-dire"> Je préfère ne pas dire <span>/ prefer not to say</span></label>
+        </div>
+      </fieldset>
+      <p class="parcours-note">Facultatif — ça nous aide à savoir si on rapproche vraiment francophones et apprenant·es. / Optional — it helps us know if we are truly bringing francophones and learners together.</p>
       <button type="submit">Proposer / Propose</button>
     </form>
     <p style="font-size:0.85rem; color:var(--muted)">Prefer email? <a href="mailto:kurtrgoddard@gmail.com?subject=Bilingua%20Quest%20—%20rendez-vous%20propos%C3%A9">kurtrgoddard@gmail.com</a></p>
