@@ -78,3 +78,9 @@ netlify deploy --prod --dir . --site 2e4f2cb4-2285-4201-8a39-b12c43310fa1
 - A valid demo code for testing: **`STELLA-WOLASTOQ-11`**
 - v0.2 validates codes client-side (a ritual, not a lock). v1 moves redemption
   server-side with real one-time-use tracking.
+
+## Operator resources
+- **[OPERATIONS.md](OPERATIONS.md)** — Le Manuel de la Régie: the daily/weekly/monthly
+  rhythm, code issuance policy, the support playbook, and growth triggers.
+- **`/regie.html`** — the unlisted operator panel (code checker, duo-code calculator,
+  mission-of-the-day, QR deep-links, batch log). Same keep-to-yourself rule as the atelier.

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "rituel-jeudi-dolans",
+    "date": null,
+    "heure": "18:00-20:00",
+    "lieu": "Dolan's Pub",
+    "quartier": "Centre-ville / Downtown",
+    "titre_fr": "Rendez-vous du Jeudi",
+    "titre_en": "The Thursday rendez-vous",
+    "niveau": "tous",
+    "format": "ritual",
+    "places": null,
+    "note_fr": "Chaque jeudi, sans inscription. Tu arrives, tu dis bonjour, c'est tout. Les débutant·es sont accueilli·es en héros.",
+    "note_en": "Every Thursday, no sign-up. You show up, you say bonjour, that's it. Beginners get a hero's welcome."
+  },
+  {
+    "id": "exemple-cafe-samedi",
+    "date": "2026-07-25",
+    "heure": "10:00-11:30",
+    "lieu": "Jonnie Java Roasters",
+    "quartier": "Centre-ville / Downtown",
+    "titre_fr": "Café du samedi matin",
+    "titre_en": "Saturday-morning coffee table",
+    "niveau": "debutant",
+    "format": "table",
+    "places": 6,
+    "note_fr": "Une table, des cafés, une heure de français tout doux. « exemple — remplace-moi via la Régie »",
+    "note_en": "One table, some coffees, one gentle hour of French. (Example entry — replace me via the Régie.)"
+  },
+  {
+    "id": "exemple-expedition-aout",
+    "date": "2026-08-08",
+    "heure": "14:00-15:00",
+    "lieu": "Officers' Square (kiosque)",
+    "quartier": "Centre-ville / Downtown",
+    "titre_fr": "Expédition — Le Carnet du kiosque",
+    "titre_en": "Expedition — the gazebo notebook quest",
+    "niveau": "tous",
+    "format": "expedition",
+    "places": 6,
+    "note_fr": "45 minutes, 4 à 6 personnes, trois lieux du centre-ville. « exemple — remplace-moi via la Régie »",
+    "note_en": "45 minutes, 4-6 people, three downtown stops. (Example entry — replace me via the Régie.)"
+  }
+]

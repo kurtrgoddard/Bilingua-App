@@ -30,4 +30,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
           publish_branch: gh-pages
-          force_orphan: true
+          cname: bilingua.app
+          # No force_orphan: rewriting gh-pages as a fresh orphan on every
+          # deploy resets the Pages deployment identity and restarts GitHub's
+          # HTTPS cert-provisioning clock, so the cert for the custom domain
+          # never finishes. Keeping stable history lets it provision once and stick.
