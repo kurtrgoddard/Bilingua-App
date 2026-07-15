@@ -37,4 +37,6 @@ jobs:
         if: steps.gate.outputs.ready == 'true'
       - name: Deploy to Netlify
         if: steps.gate.outputs.ready == 'true'
-        run: npx --yes netlify-cli@latest deploy --prod --dir site --site "$NETLIFY_SITE_ID" --message "Deploy from GitHub Actions ($GITHUB_SHA)"
+        # --no-build: site/ is finished static files; without it netlify-cli
+        # runs the legacy root package.json build (vite) and fails.
+        run: npx --yes netlify-cli@latest deploy --prod --no-build --dir site --site "$NETLIFY_SITE_ID" --message "Deploy from GitHub Actions ($GITHUB_SHA)"
