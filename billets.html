@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Billets / Tickets — Bilingua Quest</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
+<style>
+  :root { --paper: #F8F4EC; --ink: #2A2118; --acadie: #1F4FA8; --stella: #C89512; --line: #E3DACB; --muted: #6E6357; --card: #FFFDF8; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: Charter, Cambria, Georgia, serif; font-size: 16px; line-height: 1.6; padding: 2.5rem 1.25rem; }
+  .wrap { max-width: 46rem; margin: 0 auto; }
+  h1, h2 { font-family: 'Iowan Old Style', Palatino, Georgia, serif; text-wrap: balance; }
+  h1 { font-size: 1.9rem; }
+  h2 { font-size: 1.2rem; color: var(--acadie); margin: 1.8rem 0 0.5rem; }
+  p, li { margin-bottom: 0.6rem; }
+  .fr { font-style: italic; color: var(--muted); font-size: 0.92em; }
+  .test { background: #fdf3d8; border: 1.5px solid var(--stella); border-radius: 8px; padding: 0.7rem 1rem; font-size: 13px; margin: 1rem 0; }
+  .tickets { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.9rem; margin: 1.4rem 0; }
+  .tk { background: var(--card); border: 2.5px solid var(--acadie); border-radius: 14px; padding: 1.1rem 1.2rem; display: flex; flex-direction: column; }
+  .tk.gold { border-color: var(--stella); }
+  .tk .ico { font-size: 1.8rem; }
+  .tk h3 { font-family: 'Iowan Old Style', Palatino, serif; font-size: 1.05rem; margin: 0.3rem 0 0.1rem; }
+  .tk .price { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.5rem; color: var(--acadie); }
+  .tk p { font-size: 0.85rem; color: var(--muted); flex: 1; }
+  .tk a { display: inline-block; text-align: center; font-family: 'Courier New', monospace; font-weight: bold; background: var(--acadie); color: var(--paper); text-decoration: none; border-radius: 8px; padding: 0.55rem 1rem; margin-top: 0.6rem; }
+  .tk.gold a { background: var(--stella); color: #201a08; }
+  .free { background: var(--card); border: 2.5px dashed var(--stella); border-radius: 14px; padding: 1.1rem 1.3rem; margin: 1.4rem 0; }
+  ul { padding-left: 1.3rem; }
+  a { color: var(--acadie); }
+  .meta { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Billets <span class="fr">/ Tickets</span></h1>
+  <p class="fr">Une place = un latte. Ta première expédition, c'est la maison qui l'offre.</p>
+
+  <div class="test"><b>PRÉVENTE D'ESSAI / TEST MODE.</b> Payments are in Stripe test mode while the pilot finishes — no real charges are possible yet. These become live the day the first paid expedition is scheduled. (Test cards only, e.g. 4242 4242 4242 4242.)</div>
+
+  <div class="free">
+    <b>✶ Ta première expédition est gratuite. Toujours.</b><br>
+    <span style="font-size:0.9rem">Your first expedition is free, always — someone probably even suspended a coffee for you. Claim it with an invitation code or from the <a href="./#waitlist">waitlist</a>. Everything below is for the ones after.</span>
+  </div>
+
+  <div class="tickets">
+    <div class="tk">
+      <div class="ico">🎟️</div>
+      <h3>Une place / One seat</h3>
+      <div class="price">5,00 $ CAD</div>
+      <p>One 45-minute expedition: a party of 4–6, three downtown stops, a café ending. Round number, latte logic — and a paid chair is a chair that shows up.</p>
+      <a href="https://buy.stripe.com/test_4gM9AUeaq1mK0qD7S66Ri00">Réserver ma chaise</a>
+    </div>
+    <div class="tk gold">
+      <div class="ico">📔</div>
+      <h3>Le Carnet de dix</h3>
+      <div class="price">40,00 $ CAD</div>
+      <p>Ten expeditions for the price of eight, on a 12-slot card that arrives with 2 slots already stamped (your free first + a founders' bonus). Stamped at the café, like it matters — because it does.</p>
+      <a href="https://buy.stripe.com/test_9B69AUeaqc1o5KXfky6Ri01">Prendre le carnet</a>
+    </div>
+    <div class="tk">
+      <div class="ico">☕</div>
+      <h3>Expédition suspendue</h3>
+      <div class="price">5,00 $ CAD</div>
+      <p>The Naples caffè sospeso tradition, Fredericton edition: pay forward a stranger's first expedition and their coffee. They'll never know your name. That's the point.</p>
+      <a href="https://buy.stripe.com/test_9B63cw3vM4yWehta0e6Ri02">Suspendre un café</a>
+    </div>
+  </div>
+
+  <h2>Où va l'argent <span class="fr">/ Where the money goes</span></h2>
+  <ul>
+    <li><b>65% — l'Hôte.</b> The francophone host who ran your expedition. (After a 3-event apprenticeship: one shadowed, two co-hosted, expenses covered.)</li>
+    <li><b>20% — Bilingua.</b> Keeps the game free, the kits printed, the lights on.</li>
+    <li><b>15% — le Fonds communautaire.</b> The hosts' collective fund: bourse seats for those who can't pay, suspended coffees, materials. Spending published quarterly.</li>
+  </ul>
+  <p class="meta">If only 3 people show, the fund tops the host up to a $12 floor — nobody hosts for pocket lint. Full model & research: <code>DESIGN-ECONOMY.md</code> in the repo. Prices include everything; no fees appear at checkout that aren't shown here.</p>
+
+  <p class="meta" style="margin-top:2rem">Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). · <a href="./">Home</a> · <a href="expedition.html">The expedition kit</a> · <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a></p>
+</div>
+</body>
+</html>

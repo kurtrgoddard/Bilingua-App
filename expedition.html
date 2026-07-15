@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Trousse d'Expédition — Bilingua Quest Pilot Kit</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🎒</text></svg>">
+<meta name="robots" content="noindex">
+<style>
+  :root { --paper: #F8F4EC; --ink: #2A2118; --acadie: #1F4FA8; --stella: #C89512; --line: #E3DACB; --muted: #6E6357; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: Charter, Cambria, Georgia, serif; padding: 2rem 1.25rem; font-size: 15px; line-height: 1.5; }
+  .wrap { max-width: 52rem; margin: 0 auto; }
+  h1, h2, h3 { font-family: 'Iowan Old Style', Palatino, Georgia, serif; text-wrap: balance; }
+  h1 { font-size: 1.9rem; }
+  h2 { font-size: 1.3rem; margin: 2rem 0 0.6rem; color: var(--acadie); border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  h3 { font-size: 1.05rem; margin: 1rem 0 0.4rem; }
+  p, li { margin-bottom: 0.5rem; }
+  ul, ol { padding-left: 1.3rem; }
+  .top-note { background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 13px; }
+  .controls { margin: 1rem 0; }
+  button.print { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1rem; background: var(--acadie); color: var(--paper); border: none; border-radius: 8px; padding: 0.6rem 1.6rem; cursor: pointer; }
+  .sheet-break { page-break-before: always; }
+
+  /* cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0.7rem; margin: 0.8rem 0; }
+  .card { border: 2.5px solid var(--acadie); border-radius: 12px; background: #fff; padding: 0.9rem 1rem; break-inside: avoid; page-break-inside: avoid; }
+  .card.gold { border-color: var(--stella); }
+  .card h3 { margin: 0 0 0.3rem; display: flex; justify-content: space-between; align-items: baseline; }
+  .card h3 .tag { font-size: 10px; font-family: ui-monospace, monospace; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .card .fr { font-style: italic; color: var(--muted); font-size: 12px; }
+  .card ul { font-size: 13px; margin-top: 0.4rem; }
+  .secret { border-top: 1.5px dashed var(--stella); margin-top: 0.5rem; padding-top: 0.4rem; font-size: 12.5px; }
+  .secret b { color: var(--stella); }
+  .consent-card { text-align: center; border-width: 3px; }
+  .consent-card .big { font-size: 2rem; }
+  .consent-card h3 { justify-content: center; font-size: 1rem; }
+  .phrase { font-family: 'Iowan Old Style', Palatino, serif; font-size: 1.02rem; }
+  .phrase .en { display: block; font-size: 11.5px; font-style: italic; color: var(--muted); font-family: Charter, Georgia, serif; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 0.6rem 0; background: #fff; }
+  th, td { border: 1px solid var(--line); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+  th { background: #f0ead d; background: #F0EADD; font-family: ui-monospace, monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .fill { border-bottom: 1px solid var(--ink); display: inline-block; min-width: 10rem; }
+  .postcard { border: 3px solid var(--acadie); border-radius: 14px; background: #fff; padding: 1.2rem; min-height: 230px; display: flex; flex-direction: column; justify-content: space-between; }
+  .draft { background: #fdf3d8; border: 1.5px solid var(--stella); border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 12.5px; margin: 0.8rem 0; }
+  .ribbon { background: #1a2340; color: #f4ead2; border-radius: 10px; text-align: center; padding: 0.55rem 1rem; margin: 0.8rem 0; font-size: 14px; }
+  .ribbon p { margin: 0; }
+  .ribbon .en { display: block; font-size: 11.5px; font-style: italic; color: #8fa3cc; }
+  @media print {
+    .controls, .top-note.noprint, .ribbon { display: none; }
+    body { padding: 0.4rem; background: #fff; font-size: 13px; }
+    h2 { margin-top: 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>La Trousse d'Expédition <span style="font-size:1rem; color:var(--muted)">· Bilingua Quest — Pilot Kit v1</span></h1>
+  <p class="fr" style="font-style:italic; color:var(--muted)">One exceptional 45-minute quest for 4–6 adults, downtown Fredericton. Print, cut, host. The whole pilot fits in an envelope.</p>
+
+  <div class="ribbon">
+    <p>🎻 <b>Rendez-vous du jeudi</b> — Dolan's Pub, 18 h. Chaque semaine.<span class="en">Thursday rendez-vous — Dolan's Pub, 6 pm. Every week.</span></p>
+  </div>
+
+  <div class="top-note noprint">
+    <b>How to use this kit:</b> print it (button below), cut the cards, recruit 4–6 adults (18+) and one host, and run the quest as written. Run it weekly for 4 weeks with ~30 adults total, measure only the five numbers on the last sheet, and you'll know whether Bilingua deserves to be software. Design rationale: <code>DESIGN-EXPEDITIONS.md</code> in the repo.
+    <div class="controls"><button class="print" onclick="window.print()">Print the kit</button></div>
+  </div>
+
+  <h2>1 · The host sheet (read this first)</h2>
+  <h3>The promise you are choreographing</h3>
+  <p>Strangers arrive safely → know instantly what to do → <b>need one another</b> to succeed → laugh within five minutes → leave expecting to meet again. Your job is the sequence, not the French. <b>French-first, never French-punitive.</b></p>
+  <h3>Check-in (10 min before)</h3>
+  <ul>
+    <li>Hub: <b>the Officers' Square gazebo</b> (rain backup: inside the Fredericton Public Library entrance, 12 Carleton St — confirm with staff that week).</li>
+    <li>Greet each arrival by name from the registration list. Minimum party of 4 — below that, convert to a café conversation and still count it.</li>
+    <li>Each player signs the participation & photo-consent sheet (section 6), draws a <b>role card</b>, keeps their 3 rescue phrases, and sets a <b>correction-consent card</b> face-up where the group can see it.</li>
+    <li>Say once, out loud: « On peut partir quand on veut, sans explication. » ("Anyone may leave at any time, no explanation needed.")</li>
+  </ul>
+  <h3>During (the host's only 4 jobs)</h3>
+  <ul>
+    <li>Keep time (15 min per location, gentle).</li>
+    <li>Enforce consent cards kindly if anyone slips ("elle a la carte 🕊️ ce soir !").</li>
+    <li>Rescue anyone who dominates by handing them L'Observateur's spotting card for the next leg.</li>
+    <li>Tally French-speaking turns per person, roughly (tick marks — imprecise is fine).</li>
+  </ul>
+  <h3>Check-out (at the café)</h3>
+  <ul>
+    <li>The funniest phrase of the night is voted, read aloud, and written on the postcard.</li>
+    <li>The group votes the next expedition's date <i>before</i> anyone leaves.</li>
+    <li>Contact exchange is opt-in and player-to-player only — the host never collects or shares numbers.</li>
+    <li>Everyone checked out by name.</li>
+  </ul>
+  <h3>Alcohol policy (read verbatim to hosts)</h3>
+  <ul>
+    <li>The expedition formally <b>ends on arrival</b> at the final venue; drinks afterward are an optional social extension, everyone buying their own from the licensed venue (which carries the service duty).</li>
+    <li>The organizer and hosts never buy rounds, supply alcohol, or encourage drinking. If someone appears impaired, the host offers taxi/safe-ride information.</li>
+    <li><b>Pub-ending variants are 19+</b> (New Brunswick's drinking age), even though the game itself is 18+. Café and alcohol-free endings (Chess Piece Pâtisserie, the library) are 18+ and run at least once per month.</li>
+  </ul>
+  <h3>Route accessibility (this quest)</h3>
+  <table>
+    <tr><th>Distance</th><th>Duration</th><th>Terrain</th><th>Step-free</th><th>Seating</th><th>Washrooms</th><th>Sensory</th><th>In/out</th></tr>
+    <tr><td>~900 m</td><td>45 min</td><td>Paved sidewalks, flat</td><td>Yes, fully</td><td>Officers' Sq., ending café</td><td>Ending café; City Hall (daytime)</td><td>Low–moderate (street noise)</td><td>Outdoor ×2, indoor ×1</td></tr>
+  </table>
+  <p style="font-size:12.5px">A support person may always join (doesn't count against party size). Quiet-mode variant: swap Location 2's crier for the written version on its card.</p>
+
+  <h2 class="sheet-break">2 · The six role cards <span style="font-size:0.8rem; color:var(--muted)">(cut; players draw blind; roles rotate next time)</span></h2>
+  <div class="cards">
+    <div class="card"><h3>Le Guide <span class="tag">rôle 1/6</span></h3>
+      <p class="fr">You alone hold the route. You may describe, never point.</p>
+      <ul><li><b>You know:</b> Location 2 is « là où les livres dorment dehors » — the Little Free Library box on the Queen St side of Officers' Square; Location 3 is the partner café (host told you which).</li><li>Give directions only in French; gestures forbidden (for you!).</li></ul>
+      <div class="secret"><b>Objectif secret :</b> get the whole group to cross one street without you saying « gauche » or « droite » once.</div></div>
+    <div class="card"><h3>L'Archiviste <span class="tag">rôle 2/6</span></h3>
+      <p class="fr">You hold the history. One of your facts is absurd. Sell it straight.</p>
+      <ul><li><b>Your clues:</b> (1) Officers' Square held military parades for over a century. (2) The Wolastoq's name means "beautiful river." (3) In 1897, a moose was elected deputy mayor of Fredericton for one afternoon.</li><li>The group must decide which is false — they must ask you questions in French to probe.</li></ul>
+      <div class="secret"><b>Objectif secret :</b> defend the moose story for at least two full minutes.</div></div>
+    <div class="card"><h3>Le/La Diplomate <span class="tag">rôle 3/6</span></h3>
+      <p class="fr">Only you may address strangers and staff — in French first, always politely.</p>
+      <ul><li>At Location 3, you must secure from the café staff: the group's order, one recommendation, and one napkin « pour un document officiel » (the postcard).</li></ul>
+      <div class="secret"><b>Objectif secret :</b> learn the first name of one person who is not in your group.</div></div>
+    <div class="card"><h3>L'Observateur·rice <span class="tag">rôle 4/6</span></h3>
+      <p class="fr">You hold the spotting list. One item on it does not exist.</p>
+      <ul><li><b>Find, between locations:</b> une porte rouge · un vélo attaché · une affiche bilingue · un chien qui sourit · <i>une statue de castor</i>.</li><li>The group must talk you out of the fake one — in French.</li></ul>
+      <div class="secret"><b>Objectif secret :</b> insist the beaver statue exists until at least two people have argued with you.</div></div>
+    <div class="card"><h3>Le/La Trouble-fête <span class="tag">rôle 5/6</span></h3>
+      <p class="fr">You carry one complication. Deploy it exactly once, anywhere.</p>
+      <ul><li><b>Your complication:</b> « Pendant deux minutes, tout le monde parle seulement en questions. » (Two minutes: everyone may only speak in questions.)</li></ul>
+      <div class="secret"><b>Objectif secret :</b> deploy it at the least convenient possible moment.</div></div>
+    <div class="card gold"><h3>Le/La Gardien·ne des mots <span class="tag">rôle 6/6</span></h3>
+      <p class="fr">You guard the group's magic. Spend it wisely.</p>
+      <ul><li><b>You hold:</b> the group's 3 emergency phrases (below), the mime token (30 s of gestures, always legal), and <b>LA phrase anglaise</b> — one full English sentence for the whole quest. When it's spent, it's spent.</li></ul>
+      <div class="secret"><b>Objectif secret :</b> finish the quest with the English sentence unspent. If you do, the group earns the « Purs et durs » cheer.</div></div>
+  </div>
+
+  <h2>3 · Correction-consent cards <span style="font-size:0.8rem; color:var(--muted)">(one per player, face-up; change any time)</span></h2>
+  <div class="cards">
+    <div class="card consent-card"><div class="big">✅</div><h3>Corrige-moi souvent</h3><p class="fr">Correct me often — it helps.</p></div>
+    <div class="card consent-card"><div class="big">⚖️</div><h3>Seulement si on ne se comprend pas</h3><p class="fr">Only when meaning breaks.</p></div>
+    <div class="card consent-card"><div class="big">🧭</div><h3>Aide-moi à trouver les mots</h3><p class="fr">Help me find words — don't correct.</p></div>
+    <div class="card consent-card"><div class="big">🕊️</div><h3>Ce soir, je veux juste parler</h3><p class="fr">Tonight, I just want to speak.</p></div>
+  </div>
+
+  <h2 class="sheet-break">4 · The quest script — « Le Carnet du kiosque » <span style="font-size:0.8rem; color:var(--muted)">(host copy)</span></h2>
+  <h3>Lieu 1 — Officers' Square gazebo (15 min)</h3>
+  <ol>
+    <li>Host reads the hook: « En 1969, la plus belle conversation de Fredericton a eu lieu ici même. Quelqu'un l'a notée. Le vent a fait le reste. Ce soir, on la reconstitue. »</li>
+    <li><b>Challenge 1 — Le vrai du faux :</b> L'Archiviste presents the three facts; the group interrogates (in French) and votes which is false. Any vote is "correct" — the debate was the game. Reward: the host hands over <b>Page 1</b> of the night's carnet (any beautiful line — improvise or reuse the game's: « Deux langues, une rivière. »).</li>
+    <li>Trouble-fête may strike at any time from here on.</li>
+  </ol>
+  <h3>Lieu 2 — the Little Free Library, Queen St side (15 min)</h3>
+  <ol>
+    <li>Le Guide must get the group here without pointing. L'Observateur·rice hunts the spotting list en route.</li>
+    <li><b>Challenge 2 — Le mot interdit :</b> at the book box, each player describes (in French) a book they love <i>without saying its title or the word « livre »</i>. The group guesses. Two minutes each, laughter mandatory, accuracy optional.</li>
+    <li>Reward: Page 2 (« Le courage, c'est une phrase à la fois. »).</li>
+  </ol>
+  <h3>Lieu 3 — the partner café (15 min + stay as long as you like)</h3>
+  <ol>
+    <li>Le/La Diplomate handles the counter (order, recommendation, official napkin).</li>
+    <li><b>Challenge 3 — La grande jasette :</b> around the table, each person completes, in French: « La chose la plus courageuse que j'ai dite cette année, c'est… » (The bravest thing I said this year was…). No corrections during this round regardless of cards — 🕊️ rules for everyone.</li>
+    <li>Vote the funniest phrase of the night → write it on the postcard → vote the next date → check-out.</li>
+  </ol>
+  <h3>The three emergency phrases (Gardien·ne's card)</h3>
+  <p class="phrase">« Pouvez-vous répéter plus lentement ? »<span class="en">Can you repeat more slowly?</span></p>
+  <p class="phrase">« Comment on dit ___ en français ? »<span class="en">How do you say ___ in French?</span></p>
+  <p class="phrase">« Attends — je l'ai, je l'ai… » <span class="en">Wait — I've got it, I've got it… (buys ten glorious seconds)</span></p>
+
+  <h2 class="sheet-break">5 · The five numbers (measure nothing else)</h2>
+  <table>
+    <tr><th>#</th><th>Metric</th><th>Week 1</th><th>Week 2</th><th>Week 3</th><th>Week 4</th></tr>
+    <tr><td>1</td><td>Registered → showed up (%)</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>2</td><td>Quest completed (%)</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>3</td><td>French turns per person (host tally, rough)</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>4</td><td>Consent-based contact exchanges (count)</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>5</td><td>Re-registered within 14 days (%)</td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <p style="font-size:12.5px">Green light for v1 software: ≥60% completion and ≥25% 14-day return. Anything else: change the quest, not the mission.</p>
+
+  <h2>6 · Participation & photo consent <span style="font-size:0.8rem; color:var(--muted)">(one per player per night)</span></h2>
+  <div class="draft"><b>DRAFT — not legal advice.</b> Have this reviewed by a New Brunswick–licensed lawyer before public use. See <code>LEGAL-ANALYSIS.md</code>.</div>
+  <div class="card" style="max-width:none">
+    <p><b>Bilingua Quest Expedition — Participation Acknowledgment</b></p>
+    <p style="font-size:13px">I am 18 or older. I am choosing to join a free, volunteer-run community walking activity of about 45 minutes on public sidewalks and in public places in downtown Fredericton. I understand ordinary walking risks (weather, surfaces, traffic) apply and that I am responsible for my own safety, belongings, and any purchases. I can leave at any time without explanation. The organizers are volunteers and this is a free community activity; to the extent permitted by law, I release the organizers and hosts from claims arising from ordinary risks of this activity. This is not a waiver of rights I cannot waive by law.</p>
+    <p style="font-size:13px"><b>Photos:</b> ☐ Yes, photos including me may be shared publicly &nbsp; ☐ Photos are OK but don't identify me &nbsp; ☐ No photos of me.</p>
+    <p style="font-size:13px">Name: <span class="fill"></span> &nbsp; Signature: <span class="fill"></span> &nbsp; Date: <span class="fill" style="min-width:6rem"></span> &nbsp; Emergency contact (optional): <span class="fill"></span></p>
+  </div>
+
+  <h2>7 · Venue permission note <span style="font-size:0.8rem; color:var(--muted)">(send/hand to the ending café a week ahead)</span></h2>
+  <div class="card" style="max-width:none">
+    <p style="font-size:13px">Bonjour ! I run <b>Bilingua Quest</b>, a free community activity helping Fredericton adults practice French. On <span class="fill" style="min-width:8rem"></span> around <span class="fill" style="min-width:5rem"></span>, a group of 4–6 adults would like to end our walking quest at your venue — each buying their own order, staying about 30–45 minutes, at whatever table suits you. We'd love your team's French-speakers to say bonjour, and we'll happily leave if you're slammed. May we? — Kurt Goddard, kurtrgoddard@gmail.com</p>
+  </div>
+
+  <h2>8 · The expedition postcard <span class="tag">(one per party per night)</span></h2>
+  <div class="postcard">
+    <div>
+      <b style="font-family:'Iowan Old Style',Palatino,serif; font-size:1.15rem">Expédition n° <span class="fill" style="min-width:3rem"></span> — Fredericton</b>
+      <p style="font-size:12px; color:var(--muted)">Date : <span class="fill" style="min-width:7rem"></span> · Météo : <span class="fill" style="min-width:7rem"></span> · Prénoms (si tout le monde veut) : <span class="fill"></span></p>
+    </div>
+    <div>
+      <p style="font-size:13px">La phrase la plus drôle de la soirée :</p>
+      <p class="phrase" style="font-size:1.2rem">« <span class="fill" style="min-width:80%"></span> »</p>
+    </div>
+    <p style="font-size:11px; color:var(--muted)">✶ Photograph this card, not each other (unless everyone signed yes). Share it anywhere — it names no one and locates nothing. That's the point.</p>
+  </div>
+
+  <p style="margin-top:2rem; font-size:12px; color:var(--muted)">Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). · Bilingua Quest pilot kit v1 · <a href="./">the vision</a> · <a href="play/">the game</a> · <a href="proposer.html">proposer une quête</a></p>
+</div>
+</body>
+</html>
