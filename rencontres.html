@@ -89,6 +89,52 @@
   .board-note { font-size: 0.85rem; color: var(--muted); }
   .board-empty { background: var(--card); border: 1px dashed var(--line); border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.92rem; color: var(--muted); }
 
+  /* reserved tables — live cards from bq-tables, above the rituals */
+  .rdv.reservee { border: 2px solid var(--acadie); }
+  .rdv .hote { font-size: 0.92rem; margin-bottom: 0.35rem; }
+  .rdv .hote .etoile { color: var(--stella); }
+  .places-line { font-size: 0.95rem; margin: 0.55rem 0 0.1rem; }
+  .pill-complet {
+    display: inline-block; font-family: 'Courier New', Courier, monospace; font-weight: bold;
+    font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--gold); color: #201a08; border-radius: 999px; padding: 0.18rem 0.85rem;
+  }
+  .btn-reserver {
+    display: inline-block; margin-top: 0.7rem;
+    font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1rem;
+    background: var(--acadie); color: var(--paper); border: none; border-radius: 8px;
+    padding: 0.55rem 1.5rem; cursor: pointer;
+  }
+  .btn-reserver:hover { opacity: 0.92; }
+  .btn-reserver + .mini18 { display: inline-block; margin-left: 0.6rem; font-family: ui-monospace, Menlo, monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted); }
+  .rdv.coming { border: 2px dashed var(--stella); background: var(--soft); text-align: center; padding: 1.4rem 1.2rem; }
+  .rdv.coming .fr-line { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; font-size: 1.1rem; margin-bottom: 0.3rem; }
+  .rdv.coming .en { font-size: 0.85rem; font-style: italic; color: var(--muted); margin-bottom: 0.2rem; }
+
+  /* the reserve dialog */
+  #rsv-dialog {
+    border: 2px solid var(--acadie); border-radius: 12px;
+    background: var(--card); color: var(--ink);
+    width: min(28rem, calc(100vw - 2rem)); padding: 1.3rem 1.5rem;
+  }
+  #rsv-dialog::backdrop { background: rgba(11, 14, 26, 0.6); }
+  #rsv-dialog form { border: none; border-radius: 0; background: none; padding: 0; margin: 0.4rem 0 0; }
+  #rsv-dialog h3 { font-size: 1.2rem; margin-bottom: 0.2rem; }
+  #rsv-dialog .rsv-table { font-size: 0.92rem; color: var(--muted); margin-bottom: 0.3rem; }
+  #rsv-dialog .rsv-table .en { font-style: italic; font-size: 0.85em; }
+  #rsv-dialog .majeur { display: flex; align-items: flex-start; gap: 0.5rem; margin: 1rem 0 0; font-size: 0.92rem; cursor: pointer; }
+  #rsv-dialog .majeur input { width: auto; margin-top: 0.3rem; }
+  #rsv-dialog .majeur .en { display: block; font-size: 0.8rem; font-style: italic; color: var(--muted); }
+  #rsv-dialog .btn-quiet {
+    margin-top: 1.1rem; margin-left: 0.6rem; font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 0.95rem;
+    background: var(--soft); color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px;
+    padding: 0.6rem 1.2rem; cursor: pointer;
+  }
+  #rsv-dialog .rsv-note { font-size: 0.8rem; color: var(--muted); margin: 0.8rem 0 0; }
+  #rsv-dialog .rsv-done p { margin-bottom: 0.7rem; }
+  #rsv-dialog .rsv-done .en { font-size: 0.85rem; font-style: italic; color: var(--muted); }
+  #rsv-dialog .rsv-err { color: var(--stella); font-weight: bold; }
+
   form { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem 1.5rem; margin: 1.6rem 0; }
   label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.9rem 0 0.25rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; text-transform: uppercase; }
   label .en { display: block; font-size: 0.72rem; text-transform: none; letter-spacing: 0; font-style: italic; font-family: Charter, Cambria, Georgia, serif; }
@@ -153,7 +199,7 @@
 
 <div class="hero">
   <p class="crumb"><a href="./">Bilingua Quest</a> · Fredericton</p>
-  <div class="pixel-title">LES RENDEZ-VOUS</div>
+  <h1 class="pixel-title">LES RENDEZ-VOUS</h1>
   <p class="sub">« Le jeu te donne le quand et le où. Toi, tu apportes toi-même. »</p>
   <p class="sub-en">Meet to speak French — the game gives you the when and the where; you bring yourself.</p>
   <p class="philo">Pas de profils, pas de messages privés, pas de swipe. On se rencontre à des rituels, dans des lieux publics, comme citoyen·nes de la même ville.
@@ -167,11 +213,11 @@
     <h2>Les rituels fixes</h2>
     <p class="en-sub">The standing rituals — no sign-up, no code, no permission needed. Just show up.</p>
     <div class="steps">
-      <div class="step"><span class="ico">🎻</span><h3>Rendez-vous du Jeudi</h3>
+      <div class="step"><span class="ico" aria-hidden="true">🎻</span><h3>Rendez-vous du Jeudi</h3>
         <p>Dolan's Pub, 18 h – 20 h, chaque semaine. Les débutant·es sont explicitement bienvenu·es : la culture de l'Accueil veut que la personne la plus à l'aise se tourne vers la plus nerveuse — ton « bonjour » hésitant est la meilleure chose qui puisse arriver à la table. <em>Every Thursday. The Accueil culture: whoever is most comfortable turns toward whoever is most nervous — your shaky bonjour is the best thing that can happen to the table.</em></p></div>
-      <div class="step"><span class="ico">🕵️</span><h3>Mission Secrète du Jour</h3>
+      <div class="step"><span class="ico" aria-hidden="true">🕵️</span><h3>Mission Secrète du Jour</h3>
         <p>Chaque jour, toute la ville reçoit la même mission secrète dans le jeu. C'est le brise-glace naturel : « C'est toi aussi, la mission ? » <em>Every day, everyone city-wide gets the same secret mission — the natural icebreaker: "You too, the mission?"</em></p></div>
-      <div class="step"><span class="ico">🎒</span><h3>Les Expéditions</h3>
+      <div class="step"><span class="ico" aria-hidden="true">🎒</span><h3>Les Expéditions</h3>
         <p>Des quêtes de 45 minutes pour 4 à 6 personnes au centre-ville, avec un·e hôte. <em>45-minute downtown quests for 4–6 people, with a host.</em> <a href="expedition.html">La trousse</a> · <a href="billets.html">Billets</a></p></div>
     </div>
   </section>
@@ -184,6 +230,7 @@
       <div class="board-empty">Chargement du tableau… <em>Loading the board…</em></div>
     </div>
     <p class="board-note">Le tableau est tenu à la main — un vrai humain lit chaque proposition avant qu'elle apparaisse. Pas d'algorithme, pas de classement : juste des dates, des lieux publics, et du monde qui veut jaser. <em>The board is kept by hand — a real human reads every proposal before it appears. No algorithm, no rankings: just dates, public places, and people who want to talk.</em></p>
+    <dialog id="rsv-dialog"><div id="rsv-body"></div></dialog>
   </section>
 
   <section id="proposer">
@@ -250,7 +297,7 @@
         <li><strong>Aucune pression de continuer.</strong> On peut partir quand on veut, sans explication. <span class="en">No pressure to continue — anyone may leave at any time, no explanation needed.</span></li>
         <li><strong>Adultes 18+.</strong> Le jeu et ses rendez-vous sont pour adultes seulement. <span class="en">The game and its rendez-vous are for adults only.</span></li>
       </ul>
-      <p style="margin:0"><a href="privacy.html">Vie privée / Privacy</a> — pas de comptes, pas de pistage. <span class="en">No accounts, no tracking.</span></p>
+      <p style="margin:0"><a href="privacy.html">Vie privée / Privacy</a> — pas de comptes, aucun pistage. Réserver une place garde seulement ton nom et ton courriel, au Canada, effacés sur demande. <span class="en">No accounts, no analytics tracking. Reserving a seat keeps only your name and email, in Canada, deleted on request.</span></p>
     </div>
   </section>
 
@@ -284,10 +331,16 @@ const COMMUNITY_URL = "";
 })();
 
 /* ── Le tableau ───────────────────────────────────────────────────
-   Reads rendezvous.json (curated by hand via the Régie). Rituals first,
-   then dated entries ascending; past dates are hidden. Fails gracefully
-   on file:// or if the fetch dies — the rituals section above is static,
-   so the page never goes dark. */
+   1. Try the live backend (bq-tables, 4 s timeout) — its reserved
+      tables render as cards ABOVE the rituals, with real seat counts.
+   2. If the backend is silent, fall back to rendezvous.json; any
+      "table-reservee" entry there renders as ONE honest « à venir »
+      card — the board never shows a fake table or fake seats.
+   3. On file:// no fetch is even attempted (it can't succeed there):
+      straight to the static fallback, zero console errors.
+   Rituals first, then dated entries ascending; past dates hidden.
+   The page never goes dark. */
+const TABLES_API = 'https://tgzouzrqaqpjyqjbveaz.supabase.co/functions/v1/bq-tables';
 const NIVEAUX = {
   tous: 'Tous les niveaux',
   debutant: 'Débutant·es bienvenu·es',
@@ -313,22 +366,86 @@ function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-function renderBoard(entries) {
+function fetchWithTimeout(url, opts, ms) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, Object.assign({}, opts, { signal: ctrl.signal })).finally(() => clearTimeout(t));
+}
+
+/* One honest card when no live table exists (or the backend is silent):
+   never a fake table, never fake seats. */
+function comingSoonCard() {
+  return '<article class="rdv coming">' +
+    '<p class="fr-line">« Les premières tables réservées arrivent — deviens Hôte pour ouvrir la tienne. »</p>' +
+    '<p class="en">The first reserved tables are coming — become a Host to open yours.</p>' +
+    '<p style="margin:0.4rem 0 0"><a href="hote.html">Devenir Hôte / Become a Host →</a></p>' +
+    '</article>';
+}
+
+/* A live reserved table, straight from bq-tables. */
+function tableCard(t) {
+  const complet = t.statut === 'complet' || !(Number(t.places_restantes) > 0);
+  const dateIso = String(t.date_at || '').slice(0, 10);
+  const when = (dateIso ? frDate(dateIso) : '') + (t.heure ? (dateIso ? ' · ' : '') + esc(t.heure) : '');
+  const seats = complet
+    ? '<span class="pill-complet">Complet / Full</span>'
+    : 'places restantes : <strong>' + Number(t.places_restantes) + '</strong> <em style="color:var(--muted)">/ seats left</em>';
+  return '<article class="rdv reservee">' +
+    '<p class="when">' + when + '</p>' +
+    '<h3>' + esc(t.titre_fr) + '</h3>' +
+    '<p class="t-en">' + esc(t.titre_en) + '</p>' +
+    '<p class="ou">📍 ' + esc(t.lieu) + (t.quartier ? ' — ' + esc(t.quartier) : '') + '</p>' +
+    (t.hote_prenom ? '<p class="hote"><span class="etoile">★</span> Ton hôte : <strong>' + esc(t.hote_prenom) + '</strong> <em style="color:var(--muted)">/ your host</em></p>' : '') +
+    '<div class="badges"><span class="badge">Table réservée</span>' +
+    (NIVEAUX[t.niveau] ? '<span class="badge niveau">' + esc(NIVEAUX[t.niveau]) + '</span>' : '') +
+    '</div>' +
+    '<p class="places-line" data-places-for="' + esc(t.id) + '">' + seats + '</p>' +
+    (t.note_fr ? '<p class="note">' + esc(t.note_fr) + (t.note_en ? '<span class="en">' + esc(t.note_en) + '</span>' : '') + '</p>' : '') +
+    (!complet && t.statut === 'ouverte'
+      ? '<button type="button" class="btn-reserver" data-id="' + esc(t.id) + '" data-titre="' + esc(t.titre_fr) + '" data-titre-en="' + esc(t.titre_en) + '">Réserver ma place</button><span class="mini18">18+ · lieu public</span>'
+      : '') +
+    '</article>';
+}
+
+/* entries: rendezvous.json array (or null) · tables: live bq-tables array (or null) */
+function renderBoard(entries, tables) {
   const board = document.getElementById('rdv-board');
   const today = todayLocal();
-  const rituals = entries.filter(e => e.format === 'ritual' || !e.date);
-  const dated = entries
+
+  let reservedHtml = '';
+  if (tables) {
+    const visible = tables.filter(t =>
+      (t.statut === 'ouverte' || t.statut === 'complet') &&
+      (!t.date_at || String(t.date_at).slice(0, 10) >= today));
+    reservedHtml = visible.length ? visible.map(tableCard).join('') : comingSoonCard();
+  } else if (entries) {
+    /* backend silent — the JSON's table-reservee entries collapse into the one honest card */
+    reservedHtml = entries.some(e => e.format === 'table-reservee') ? comingSoonCard() : '';
+  } else {
+    /* nothing reachable at all — still an honest card, never a broken board */
+    reservedHtml = comingSoonCard();
+  }
+
+  if (!entries) {
+    board.innerHTML = reservedHtml +
+      '<div class="board-empty">Le tableau n’a pas pu se charger — mais le jeudi, lui, ne bouge jamais : Dolan’s Pub, 18 h – 20 h. <em>The board couldn’t load — but Thursday never moves: Dolan’s Pub, 6–8 pm. The rituals above are always on.</em></div>';
+    return;
+  }
+
+  const flat = entries.filter(e => !e._schema && e.format !== '_schema' && e.format !== 'table-reservee');
+  const rituals = flat.filter(e => e.format === 'ritual' || !e.date);
+  const dated = flat
     .filter(e => e.format !== 'ritual' && e.date)
     .filter(e => e.date >= today)
     .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
   const list = rituals.concat(dated);
 
   if (!list.length) {
-    board.innerHTML = '<div class="board-empty">Rien d’affiché pour l’instant — mais le jeudi, lui, ne bouge jamais : Dolan’s Pub, 18 h. <em>Nothing posted right now — but Thursday never moves: Dolan’s Pub, 6 pm.</em></div>';
+    board.innerHTML = reservedHtml + '<div class="board-empty">Rien d’affiché pour l’instant — mais le jeudi, lui, ne bouge jamais : Dolan’s Pub, 18 h. <em>Nothing posted right now — but Thursday never moves: Dolan’s Pub, 6 pm.</em></div>';
     return;
   }
 
-  board.innerHTML = list.map(e => {
+  board.innerHTML = reservedHtml + list.map(e => {
     const isRitual = e.format === 'ritual' || !e.date;
     const when = isRitual
       ? 'Chaque jeudi · ' + esc(e.heure || '')
@@ -348,13 +465,127 @@ function renderBoard(entries) {
   }).join('');
 }
 
-fetch('rendezvous.json')
-  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(renderBoard)
-  .catch(() => {
-    document.getElementById('rdv-board').innerHTML =
-      '<div class="board-empty">Le tableau n’a pas pu se charger — mais le jeudi, lui, ne bouge jamais : Dolan’s Pub, 18 h – 20 h. <em>The board couldn’t load — but Thursday never moves: Dolan’s Pub, 6–8 pm. The rituals above are always on.</em></div>';
+(function initBoard() {
+  /* file:// can't fetch anything — go straight to the static fallback,
+     no attempted requests, no console noise. */
+  if (location.protocol === 'file:') { renderBoard(null, null); return; }
+  const localP = fetch('rendezvous.json')
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .catch(() => null);
+  const liveP = fetchWithTimeout(TABLES_API, { method: 'GET' }, 4000)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(j => (j && j.ok && Array.isArray(j.tables)) ? j.tables : null)
+    .catch(() => null);
+  Promise.all([localP, liveP]).then(([entries, tables]) => renderBoard(entries, tables));
+})();
+
+/* ── Réserver ma place — inline <dialog> flow ───────────────────── */
+const RSV_ERRORS = {
+  complet: { fr: 'Cette table vient de se remplir — reste sur la liste !', en: 'This table just filled up — stay on the list!' },
+  deja: { fr: 'Tu as déjà une place à cette table.', en: 'You already have a seat at this table.' },
+  missing: { fr: 'Il manque un champ — vérifie ton prénom et ton courriel.', en: 'A field is missing — check your name and email.' },
+  unknown: { fr: 'On ne retrouve plus cette table — rafraîchis la page.', en: 'We can’t find that table any more — refresh the page.' },
+  reseau: { fr: 'Ça n’a pas passé de notre côté. Réessaie, ou écris-nous : kurtrgoddard@gmail.com', en: 'That didn’t go through on our end. Try again, or email us: kurtrgoddard@gmail.com' }
+};
+
+function openReserve(tableId, titreFr, titreEn) {
+  const dlg = document.getElementById('rsv-dialog');
+  const body = document.getElementById('rsv-body');
+  body.innerHTML =
+    '<h3>Réserver ma place <span style="color:var(--stella)">★</span></h3>' +
+    '<p class="rsv-table">' + esc(titreFr) + ' <span class="en">/ ' + esc(titreEn) + '</span></p>' +
+    '<p class="rsv-note" style="margin-top:0">Tu réserves une place à une table, jamais une personne. Lieu public, 18+. <em>You reserve a seat at a table, never a person. Public venue, 18+.</em></p>' +
+    '<form id="rsv-form">' +
+    '<label for="rsv-nom">Prénom et nom <span class="en">First and last name</span></label>' +
+    '<input type="text" id="rsv-nom" name="nom" required autocomplete="name">' +
+    '<label for="rsv-email">Courriel <span class="en">Email — for the confirmation, nothing else</span></label>' +
+    '<input type="email" id="rsv-email" name="email" required autocomplete="email">' +
+    '<fieldset class="parcours-group">' +
+    '<legend>Ton parcours <span class="opt-tag">(facultatif — ça débloque rien, ça nous aide à équilibrer la table / optional — unlocks nothing, helps us balance the table)</span></legend>' +
+    '<div class="parcours">' +
+    '<label><input type="radio" name="parcours" value="francophone"> Francophone</label>' +
+    '<label><input type="radio" name="parcours" value="apprenant"> Apprenant·e <span>/ learner</span></label>' +
+    '<label><input type="radio" name="parcours" value="entre-les-deux"> Entre les deux <span>/ in between</span></label>' +
+    '<label><input type="radio" name="parcours" value="prefere-ne-pas-dire"> Je préfère ne pas dire <span>/ prefer not to say</span></label>' +
+    '</div></fieldset>' +
+    '<label for="rsv-code">Code d’invitation <span class="en">Invitation code (optional)</span></label>' +
+    '<input type="text" id="rsv-code" name="invite" autocomplete="off" spellcheck="false" placeholder="(facultatif / optional)">' +
+    '<label class="majeur"><input type="checkbox" name="majeur" required> <span>J’ai 18 ans ou plus. <span class="en">I am 18 or older. Tables are for adults only.</span></span></label>' +
+    '<p class="rsv-note">On garde ton nom et ton courriel pour tenir ta place et t’envoyer la confirmation — chez Supabase, au Canada, effacés sur demande. <a href="privacy.html">Vie privée</a>. <em>We keep your name and email to hold your seat and send the confirmation — on Supabase, in Canada, deleted on request. Privacy.</em></p>' +
+    '<button type="submit">Réserver ma place</button>' +
+    '<button type="button" class="btn-quiet" id="rsv-cancel">Annuler / Cancel</button>' +
+    '<p class="rsv-err" id="rsv-err" aria-live="polite"></p>' +
+    '</form>';
+  dlg.showModal();
+  document.getElementById('rsv-cancel').addEventListener('click', () => dlg.close());
+  document.getElementById('rsv-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const fd = new FormData(f);
+    const btn = f.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Un instant…';
+    const payload = {
+      table_id: tableId,
+      name: String(fd.get('nom') || '').trim(),
+      email: String(fd.get('email') || '').trim(),
+      parcours: fd.get('parcours') || undefined,
+      invite_code: String(fd.get('invite') || '').trim() || undefined
+    };
+    fetchWithTimeout(TABLES_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }, 8000)
+      .then(r => r.json().then(j => ({ httpOk: r.ok, j })).catch(() => ({ httpOk: false, j: null })))
+      .then(({ httpOk, j }) => {
+        if (httpOk && j && j.ok) {
+          const n = Number(j.places_restantes);
+          const seatsLine = Number.isFinite(n)
+            ? (n > 0
+              ? 'Il reste maintenant <strong>' + n + '</strong> place' + (n > 1 ? 's' : '') + ' à cette table.'
+              : 'La tienne était la dernière place — la table est maintenant complète.')
+            : '';
+          body.innerHTML =
+            '<div class="rsv-done">' +
+            '<h3>Ta place est gardée. <span style="color:var(--stella)">★</span></h3>' +
+            '<p>' + esc(titreFr) + ' — quelqu’un t’attend, exprès. ' + seatsLine + '</p>' +
+            '<p>Un courriel de confirmation suivra, avec le lieu exact et l’heure. Merci d’être brave.</p>' +
+            '<p class="en">Your seat is held. A confirmation email will follow with the exact place and time. Thank you for being brave.</p>' +
+            '<button type="button" class="btn-quiet" style="margin-left:0" id="rsv-close2">Fermer / Close</button>' +
+            '</div>';
+          document.getElementById('rsv-close2').addEventListener('click', () => dlg.close());
+          /* keep the card honest: refresh its seat count in place */
+          const line = document.querySelector('[data-places-for="' + (window.CSS && CSS.escape ? CSS.escape(tableId) : tableId) + '"]');
+          if (line && Number.isFinite(n)) {
+            line.innerHTML = n > 0
+              ? 'places restantes : <strong>' + n + '</strong> <em style="color:var(--muted)">/ seats left</em>'
+              : '<span class="pill-complet">Complet / Full</span>';
+            if (n <= 0) {
+              const card = line.closest('.rdv');
+              const b = card && card.querySelector('.btn-reserver');
+              if (b) { b.remove(); const m = card.querySelector('.mini18'); if (m) m.remove(); }
+            }
+          }
+        } else {
+          const reason = (j && j.reason) || 'reseau';
+          const msg = RSV_ERRORS[reason] || RSV_ERRORS.reseau;
+          const errEl = document.getElementById('rsv-err');
+          errEl.innerHTML = esc(msg.fr) + '<br><em style="font-weight:normal;color:var(--muted)">' + esc(msg.en) + '</em>';
+          btn.disabled = false; btn.textContent = 'Réserver ma place';
+        }
+      })
+      .catch(() => {
+        const errEl = document.getElementById('rsv-err');
+        errEl.innerHTML = esc(RSV_ERRORS.reseau.fr) + '<br><em style="font-weight:normal;color:var(--muted)">' + esc(RSV_ERRORS.reseau.en) + '</em>';
+        btn.disabled = false; btn.textContent = 'Réserver ma place';
+      });
   });
+}
+
+document.getElementById('rdv-board').addEventListener('click', (e) => {
+  const btn = e.target.closest('.btn-reserver');
+  if (btn) openReserve(btn.dataset.id, btn.dataset.titre, btn.dataset.titreEn || '');
+});
 
 /* form-fallback: Netlify Forms only capture on Netlify hosting.
    Everywhere else (GitHub Pages — github.io or the bilingua.app custom domain),
