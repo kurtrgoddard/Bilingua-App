@@ -71,6 +71,32 @@
   <p class="lede sub">Your one screen for running Bilingua as a business: the waitlist, the codes and who holds each one, the money, and the levers that make it spread. It never shows a fake number — where the real data lives elsewhere, it sends you straight there; where nothing tracks something yet, it says so.</p>
 </header>
 
+<!-- ========================= LIVE MODE ========================= -->
+<section class="panel" id="live-panel">
+  <span class="tag live">Live · straight from the database</span>
+  <h2>The live picture</h2>
+  <p>Paste your operator key once (it stays in this browser only) and this panel fills with the real numbers: waitlist, codes and who redeemed them, members, and every reservation.</p>
+  <div class="toolbar" id="live-login">
+    <div><label for="opkey">Operator key</label><input id="opkey" type="password" placeholder="bqop_…" style="width:100%"></div>
+    <div style="flex:0 0 auto"><button class="btn gold" id="live-go">Unlock</button></div>
+  </div>
+  <p id="live-status" class="note" style="min-height:1.2em"></p>
+  <div id="live-body" style="display:none">
+    <div class="grid">
+      <div class="stat"><div class="n" id="lv-waitlist">–</div><div class="l">Waitlist</div></div>
+      <div class="stat"><div class="n" id="lv-codes">–</div><div class="l">Codes in circulation</div></div>
+      <div class="stat"><div class="n" id="lv-members">–</div><div class="l">Members (redeemed in)</div></div>
+      <div class="stat"><div class="n" id="lv-feedback">–</div><div class="l">Feedback + proposals</div></div>
+    </div>
+    <h3 style="font-size:1rem; margin-top:0.8rem">Latest signups</h3>
+    <table><thead><tr><th>Kind</th><th>Name</th><th>Email</th><th>Referred by</th><th>When</th></tr></thead><tbody id="lv-signups"></tbody></table>
+    <h3 style="font-size:1rem; margin-top:0.8rem">Codes — who holds access</h3>
+    <table><thead><tr><th>Code</th><th>Issued to / source</th><th>Uses</th><th>Parent (invited by)</th></tr></thead><tbody id="lv-codetbl"></tbody></table>
+    <p class="note">Reservations per table live in the Supabase dashboard (SQL crib in <code>regie.html</code>) until this panel's next upgrade. Data refreshes on unlock; click Unlock again to refresh.</p>
+    <p><button class="btn sm ghost" id="live-forget">Forget key on this browser</button></p>
+  </div>
+</section>
+
 <!-- ========================= WAITLIST ========================= -->
 <section class="panel">
   <span class="tag linked">Lives in Netlify Forms</span>
@@ -350,6 +376,50 @@ $('import-file').addEventListener('change', (e) => {
 });
 
 render();
+
+/* ---- live mode: the real numbers via bq-report (op-key gated) ---- */
+const REPORT_URL = 'https://tgzouzrqaqpjyqjbveaz.supabase.co/functions/v1/bq-report';
+const OPKEY_KEY = 'bq_operator_opkey';
+function liveStatus(msg, ok) {
+  const el = $('live-status');
+  el.textContent = msg; el.style.color = ok ? 'var(--green)' : 'var(--red)';
+}
+async function liveLoad(key) {
+  liveStatus('Loading…', true);
+  try {
+    const res = await fetch(REPORT_URL, { headers: { 'x-op-key': key } });
+    const data = await res.json();
+    if (!data.ok) { liveStatus(res.status === 401 ? 'That key was refused.' : 'Server error — try again.', false); return; }
+    localStorage.setItem(OPKEY_KEY, key);
+    const c = data.counts || {};
+    $('lv-waitlist').textContent = c.waitlist ?? 0;
+    $('lv-codes').textContent = c.codes ?? 0;
+    $('lv-members').textContent = c.members ?? 0;
+    $('lv-feedback').textContent = (c.feedback ?? 0) + (c.proposals ?? 0);
+    $('lv-signups').innerHTML = (data.signups || []).slice(0, 30).map(s =>
+      '<tr><td>' + esc(s.kind || '') + '</td><td>' + esc(s.name || '—') + '</td><td>' + esc(s.email || '—') +
+      '</td><td class="who">' + esc(s.referred_by || '—') + '</td><td class="who">' + esc((s.created_at || '').slice(0, 10)) + '</td></tr>').join('')
+      || '<tr><td colspan="5" class="who">No signups yet — an honest zero.</td></tr>';
+    $('lv-codetbl').innerHTML = (data.codes || []).slice(0, 60).map(cd =>
+      '<tr><td class="code">' + esc(cd.code) + '</td><td>' + esc(cd.issued_to || cd.source || '') +
+      '</td><td>' + cd.uses + '/' + cd.max_uses + '</td><td class="who">' + esc(cd.parent_code || '—') + '</td></tr>').join('');
+    $('live-body').style.display = 'block';
+    liveStatus('Live · loaded ' + new Date().toLocaleTimeString(), true);
+  } catch (e) {
+    liveStatus('Could not reach the database (offline?). The local ledger below still works.', false);
+  }
+}
+$('live-go').addEventListener('click', () => {
+  const key = $('opkey').value.trim();
+  if (key) liveLoad(key);
+});
+$('opkey').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('live-go').click(); });
+$('live-forget').addEventListener('click', () => {
+  localStorage.removeItem(OPKEY_KEY); $('opkey').value = '';
+  $('live-body').style.display = 'none'; liveStatus('Key forgotten on this browser.', true);
+});
+const storedKey = localStorage.getItem(OPKEY_KEY);
+if (storedKey) { $('opkey').value = storedKey; liveLoad(storedKey); }
 </script>
 </body>
 </html>

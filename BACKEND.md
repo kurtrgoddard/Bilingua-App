@@ -4,12 +4,19 @@ This turns the operator panel into a real control room: a live waitlist, true
 **single-use** invitation codes, a who-invited-whom **referral tree**, and an
 **access list** of who's redeemed. It is deliberately small and sealed.
 
-> **Status: authored, not yet deployed.** The database migration and Edge
-> Functions in this repo are ready to apply, but the session that wrote them
-> could not reach the Supabase write API (a sandbox egress + tool-permission
-> limitation, not a code problem). Apply them with the steps below — from the
-> Supabase dashboard SQL editor or the CLI — and nothing on the live site
-> changes until the "go-live" wiring (last section) is merged.
+> **Status: DEPLOYED and verified (2026-07-17).** All three migrations are
+> applied, the four Edge Functions are ACTIVE, and the verification battery
+> passed: single-use redemption (second redeem returns `used`), 3 child codes
+> per redemption, atomic seat reservation with honest `complet`, duplicate
+> email refused, the public listing leaks no attendee names, and a wrong
+> operator key gets `unauthorized`. The security advisor's anon/authenticated
+> grant hole was found and sealed (migration 0003). The operator key was set
+> at deploy time and delivered to Kurt privately — rotate it any time with the
+> UPDATE in step 2 below.
+>
+> Function base URL: `https://tgzouzrqaqpjyqjbveaz.supabase.co/functions/v1/`
+> — `bq-waitlist` (POST) · `bq-redeem` (POST) · `bq-tables` (GET list / POST
+> reserve) · `bq-report` (op-key gated).
 
 ## Where it lives
 

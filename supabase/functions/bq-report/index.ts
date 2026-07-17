@@ -3,7 +3,14 @@
 // Returns the live picture: counts, signups, codes with holders, the access
 // list, and the referral edges.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { cors, json } from "../_shared/cors.ts";
+const cors: Record<string, string> = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-op-key",
+};
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -20,7 +27,7 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
   const { data, error } = await supabase.rpc("bq_operator_report", { p_key: key });
-  if (error) return json({ ok: false, reason: "server", detail: error.message }, 500);
+  if (error) return json({ ok: false, reason: "server" }, 500);
   if (!data || (data as { ok?: boolean }).ok !== true) {
     return json({ ok: false, reason: "unauthorized" }, 401);
   }

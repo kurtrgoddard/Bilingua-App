@@ -1,7 +1,14 @@
 // bq-waitlist — capture a signup, feedback note, or quest proposal.
 // Public. Uses the service role (server-side only) to call bq_add_signup.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { cors, json } from "../_shared/cors.ts";
+const cors: Record<string, string> = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-op-key",
+};
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -26,6 +33,6 @@ Deno.serve(async (req) => {
   const { data, error } = await supabase.rpc("bq_add_signup", {
     p_kind: kind, p_email: email, p_name: name, p_message: message, p_referred_by: referred_by,
   });
-  if (error) return json({ ok: false, reason: "server", detail: error.message }, 500);
+  if (error) return json({ ok: false, reason: "server" }, 500);
   return json(data);
 });

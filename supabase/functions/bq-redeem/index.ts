@@ -1,7 +1,14 @@
 // bq-redeem — atomically redeem an invitation code (true single use) and
 // return the 3 child codes the new member can pass on. Public.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { cors, json } from "../_shared/cors.ts";
+const cors: Record<string, string> = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-op-key",
+};
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -22,6 +29,6 @@ Deno.serve(async (req) => {
   const { data, error } = await supabase.rpc("bq_redeem", {
     p_code: code, p_name: name, p_ref: ref,
   });
-  if (error) return json({ ok: false, reason: "server", detail: error.message }, 500);
+  if (error) return json({ ok: false, reason: "server" }, 500);
   return json(data);
 });
