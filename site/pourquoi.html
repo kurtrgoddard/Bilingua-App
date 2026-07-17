@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pourquoi / Why — L'écart n'a jamais été le français | La Table (Bilingua)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>📊</text></svg>">
+<meta name="description" content="La donnée honnête derrière La Table : le Nouveau-Brunswick apprend le français mieux que partout au Canada, puis le perd au silence. Sources nommées. / The honest data behind La Table: New Brunswick learns French better than anywhere in Canada, then loses it to silence. Sources named.">
+<style>
+  :root {
+    --paper: #F8F4EC; --ink: #2A2118; --muted: #6E6357;
+    --acadie: #1F4FA8; --stella: #C89512;
+    --card: #FFFDF8; --line: #E3DACB; --soft: #F0EADD;
+    --navy: #1a2340; --navy2: #232f57; --cream: #f4ead2; --gold: #e8c04a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #211913; --ink: #EFE7DA; --muted: #A79A8A; --acadie: #8FB0E8; --stella: #E0B93F; --card: #2A211A; --line: #3D332A; --soft: #2E251D; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+    font-size: 1.0625rem; line-height: 1.65;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem; }
+  h1, h2, h3 { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; line-height: 1.15; text-wrap: balance; }
+  p { margin-bottom: 1.1rem; }
+  a { color: var(--acadie); }
+
+  /* hero — the game's night-sky world (sober here) */
+  .hero {
+    background: linear-gradient(180deg, #0b0e1a 0%, #16203a 70%, #1a2340 100%);
+    color: var(--cream); text-align: center;
+    padding: 4.5rem 1.25rem 3.4rem;
+    overflow: hidden;
+  }
+  .hero .eyebrow-h { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #8fa3cc; margin-bottom: 1.4rem; }
+  .hero .pixel-title {
+    font-family: 'Courier New', Courier, monospace; font-weight: bold;
+    font-size: clamp(1.8rem, 6vw, 3.2rem); letter-spacing: 0.03em;
+    color: var(--gold); text-shadow: 3px 3px 0 #0b0e1a, 6px 6px 0 rgba(31,79,168,0.45);
+  }
+  .hero .sub { font-size: clamp(1.05rem, 3vw, 1.35rem); font-style: italic; color: #cfd9f0; margin: 0.9rem 0 0.2rem; }
+  .hero .sub-en { font-size: 0.95rem; color: #8fa3cc; margin-bottom: 1.6rem; }
+  .hero .note { font-size: 0.9rem; color: var(--cream); margin: 1.3rem 0 0.2rem; }
+  .hero .note-en { font-size: 0.82rem; color: #8fa3cc; font-style: italic; margin: 0; }
+
+  section { padding: 3.2rem 0 0.5rem; }
+  .eyebrow {
+    display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  .eyebrow .fr { font-style: italic; }
+  .moitie { flex: 1; height: 2px; min-width: 3rem; background: linear-gradient(to right, var(--acadie) 50%, var(--stella) 50%); border-radius: 1px; }
+  h2 { font-size: 1.7rem; margin-bottom: 0.4rem; }
+  .h2-en { font-size: 0.95rem; color: var(--muted); font-style: italic; margin-bottom: 1rem; }
+  .en-sub { font-size: 0.92rem; color: var(--muted); font-style: italic; }
+  strong { font-weight: 700; }
+  strong em { font-style: italic; }
+
+  .source { font-size: 0.8rem; color: var(--muted); font-style: italic; border-left: 2px solid var(--line); padding-left: 0.8rem; margin: 0.2rem 0 1.4rem; }
+
+  blockquote {
+    margin: 1.8rem 0; padding-left: 1.25rem; border-left: 3px solid var(--stella);
+    font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 1.25rem; line-height: 1.5;
+  }
+  blockquote .en { display: block; font-size: 0.9rem; color: var(--muted); font-style: italic; margin-top: 0.4rem; font-family: Charter, Cambria, Georgia, serif; }
+
+  /* the key numbers as tiles */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 1.6rem 0; }
+  .stat { background: var(--card); padding: 1.1rem 1rem; }
+  .stat .n { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: clamp(1.7rem, 4.5vw, 2.4rem); color: var(--acadie); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 0.82rem; color: var(--muted); margin-top: 0.45rem; line-height: 1.45; }
+  @media (max-width: 560px) { .stats { grid-template-columns: 1fr; } }
+
+  .cta-btn {
+    display: inline-block; margin: 0.4rem 0 0.2rem;
+    font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.05rem;
+    background: var(--acadie); color: var(--paper); text-decoration: none;
+    border: none; border-radius: 8px; padding: 0.7rem 1.8rem;
+  }
+  .cta-btn:hover { opacity: 0.92; }
+  .cta-btn .en { display: block; font-size: 0.72rem; font-weight: normal; letter-spacing: 0.02em; margin-top: 0.1rem; opacity: 0.85; }
+  .quiet-ctas { margin: 1.6rem 0 0.4rem; }
+  .quiet-ctas p { margin: 0 0 0.5rem; }
+  .quiet-ctas .en { color: var(--muted); font-style: italic; font-size: 0.9rem; }
+
+  footer { margin-top: 3.5rem; padding: 2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+  footer p { margin-bottom: 0.6rem; }
+  footer .en { font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="eyebrow-h">POURQUOI / WHY · LES CHIFFRES / THE DATA</p>
+  <h1 class="pixel-title">« L'écart n'a jamais été le français. »</h1>
+  <p class="sub">« C'est la deuxième conversation. »</p>
+  <p class="sub-en">"The gap was never French. It's the second conversation."</p>
+  <p class="note">« Chaque chiffre ici est sourcé. Si un seul est faux, écris-nous et on le corrige. »</p>
+  <p class="note-en">Every number here is sourced. If one is wrong, write us and we'll fix it.</p>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <div class="eyebrow"><span>The skill</span><span class="moitie"></span><span class="fr">La compétence</span></div>
+    <h2>« Le Nouveau-Brunswick apprend le français mieux que partout au Canada. »</h2>
+    <p class="h2-en">New Brunswick learns French better than anywhere in Canada.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">37,3 %</div><div class="l">des élèves du secteur anglophone passent par l'immersion — le taux le plus élevé au Canada. <span class="en" style="font-style:italic">of anglophone-sector students go through immersion — the highest rate in Canada.</span></div></div>
+      <div class="stat"><div class="n">99 %</div><div class="l">de ceux qui <em>terminent</em> l'immersion atteignent une aisance orale conversationnelle (B1+) — <em>selon la province</em>. <span class="en" style="font-style:italic">of those who finish immersion reach conversational oral proficiency (B1+) — the province's own claim.</span></div></div>
+      <div class="stat"><div class="n">1</div><div class="l">seule province officiellement bilingue au pays. <span class="en" style="font-style:italic">the country's only officially bilingual province.</span></div></div>
+    </div>
+    <p>« C'est la seule province officiellement bilingue du pays, et <strong>37,3 %</strong> de ses élèves du secteur anglophone passent — ou sont passés — par l'immersion française : le taux le plus élevé au Canada. La province affirme que 99 % des élèves qui <em>terminent</em> l'immersion atteignent une aisance orale conversationnelle (B1+). La compétence est là, produite en masse. »</p>
+    <p class="en-sub">It's the country's only officially bilingual province, and <strong>37.3%</strong> of its anglophone-sector students go — or went — through French immersion: the highest rate in Canada. The province says 99% of students who <em>finish</em> immersion reach conversational oral proficiency (B1+). The skill is there, produced at scale.</p>
+    <p class="source">Source : Statistique Canada, « Recensement en bref » 98-200-X2021018, « Participation à l'immersion en français… », 28 février 2024. / Statistics Canada, Census in Brief 98-200-X2021018, Feb 28, 2024.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>The evaporation</span><span class="moitie"></span><span class="fr">L'évaporation</span></div>
+    <h2>« Et puis, le silence. »</h2>
+    <p class="h2-en">And then, silence.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">~16 %</div><div class="l">des anglophones néo-brunswickois tiennent vraiment une conversation dans les deux langues — plat depuis 20 ans. <span class="en" style="font-style:italic">of anglophone New Brunswickers can actually converse in both languages — flat for 20 years.</span></div></div>
+      <div class="stat"><div class="n">~40 %</div><div class="l">des adultes du N.-B. (25–54 ans) passés par l'immersion l'ont perdue. <span class="en" style="font-style:italic">of NB adults (25–54) who did immersion have lost it.</span></div></div>
+      <div class="stat"><div class="n">50,2 %</div><div class="l">au Canada hors Québec, à peine la moitié des ancien·nes de l'immersion peuvent encore converser. <span class="en" style="font-style:italic">Canada outside Quebec, barely half of former immersion students can still converse.</span></div></div>
+    </div>
+    <p>« Malgré tout cet apprentissage, seulement <strong>~16 %</strong> des anglophones néo-brunswickois tiennent vraiment une conversation dans les deux langues — un chiffre plat depuis vingt ans, dans une province où environ 73 % des francophones sont bilingues. Le bilinguisme au N.-B. est du travail fait, surtout, par une seule des deux communautés. »</p>
+    <p class="en-sub">Despite all that learning, only <strong>~16%</strong> of anglophone New Brunswickers can actually hold a conversation in both languages — a figure flat for twenty years, in a province where about 73% of francophones are bilingual. Bilingualism in NB is labour performed, mostly, by one of the two communities.</p>
+    <p>« Et chez celles et ceux qui ont fait l'immersion, la compétence s'efface : parmi les adultes néo-brunswickois de 25 à 54 ans passés par l'immersion, à peine <strong>~60 %</strong> tiennent encore une conversation en français. Autrement dit : <strong>~40 % l'ont perdue.</strong> Au Canada hors Québec, c'est pire — à peine la moitié (50,2 %) des ancien·nes de l'immersion peuvent encore converser en français. »</p>
+    <p class="en-sub">And among those who did immersion, the skill fades: of NB adults aged 25–54 who went through immersion, barely <strong>~60%</strong> can still hold a conversation in French. Which means <strong>~40% have lost it.</strong> Canada-wide outside Quebec it's worse — barely half (50.2%) of former immersion students can still converse.</p>
+    <p class="source">Sources : Statistique Canada 98-200-X2021018 (adultes 25–54 du N.-B.) ; recensement de 2016 pour le taux anglophone (~15,8 %) ; Statistique Canada, « Le Quotidien », 28 février 2024 (50,2 % hors Québec). / Statistics Canada 98-200-X2021018 (NB adults 25–54); 2016 Census (~15.8% anglophone rate); The Daily, Feb 28, 2024 (50.2% outside Quebec).</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>The paradox</span><span class="moitie"></span><span class="fr">Le paradoxe</span></div>
+    <h2>« On fabrique des locuteur·rices, puis on les perd au silence. »</h2>
+    <p class="h2-en">We manufacture French speakers, then lose them to silence.</p>
+    <p>« Mets ces chiffres ensemble : la province qui produit le plus de conversationnel·les du pays est aussi celle qui les perd. Douze ans à bâtir la compétence — et rien, entre le diplôme et la tombe, pour s'en servir. Le pipeline se termine au moment exact où la langue est utilisée… ou meurt. »</p>
+    <p class="en-sub">Put those numbers together: the province that produces the most conversational speakers is also the one that loses them. Twelve years building the skill — and nothing, between graduation and the grave, to use it on. The pipeline ends at the exact moment the language is used… or dies.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>The switch</span><span class="moitie"></span><span class="fr">Le switch</span></div>
+    <h2>« Chaque switch est un petit verdict. »</h2>
+    <p class="h2-en">Every switch is a tiny verdict.</p>
+    <p>« Chaque apprenant·e anglophone le connaît dans son corps : tu tentes le français ; l'autre entend l'accent ou l'hésitation, et passe à l'anglais — par politesse, par efficacité, parfois pour protéger sa propre langue. Les groupes de discussion du Commissariat aux langues officielles (2024) ont documenté les deux côtés : des apprenant·es convaincu·es que leur français « n'est pas assez bon », des francophones qui admettent « passer trop vite à l'anglais pour accommoder les anglophones ». Chaque switch dit, tout bas : <strong><em>ton français ne vaut pas ma patience.</em></strong> »</p>
+    <p class="en-sub">Every anglophone learner knows it in their body: you attempt French; the other person hears the accent or the hesitation and flips to English — out of politeness, efficiency, sometimes to protect their own language. The Commissioner of Official Languages' 2024 focus groups documented both sides: learners convinced their French "isn't good enough," francophones admitting they "switch to English too easily to accommodate Anglophones." Every switch quietly says: <strong><em>your French isn't worth my patience.</em></strong></p>
+    <p class="source">Source : Commissariat aux langues officielles, « Jeter des ponts / Building Bridges » (2024). / Office of the Commissioner of Official Languages, "Building Bridges" (2024).</p>
+    <p>« La science du langage a un nom pour ce qui compte ici. Ce qui prédit si quelqu'un <em>parle</em> vraiment une langue seconde n'est pas la compétence, mais la <strong>volonté de communiquer</strong> — une décision de l'instant, gouvernée par l'anxiété et par le contexte social (MacIntyre et coll.). Le Nouveau-Brunswick n'a pas un problème d'éducation en français. Il a un problème de <strong>permission</strong>. »</p>
+    <p class="en-sub">Language science has a name for what matters here. What predicts whether someone actually <em>speaks</em> a second language isn't competence but <strong>willingness to communicate</strong> — a moment-to-moment decision governed by anxiety and social setting (MacIntyre et al.). New Brunswick doesn't have a French-education problem. It has a <strong>permission</strong> problem.</p>
+    <p class="source">Source : MacIntyre, Clément, Dörnyei & Noels (1998), « Modern Language Journal » 82(4). / MacIntyre, Clément, Dörnyei & Noels (1998), Modern Language Journal 82(4).</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>What changes it</span><span class="moitie"></span><span class="fr">La solution</span></div>
+    <h2>« Un·e francophone qui <em>veut</em> rester en français casse le switch. »</h2>
+    <p class="h2-en">A francophone who wants to stay in French breaks the switch.</p>
+    <p>« Le switch survient parce que le·la francophone ne reçoit aucun signal que la patience est souhaitée — alors iel fait la chose polie et passe à l'anglais. Change ce seul signal, et tout change. Un Hôte est une personne francophone qui décide, <strong>exprès</strong>, à l'avance, de garder la table en français. La carte à l'étoile ★ sur la table le dit à voix haute : <em>ici, on pratique — ne changez pas de langue.</em> »</p>
+    <p class="en-sub">The switch happens because the francophone gets no signal that patience is wanted — so they do the polite thing and flip to English. Change that one signal, and everything changes. A Host is a francophone who decides, <strong>on purpose</strong>, ahead of time, to keep the table in French. The star card ★ on the table says it out loud: <em>we're practicing here — please don't switch.</em></p>
+    <p>« Rester en français cesse alors d'être « regarder quelqu'un se noyer ». Ça devient honorer une demande. C'est pour ça que La Table réserve une table, jamais une personne ; qu'elle met un petit groupe public plutôt qu'un tête-à-tête ; que la correction n'arrive que si tu la demandes. On ne répare pas une compétence. On baisse un prix social. »</p>
+    <p class="en-sub">Staying in French stops being "watching someone drown." It becomes honouring a request. That's why La Table reserves a table, never a person; puts a small public group instead of a one-on-one; corrects only when you ask. We're not fixing a skill. We're lowering a social price.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>The invitation</span><span class="moitie"></span><span class="fr">L'invitation</span></div>
+    <h2>« Tu vois les chiffres autrement ? Dis-le-nous. »</h2>
+    <p class="h2-en">You read the numbers differently? Tell us.</p>
+    <p>« On a sourcé chaque donnée de cette page, et certaines viennent de pages gouvernementales qu'on t'invite à ouvrir toi-même. Si tu trouves une erreur, si ton expérience contredit la nôtre, ou si tu penses qu'on se trompe de solution — écris. Une vraie personne lit et répond : <strong>kurtrgoddard@gmail.com</strong>. »</p>
+    <p class="en-sub">We've sourced every figure on this page, and some come from government pages we invite you to open yourself. If you find an error, if your experience contradicts ours, or if you think we've got the solution wrong — write. A real person reads and replies: <strong>kurtrgoddard@gmail.com</strong>.</p>
+    <a class="cta-btn" href="mailto:kurtrgoddard@gmail.com?subject=La%20Table%20%E2%80%94%20Les%20chiffres">Nous écrire<span class="en">Write to us</span></a>
+
+    <div class="quiet-ctas">
+      <p>→ <a href="rencontres.html">« Réserver une place »</a> <span class="en">· Reserve a seat</span></p>
+      <p>→ <a href="hote.html">« Devenir Hôte »</a> <span class="en">· Become a Host</span></p>
+      <p>→ <a href="index.html#liste">« M'ajouter à la liste »</a> <span class="en">· Join the waitlist</span></p>
+    </div>
+  </section>
+
+  <footer>
+    <p>« <strong>La Table</strong> — un projet civique de Kurt Goddard (Fredericton, N.-B.). Chaque chiffre de cette page est sourcé ; les sources bloquées à la recherche sont marquées « à confirmer sur la page d'origine ». On ne fabrique jamais un nombre. »</p>
+    <p class="en"><strong>La Table</strong> — a civic project by Kurt Goddard (Fredericton, NB). Every number on this page is sourced; figures the research couldn't fetch directly are flagged "confirm on the source page." We never invent a number.</p>
+    <p><a href="index.html">Accueil / Home</a> · <a href="rencontres.html">Réserver une place</a> · <a href="hote.html">Devenir Hôte</a> · <a href="securite.html">Sécurité / Safety</a> · <a href="play/">Le jeu / The game</a> · <a href="privacy.html">Vie privée / Privacy</a> · <a href="terms.html">Conditions / Terms</a></p>
+    <p>Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). / On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

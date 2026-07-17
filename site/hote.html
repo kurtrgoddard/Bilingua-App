@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Devenir Hôte — Ta fluidité est un cadeau. Exprès. | La Table (Bilingua)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>★</text></svg>">
+<meta name="description" content="Un Hôte garde une table en français, exprès, pour quelqu'un qui apprend. La première promotion — petite, exprès. / A Host keeps a table in French, on purpose, for someone who's learning. The first cohort — small, on purpose.">
+<style>
+  :root {
+    --paper: #F8F4EC; --ink: #2A2118; --muted: #6E6357;
+    --acadie: #1F4FA8; --stella: #C89512;
+    --card: #FFFDF8; --line: #E3DACB; --soft: #F0EADD;
+    --navy: #1a2340; --navy2: #232f57; --cream: #f4ead2; --gold: #e8c04a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #211913; --ink: #EFE7DA; --muted: #A79A8A; --acadie: #8FB0E8; --stella: #E0B93F; --card: #2A211A; --line: #3D332A; --soft: #2E251D; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+    font-size: 1.0625rem; line-height: 1.65;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem; }
+  h1, h2, h3 { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; line-height: 1.15; text-wrap: balance; }
+  p { margin-bottom: 1.1rem; }
+  a { color: var(--acadie); }
+
+  /* hero — the game's night-sky world */
+  .hero {
+    background: linear-gradient(180deg, #0b0e1a 0%, #16203a 70%, #1a2340 100%);
+    color: var(--cream); text-align: center;
+    padding: 4.5rem 1.25rem 3.4rem;
+    overflow: hidden;
+  }
+  .hero .eyebrow-h { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #8fa3cc; margin-bottom: 1.4rem; }
+  .hero .pixel-title {
+    font-family: 'Courier New', Courier, monospace; font-weight: bold;
+    font-size: clamp(2rem, 7vw, 3.6rem); letter-spacing: 0.04em;
+    color: var(--gold); text-shadow: 3px 3px 0 #0b0e1a, 6px 6px 0 rgba(31,79,168,0.45);
+  }
+  .hero .sub { font-size: clamp(1.05rem, 3vw, 1.35rem); font-style: italic; color: #cfd9f0; margin: 0.8rem 0 0.2rem; }
+  .hero .sub-en { font-size: 0.95rem; color: #8fa3cc; margin-bottom: 1.6rem; }
+  .hero .star-line { font-size: 1.02rem; color: var(--cream); max-width: 34rem; margin: 0 auto 0.3rem; }
+  .hero .star-line .star { color: var(--gold); }
+  .hero .star-en { font-size: 0.85rem; color: #8fa3cc; font-style: italic; margin-bottom: 1.8rem; }
+  .play {
+    display: inline-block; margin: 0.6rem 0 0.4rem;
+    font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.25rem;
+    background: var(--gold); color: #201a08; text-decoration: none;
+    border: 3px solid var(--cream); border-radius: 10px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.45);
+    padding: 0.85rem 2.4rem;
+  }
+  .play:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(0,0,0,0.45); }
+  .play .en { display: block; font-size: 0.72rem; font-weight: normal; letter-spacing: 0.04em; margin-top: 0.15rem; color: #4a3c10; }
+  .hero .note { font-size: 0.82rem; color: #8fa3cc; margin: 1.3rem 0 0; }
+
+  section { padding: 3.2rem 0 0.5rem; }
+  .eyebrow {
+    display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  .eyebrow .fr { font-style: italic; }
+  .moitie { flex: 1; height: 2px; min-width: 3rem; background: linear-gradient(to right, var(--acadie) 50%, var(--stella) 50%); border-radius: 1px; }
+  h2 { font-size: 1.7rem; margin-bottom: 0.4rem; }
+  .h2-en { font-size: 0.95rem; color: var(--muted); font-style: italic; margin-bottom: 1rem; }
+  .en-sub { font-size: 0.92rem; color: var(--muted); font-style: italic; }
+
+  .callout { background: var(--soft); border-left: 3px solid var(--muted); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.6rem 0; }
+  .callout p { margin: 0; }
+  .callout .en { font-size: 0.88rem; color: var(--muted); font-style: italic; margin-top: 0.4rem; }
+
+  .caveat { background: var(--card); border: 2px solid var(--stella); border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.4rem 0; }
+  .caveat p { margin: 0; }
+  .caveat .en { font-size: 0.88rem; color: var(--muted); font-style: italic; margin-top: 0.5rem; }
+  .caveat .tag { display: inline-block; font-size: 0.66rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stella); margin-bottom: 0.5rem; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.6rem 0; }
+  @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 1.1rem 1.2rem; }
+  .step .ico { font-size: 1.6rem; }
+  .step h3 { font-size: 1.05rem; margin: 0.4rem 0 0.3rem; }
+  .step h3 .en { font-weight: normal; font-style: italic; color: var(--muted); font-size: 0.85rem; }
+  .step p { font-size: 0.9rem; color: var(--muted); margin: 0; }
+  .step p em { color: var(--muted); }
+
+  blockquote {
+    margin: 1.8rem 0; padding-left: 1.25rem; border-left: 3px solid var(--stella);
+    font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 1.25rem; line-height: 1.5;
+  }
+  blockquote .en { display: block; font-size: 0.9rem; color: var(--muted); font-style: italic; margin-top: 0.4rem; font-family: Charter, Cambria, Georgia, serif; }
+
+  .sub-block { margin: 1.6rem 0; }
+  .sub-block h3 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+  .sub-block h3 .en { font-weight: normal; font-style: italic; color: var(--muted); font-size: 0.85rem; }
+  .money { background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 1.1rem 1.3rem; margin: 0.4rem 0 0; }
+  .money p { margin: 0 0 0.5rem; }
+  .money p:last-child { margin: 0; }
+  .money .en { font-size: 0.88rem; color: var(--muted); font-style: italic; }
+
+  form { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem 1.5rem; margin: 1.6rem 0; }
+  label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.9rem 0 0.25rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; text-transform: uppercase; }
+  label .en { display: block; font-size: 0.72rem; text-transform: none; letter-spacing: 0; font-style: italic; font-family: Charter, Cambria, Georgia, serif; }
+  input[type="text"], input[type="email"], input[type="tel"], textarea {
+    width: 100%; font-family: inherit; font-size: 1rem; color: var(--ink);
+    background: var(--paper); border: 1.5px solid var(--line); border-radius: 8px; padding: 0.6rem 0.8rem;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  input:focus, textarea:focus { outline: 2px solid var(--acadie); border-color: var(--acadie); }
+  .attest { display: flex; align-items: flex-start; gap: 0.55rem; margin: 1.2rem 0 0; font-family: inherit; font-size: 0.95rem; text-transform: none; letter-spacing: 0; color: var(--ink); }
+  .attest input[type="checkbox"] { width: auto; margin-top: 0.35rem; }
+  .attest .en { display: block; font-size: 0.8rem; color: var(--muted); font-style: italic; }
+  button[type="submit"] {
+    margin-top: 1.1rem; font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.05rem;
+    background: var(--acadie); color: var(--paper); border: none; border-radius: 8px; padding: 0.7rem 1.8rem; cursor: pointer;
+  }
+  button[type="submit"] .en { display: block; font-size: 0.72rem; font-weight: normal; letter-spacing: 0.02em; margin-top: 0.1rem; opacity: 0.85; }
+  button[type="submit"]:hover { opacity: 0.92; }
+  .hp { position: absolute; left: -9999px; }
+  .form-msg { font-size: 0.92rem; margin: 1rem 0 0; padding: 0.9rem 1.1rem; border-radius: 8px; display: none; }
+  .form-msg.ok { display: block; background: var(--soft); border: 1px solid var(--stella); color: var(--ink); }
+  .form-msg.err { display: block; background: var(--soft); border: 1px solid var(--line); color: var(--ink); }
+  .form-msg .en { display: block; font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 0.3rem; }
+
+  footer { margin-top: 3.5rem; padding: 2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+  footer p { margin-bottom: 0.6rem; }
+  footer .en { font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="eyebrow-h">DEVENIR HÔTE / BECOME A HOST · 18+</p>
+  <h1 class="pixel-title">« Ta fluidité est un cadeau. »</h1>
+  <p class="sub">« Et un cadeau, ça se donne exprès. »</p>
+  <p class="sub-en">"Your fluency is a gift. And a gift is given on purpose."</p>
+  <p class="star-line">« L'étoile <span class="star">★</span> n'est pas un grade. C'est un honneur : celui de dire bienvenue. »</p>
+  <p class="star-en">The star ★ isn't a rank. It's an honour — the honour of saying welcome.</p>
+  <a class="play" href="#candidature">Poser ma candidature<span class="en">Apply to host</span></a>
+  <p class="note">« La première promotion — petite, exprès. » · <em>The first cohort — small, on purpose.</em></p>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <div class="eyebrow"><span>The honour</span><span class="moitie"></span><span class="fr">L'honneur</span></div>
+    <h2>« On ne te paie pas en café. On te paie en sens. »</h2>
+    <p class="h2-en">We don't pay you in coffee. We pay you in meaning.</p>
+    <p>« Le Nouveau-Brunswick apprend le français mieux que partout au Canada — puis le perd au silence. Ce qui manque n'est pas un prof de plus. C'est une personne francophone qui reste en français quand quelqu'un hésite, au lieu de switcher en anglais par politesse. C'est ça, un Hôte. C'est rare, et c'est pour ça que c'est un titre. »</p>
+    <p class="en-sub">New Brunswick learns French better than anywhere in Canada — then loses it to silence. What's missing isn't one more teacher. It's a francophone who stays in French when someone hesitates, instead of switching to English out of politeness. That's a Host. It's rare — which is exactly why it's a title.</p>
+    <div class="callout">
+      <p>« On ne publie pas le nombre d'Hôtes. La première promotion est petite, exprès — et le jour où on fixe un chiffre, il reste fixe pour toujours. »</p>
+      <p class="en">We don't publish a Host count. The first cohort is small, on purpose — and the day we set a number, it stays that number forever.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>What hosting is</span><span class="moitie"></span><span class="fr">Ce que c'est</span></div>
+    <h2>« 60 à 90 minutes. Une table de café. Le français, gardé chaleureusement. »</h2>
+    <p class="h2-en">60 to 90 minutes. A café table. French, kept warmly.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="ico" aria-hidden="true">⏱️</span>
+        <h3>Le temps <span class="en">/ The time</span></h3>
+        <p>« 60 à 90 minutes, dans un café public de Fredericton. Une heure fixe, annoncée d'avance. » <em>60 to 90 minutes, at a public café in Fredericton. A set hour, announced ahead.</em></p>
+      </div>
+      <div class="step">
+        <span class="ico" aria-hidden="true">👥</span>
+        <h3>La table <span class="en">/ The table</span></h3>
+        <p>« 3 à 5 personnes qui apprennent, jamais en tête-à-tête. Tu accueilles une table, pas une personne. » <em>3 to 5 learners, never one-on-one. You host a table, not a person.</em></p>
+      </div>
+      <div class="step">
+        <span class="ico" aria-hidden="true">🗣️</span>
+        <h3>Ton seul travail <span class="en">/ Your one job</span></h3>
+        <p>« Garder le français, chaleureusement, au rythme de la table. Tu corriges seulement si on te le demande. » <em>Keep it in French, warmly, at the table's pace. You correct only when asked.</em></p>
+      </div>
+    </div>
+    <blockquote>« Tu n'enseignes pas. Tu accueilles. »<span class="en">You're not teaching. You're welcoming.</span></blockquote>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>What you get</span><span class="moitie"></span><span class="fr">Ce que tu reçois</span></div>
+    <h2>« La majorité du pot. Un vrai parcours. Le seul chiffre public qui te revient. »</h2>
+    <p class="h2-en">The majority of the pot. A real path. The only public number that's yours.</p>
+
+    <div class="sub-block">
+      <h3>L'argent, honnêtement <span class="en">/ The money, honestly</span></h3>
+      <div class="money">
+        <p>« Quand une place coûte 5 $, l'Hôte garde <strong>65 %</strong>. Une table complète et payante (6 places) fait un pot de 30 $ → <strong>~19,50 $</strong> pour l'Hôte. Le reste : 20 % à Bilingua, 15 % au fonds communautaire, un pot collectif que les Hôtes gouvernent. »</p>
+        <p class="en">When a seat is $5, the Host keeps <strong>65%</strong>. A full paid table (6 seats) makes a $30 pot → <strong>~$19.50</strong> for the Host. The rest: 20% to Bilingua, 15% to a community fund the Hosts govern.</p>
+      </div>
+      <div class="caveat">
+        <span class="tag">Honnêtement / Honestly</span>
+        <p>« Mais : pendant le pilote, les tables sont <strong>gratuites</strong>. Les premiers Hôtes sont donc bénévoles, dépenses couvertes (ton café, ton stationnement). L'argent s'allume seulement quand 2–3 vraies tables ont prouvé le modèle. On te le dit avant de te demander quoi que ce soit. »</p>
+        <p class="en">But: during the pilot, tables are <strong>free</strong>. So the earliest hosting is volunteer — expenses covered (your coffee, your parking). The money turns on only once 2–3 real tables have proven the model. We tell you this before we ask you for anything.</p>
+      </div>
+    </div>
+
+    <div class="sub-block">
+      <h3>L'apprentissage <span class="en">/ The apprenticeship</span></h3>
+      <p>« Personne n'est jeté seul à une table. Ton parcours : <strong>1 table observée</strong> (tu regardes), puis <strong>2 tables co-animées</strong> (tu tiens la table avec quelqu'un). Dépenses couvertes tout du long. Ensuite : Hôte confirmé·e. »</p>
+      <p class="en-sub">Nobody is thrown at a table alone. Your path: 1 shadowed table (you watch), then 2 co-hosted tables (you hold it with someone). Expenses covered throughout. Then: confirmed Host.</p>
+    </div>
+
+    <div class="sub-block">
+      <h3>La seule statistique publique <span class="en">/ The only public stat</span></h3>
+      <p>« Un Hôte ne collectionne pas de points, de notes, de classement. La seule chose qu'on affiche jamais, c'est le <strong>registre de gratitude</strong> : les accueils donnés, les premières conversations tenues. Le nombre de gens que tu as fait se sentir chez eux. »</p>
+      <p class="en-sub">A Host collects no points, no ratings, no ranking. The only thing we ever display is the gratitude ledger: welcomes given, first conversations held. The number of people you made feel at home.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>Who we're looking for</span><span class="moitie"></span><span class="fr">Qui on cherche</span></div>
+    <h2>« La patience avant la pédagogie. »</h2>
+    <p class="h2-en">Patience over pedagogy.</p>
+    <p>« Tu n'as pas besoin d'un diplôme en enseignement. Tu as besoin d'aimer entendre quelqu'un essayer. Si tu es du genre à ralentir plutôt qu'à switcher, à sourire quand une phrase se casse et à attendre la suivante — c'est toi. Francophones de toutes les couleurs de français bienvenu·es : le chiac aussi est un accueil. »</p>
+    <p class="en-sub">You don't need a teaching degree. You need to enjoy hearing someone try. If you're the kind who slows down instead of switching, who smiles when a sentence breaks and waits for the next one — that's you. Francophones of every shade of French welcome: Chiac is a welcome too.</p>
+  </section>
+
+  <section id="candidature">
+    <div class="eyebrow"><span>Apply · 18+</span><span class="moitie"></span><span class="fr">La candidature</span></div>
+    <h2>« Deux minutes. Puis Kurt t'appelle. »</h2>
+    <p class="h2-en">Two minutes. Then Kurt calls you.</p>
+    <p>« Remplis ceci et Kurt te téléphone en personne, sous <strong>48 heures</strong> — pas un formulaire automatique, une vraie voix. Tu dois avoir 18 ans ou plus. »</p>
+    <p class="en-sub">Fill this in and Kurt phones you personally, within 48 hours — not an auto-reply, a real voice. You must be 18 or older.</p>
+
+    <form name="hote" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="hote">
+      <p class="hp"><label>Ne remplis pas ceci / Don't fill this out: <input name="bot-field"></label></p>
+
+      <label for="h-nom">Nom <span class="en">Name</span></label>
+      <input type="text" id="h-nom" name="nom" required autocomplete="name">
+
+      <label for="h-courriel">Courriel <span class="en">Email</span></label>
+      <input type="email" id="h-courriel" name="courriel" required autocomplete="email">
+
+      <label for="h-tel">Téléphone (optionnel) <span class="en">Phone (optional)</span></label>
+      <input type="tel" id="h-tel" name="telephone" autocomplete="tel" placeholder="Pour l'appel de 48h / For the 48h call">
+
+      <label for="h-communaute">Ta communauté / ton lien au français <span class="en">Your community / your tie to French</span></label>
+      <input type="text" id="h-communaute" name="communaute" placeholder="Acadie, francophone d'ailleurs, enseignant·e d'immersion à la retraite… / Acadian, francophone from elsewhere, retired immersion teacher…">
+
+      <label for="h-dispos">Tes disponibilités <span class="en">Your availability</span></label>
+      <input type="text" id="h-dispos" name="disponibilites" placeholder="Quels soirs ou après-midis te vont ? / Which evenings or afternoons work?">
+
+      <label for="h-pourquoi">Pourquoi tu veux accueillir <span class="en">Why you want to host</span></label>
+      <textarea id="h-pourquoi" name="pourquoi" placeholder="Une phrase suffit. / One sentence is enough."></textarea>
+
+      <label class="attest">
+        <input type="checkbox" name="majeur" value="oui" required>
+        <span>J'ai 18 ans ou plus. <span class="en">I am 18 or older.</span></span>
+      </label>
+
+      <p style="font-size:0.82rem; color:var(--muted); margin:0.9rem 0 0">On garde ton nom, ton courriel et ce que tu écris seulement pour te rappeler au sujet de l’accueil — chez Supabase, au Canada, effacés sur demande. <a href="privacy.html">Vie privée</a>. <span style="font-style:italic">We keep your name, email and what you write only to call you back about hosting — on Supabase, in Canada, deleted on request. Privacy.</span></p>
+      <button type="submit">Envoyer ma candidature<span class="en">Send my application</span></button>
+      <div class="form-msg" id="h-msg" role="status" aria-live="polite"></div>
+    </form>
+    <p style="font-size:0.85rem; color:var(--muted)">Tu préfères écrire ? / Prefer email? <a href="mailto:kurtrgoddard@gmail.com?subject=Bilingua%20—%20Candidature%20H%C3%B4te">kurtrgoddard@gmail.com</a></p>
+  </section>
+
+  <footer>
+    <p>« <strong>La Table</strong> — un projet civique de Kurt Goddard (Fredericton, N.-B.). Les Hôtes sont des bénévoles pendant le pilote, dépenses couvertes. La première promotion est petite, exprès. »</p>
+    <p class="en"><strong>La Table</strong> — a civic project by Kurt Goddard (Fredericton, NB). Hosts are volunteers during the pilot, expenses covered. The first cohort is small, on purpose.</p>
+    <p><a href="index.html">Accueil / Home</a> · <a href="rencontres.html">Comment marche une table</a> · <a href="securite.html">Sécurité / Safety</a> · <a href="pourquoi.html">Pourquoi / Why</a> · <a href="privacy.html">Vie privée / Privacy</a></p>
+    <p>Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). / On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).</p>
+  </footer>
+
+</div>
+
+<script>
+/* La Table — Hôte candidature: try the live backend first (bq-waitlist, kind=feedback,
+   message prefixed [CANDIDATURE HÔTE]); on success go to merci.html. On any failure,
+   fall through to the standard Netlify-form / mailto path (the verbatim script below). */
+(function () {
+  var ENDPOINT = 'https://tgzouzrqaqpjyqjbveaz.supabase.co/functions/v1/bq-waitlist';
+  var form = document.querySelector('form[name="hote"]');
+  var msg = document.getElementById('h-msg');
+  if (!form) return;
+
+  function fieldOr(name, dash) {
+    var el = form.elements[name];
+    var v = el ? String(el.value || '').trim() : '';
+    return v || (dash || '—');
+  }
+  function showMsg(kind) {
+    if (!msg) return;
+    msg.className = 'form-msg ' + (kind === 'ok' ? 'ok' : 'err');
+    if (kind === 'ok') {
+      msg.innerHTML = 'Reçu. Kurt t\'appelle sous 48 heures — une vraie voix, pas un robot. Merci de vouloir accueillir.' +
+        '<span class="en">Got it. Kurt calls you within 48 hours — a real voice, not a robot. Thank you for wanting to welcome.</span>';
+    } else {
+      msg.innerHTML = 'L\'envoi n\'a pas passé. Écris directement à Kurt : <a href="mailto:kurtrgoddard@gmail.com">kurtrgoddard@gmail.com</a> — il te rappelle pareil.' +
+        '<span class="en">The send didn\'t go through. Email Kurt directly: kurtrgoddard@gmail.com — he\'ll still call you back.</span>';
+    }
+  }
+
+  /* Capture-phase so this runs before the verbatim mailto handler below.
+     Only when the backend POST fails do we let that normal path run. */
+  form.addEventListener('submit', function (e) {
+    if (!form.checkValidity()) return; /* let the browser show native validation */
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    var message = '[CANDIDATURE HÔTE]\n' +
+      'Communauté / lien au français : ' + fieldOr('communaute') + '\n' +
+      'Disponibilités : ' + fieldOr('disponibilites') + '\n' +
+      'Téléphone : ' + fieldOr('telephone') + '\n' +
+      '18 ans ou plus : ' + (form.elements['majeur'] && form.elements['majeur'].checked ? 'oui' : 'non') + '\n' +
+      'Pourquoi accueillir : ' + fieldOr('pourquoi');
+
+    var payload = {
+      kind: 'feedback',
+      name: fieldOr('nom', ''),
+      email: fieldOr('courriel', ''),
+      message: message
+    };
+
+    var done = false;
+    function fallback() {
+      if (done) return; done = true;
+      /* Let the normal Netlify/mailto path handle it. */
+      if (location.hostname.endsWith('netlify.app')) {
+        form.submit(); /* native POST → Netlify captures, then action=merci.html */
+      } else {
+        showMsg('err');
+        var body = '';
+        var data = new FormData(form);
+        data.forEach(function (v, k) {
+          if (k !== 'form-name' && k !== 'bot-field' && v) body += k + ': ' + v + '\n';
+        });
+        location.href = 'mailto:kurtrgoddard@gmail.com?subject=' +
+          encodeURIComponent('Bilingua — Candidature Hôte') + '&body=' + encodeURIComponent(body);
+      }
+    }
+
+    var ctrl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); fallback(); }, 8000);
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (res) {
+      return res.ok ? res.json().catch(function () { return { ok: true }; }) : Promise.reject(new Error('http ' + res.status));
+    }).then(function (data) {
+      clearTimeout(timer);
+      if (done) return;
+      if (data && data.ok !== false) {
+        done = true;
+        showMsg('ok');
+        location.href = 'merci.html';
+      } else {
+        fallback();
+      }
+    }).catch(function () {
+      clearTimeout(timer);
+      fallback();
+    });
+  }, true);
+})();
+</script>
+<script>
+/* form-fallback: Netlify Forms only capture on Netlify hosting.
+   Everywhere else (GitHub Pages — github.io or the bilingua.app custom domain),
+   swap form submits for mailto so nothing silently fails. */
+if (!location.hostname.endsWith('netlify.app')) {
+  document.querySelectorAll('form[data-netlify]').forEach(f => {
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const kind = ({waitlist:'Waitlist', feedback:'Feedback', 'proposer-quete':'Quête proposée'})[f.getAttribute('name')] || f.getAttribute('name');
+      const data = new FormData(f);
+      let body = '';
+      for (const [k, v] of data.entries()) if (k !== 'form-name' && k !== 'bot-field' && v) body += k + ': ' + v + '\n';
+      location.href = 'mailto:kurtrgoddard@gmail.com?subject=' + encodeURIComponent('Bilingua Quest ' + kind) + '&body=' + encodeURIComponent(body);
+    });
+  });
+}
+</script>
+</body>
+</html>

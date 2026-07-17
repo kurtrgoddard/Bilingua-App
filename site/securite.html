@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sécurité / Safety — Lieux publics, jamais en tête-à-tête, 18+ | La Table</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🛡️</text></svg>">
+<meta name="description" content="Comment La Table reste sûre : des lieux publics seulement, des groupes de 3 à 6, jamais en tête-à-tête, 18+, la correction par consentement, et le droit de partir sans un mot. / How La Table stays safe: public places only, groups of 3 to 6, never one-on-one, 18+, correction by consent, and the right to leave without a word.">
+<style>
+  :root {
+    --paper: #F8F4EC; --ink: #2A2118; --muted: #6E6357;
+    --acadie: #1F4FA8; --stella: #C89512;
+    --card: #FFFDF8; --line: #E3DACB; --soft: #F0EADD;
+    --navy: #1a2340; --navy2: #232f57; --cream: #f4ead2; --gold: #e8c04a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #211913; --ink: #EFE7DA; --muted: #A79A8A; --acadie: #8FB0E8; --stella: #E0B93F; --card: #2A211A; --line: #3D332A; --soft: #2E251D; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+    font-size: 1.0625rem; line-height: 1.65;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem; }
+  h1, h2, h3 { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; line-height: 1.15; text-wrap: balance; }
+  p { margin-bottom: 1.1rem; }
+  a { color: var(--acadie); }
+
+  /* hero — the game's night-sky world (calmer here, no pixel bravado) */
+  .hero {
+    background: linear-gradient(180deg, #0b0e1a 0%, #16203a 70%, #1a2340 100%);
+    color: var(--cream); text-align: center;
+    padding: 4.5rem 1.25rem 3.4rem;
+    overflow: hidden;
+  }
+  .hero .eyebrow-h { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #8fa3cc; margin-bottom: 1.4rem; }
+  .hero .pixel-title {
+    font-family: 'Courier New', Courier, monospace; font-weight: bold;
+    font-size: clamp(1.7rem, 5.4vw, 2.9rem); letter-spacing: 0.02em;
+    color: var(--gold); text-shadow: 3px 3px 0 #0b0e1a, 6px 6px 0 rgba(31,79,168,0.45);
+  }
+  .hero .sub { font-size: clamp(1.05rem, 3vw, 1.35rem); font-style: italic; color: #cfd9f0; margin: 0.9rem 0 0.2rem; }
+  .hero .sub-en { font-size: 0.95rem; color: #8fa3cc; margin-bottom: 1.6rem; }
+  .hero .note { font-size: 0.9rem; color: var(--cream); margin: 1.3rem 0 0.2rem; }
+  .hero .note-en { font-size: 0.82rem; color: #8fa3cc; font-style: italic; margin: 0; }
+
+  section { padding: 3.2rem 0 0.5rem; }
+  .eyebrow {
+    display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  .eyebrow .fr { font-style: italic; }
+  .moitie { flex: 1; height: 2px; min-width: 3rem; background: linear-gradient(to right, var(--acadie) 50%, var(--stella) 50%); border-radius: 1px; }
+  h2 { font-size: 1.7rem; margin-bottom: 0.4rem; }
+  .h2-en { font-size: 0.95rem; color: var(--muted); font-style: italic; margin-bottom: 1rem; }
+  .en-sub { font-size: 0.92rem; color: var(--muted); font-style: italic; }
+  strong { font-weight: 700; }
+
+  .callout { background: var(--soft); border-left: 3px solid var(--muted); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.6rem 0; }
+  .callout p { margin: 0; }
+  .callout .en { font-size: 0.88rem; color: var(--muted); font-style: italic; margin-top: 0.4rem; }
+  .callout.stella { border-left-color: var(--stella); background: var(--card); border: 2px solid var(--stella); border-left-width: 6px; }
+
+  blockquote {
+    margin: 1.8rem 0; padding-left: 1.25rem; border-left: 3px solid var(--stella);
+    font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 1.25rem; line-height: 1.5;
+  }
+  blockquote .en { display: block; font-size: 0.9rem; color: var(--muted); font-style: italic; margin-top: 0.4rem; font-family: Charter, Cambria, Georgia, serif; }
+
+  /* the four correction levels — a scale, not a ranking */
+  .levels { list-style: none; counter-reset: lvl; margin: 1.4rem 0; padding: 0; }
+  .levels li { counter-increment: lvl; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 0.85rem 1rem 0.85rem 3rem; margin-bottom: 0.6rem; position: relative; }
+  .levels li::before { content: counter(lvl); position: absolute; left: 0.85rem; top: 0.85rem; width: 1.5rem; height: 1.5rem; border-radius: 999px; background: var(--soft); border: 1.5px solid var(--stella); color: var(--stella); font-family: ui-monospace, Menlo, monospace; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+  .levels .fr-l { margin: 0; }
+  .levels .en { display: block; font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 0.2rem; }
+
+  /* what we never build */
+  .never { list-style: none; margin: 1.4rem 0; padding: 0; }
+  .never li { padding: 0.7rem 0 0.7rem 1.9rem; border-bottom: 1px solid var(--line); position: relative; }
+  .never li:last-child { border-bottom: none; }
+  .never li::before { content: "✗"; position: absolute; left: 0.2rem; top: 0.7rem; color: var(--stella); font-weight: 700; }
+  .never .en { display: block; font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 0.15rem; }
+
+  .report-btn {
+    display: inline-block; margin: 0.4rem 0 0.2rem;
+    font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.05rem;
+    background: var(--acadie); color: var(--paper); text-decoration: none;
+    border: none; border-radius: 8px; padding: 0.7rem 1.8rem;
+  }
+  .report-btn:hover { opacity: 0.92; }
+  .report-btn .en { display: block; font-size: 0.72rem; font-weight: normal; letter-spacing: 0.02em; margin-top: 0.1rem; opacity: 0.85; }
+
+  footer { margin-top: 3.5rem; padding: 2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+  footer p { margin-bottom: 0.6rem; }
+  footer .en { font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="eyebrow-h">LA SÉCURITÉ / SAFETY</p>
+  <h1 class="pixel-title">« La sécurité, ce n'est pas une règle. C'est la forme. »</h1>
+  <p class="sub">« On a mis le pire scénario dehors, exprès. »</p>
+  <p class="sub-en">"Safety isn't a rule here. It's the shape. We built the worst case out, on purpose."</p>
+  <p class="note">« Une table publique, un petit groupe, 18+. Tu peux partir n'importe quand. »</p>
+  <p class="note-en">A public table, a small group, 18+. You can leave any time.</p>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <div class="eyebrow"><span>Public places</span><span class="moitie"></span><span class="fr">Lieux publics</span></div>
+    <h2>« Toujours un lieu public. Structurellement. »</h2>
+    <p class="h2-en">Always a public place. Structurally.</p>
+    <p>« Ce n'est pas une promesse qu'on te demande de croire. Le tableau ne <strong>peut pas</strong> afficher une adresse privée : la case n'existe pas. Les lieux viennent d'une liste de cafés et d'espaces publics de Fredericton. Une adresse résidentielle est refusée à la source — pas par un modérateur, par le schéma lui-même. »</p>
+    <p class="en-sub">This isn't a promise we ask you to trust. The board literally <strong>cannot</strong> show a private address: the field doesn't exist. Places come from a list of Fredericton cafés and public spaces. A home address is refused at the source — not by a moderator, by the schema itself.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>In a group</span><span class="moitie"></span><span class="fr">En groupe</span></div>
+    <h2>« Des groupes de 3 à 6. Jamais un contre un. »</h2>
+    <p class="h2-en">Groups of 3 to 6. Never one-on-one.</p>
+    <p>« Une table réservée, c'est un·e Hôte plus 3 à 5 personnes. Jamais un rendez-vous à deux organisé par nous : ce n'est pas une appli de rencontre, et ça ne le deviendra pas par accident. Tu t'assois dans un petit groupe, en public, à une heure connue. »</p>
+    <p class="en-sub">A reserved table is one Host plus 3 to 5 people. Never a two-person meetup arranged by us: this is not a dating app, and it won't become one by accident. You sit in a small group, in public, at a known hour.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>Adults only · 18+</span><span class="moitie"></span><span class="fr">18 ans et plus</span></div>
+    <h2>« Adultes seulement. »</h2>
+    <p class="h2-en">Adults only.</p>
+    <p>« Il faut avoir <strong>18 ans ou plus</strong> pour réserver une place ou devenir Hôte. Là où il y a de l'alcool, c'est <strong>19+</strong>, la loi du Nouveau-Brunswick. On ne demande pas de pièce d'identité ni de date de naissance — une attestation honnête, la vérification la moins intrusive qui convient au risque (principe du Commissariat à la vie privée du Canada). »</p>
+    <p class="en-sub">You must be <strong>18 or older</strong> to reserve a seat or become a Host. Where alcohol is served, it's <strong>19+</strong>, per New Brunswick law. We don't ask for ID or birthdate — an honest attestation, the least-intrusive check that fits the risk (a principle from the Privacy Commissioner of Canada).</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>Correction by consent</span><span class="moitie"></span><span class="fr">La correction</span></div>
+    <h2>« C'est toi qui règles le curseur. »</h2>
+    <p class="h2-en">You set the dial.</p>
+    <p>« On ne te corrige jamais sans que tu l'aies demandé. Au début de la table, tu choisis ton niveau — et tu peux le changer à tout moment, à voix haute ou d'un signe. Les quatre réglages : »</p>
+    <p class="en-sub">We never correct you unless you've asked. At the start of the table, you pick your level — and you can change it any time, out loud or with a gesture. The four settings:</p>
+    <ol class="levels">
+      <li>
+        <p class="fr-l">« <strong>Corrige-moi souvent</strong> — même les petites choses. »</p>
+        <span class="en">Correct me often — even the small things.</span>
+      </li>
+      <li>
+        <p class="fr-l">« <strong>Corrige-moi quand ça change le sens.</strong> »</p>
+        <span class="en">Correct me when it changes the meaning.</span>
+      </li>
+      <li>
+        <p class="fr-l">« <strong>Seulement si on ne se comprend plus.</strong> »</p>
+        <span class="en">Only if we stop understanding each other.</span>
+      </li>
+      <li>
+        <p class="fr-l">« <strong>Pas de corrections ce soir — je veux juste parler.</strong> »</p>
+        <span class="en">No corrections tonight — I just want to talk.</span>
+      </li>
+    </ol>
+    <div class="callout stella">
+      <p>« Et à tout moment : « <strong>Ce soir, j'écoute.</strong> » Tu n'as rien à dire pour appartenir à la table. Écouter est une place entière. »</p>
+      <p class="en">And at any moment: "Tonight, I just listen." You owe the table no words to belong to it. Listening is a full seat.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>Leaving</span><span class="moitie"></span><span class="fr">Partir</span></div>
+    <h2>« Tu peux partir n'importe quand. Sans un mot. »</h2>
+    <p class="h2-en">You can leave any time. Without a word.</p>
+    <p>« Aucune explication n'est due. Tu te lèves, tu pars, personne ne te doit rien et tu ne dois rien à personne. Une mauvaise demi-heure devient une anecdote — jamais un piège. Et avant de venir : dis à un·e ami·e où tu vas. Fais confiance à ton instinct, toujours. »</p>
+    <p class="en-sub">No explanation is owed. You stand, you go — nobody owes you anything and you owe nobody. A bad half-hour becomes an anecdote — never a trap. And before you come: tell a friend where you're going. Trust your instincts, always.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>Reporting</span><span class="moitie"></span><span class="fr">Signaler</span></div>
+    <h2>« Quelque chose ne va pas ? Écris à un humain. »</h2>
+    <p class="h2-en">Something's wrong? Write to a human.</p>
+    <p>« S'il se passe quoi que ce soit d'inconfortable ou d'irrespectueux, écris directement à Kurt : <strong>kurtrgoddard@gmail.com</strong>. Une vraie personne lit, répond, agit. Pas de formulaire perdu, pas de file d'attente. »</p>
+    <p class="en-sub">If anything uncomfortable or disrespectful happens, write to Kurt directly: <strong>kurtrgoddard@gmail.com</strong>. A real person reads, replies, acts. No lost form, no queue.</p>
+    <a class="report-btn" href="mailto:kurtrgoddard@gmail.com?subject=La%20Table%20%E2%80%94%20Signaler%20quelque%20chose">Signaler quelque chose<span class="en">Report something</span></a>
+  </section>
+
+  <section>
+    <div class="eyebrow"><span>What we never build</span><span class="moitie"></span><span class="fr">La liste</span></div>
+    <h2>« La sécurité, c'est aussi ce qu'on refuse de bâtir. »</h2>
+    <p class="h2-en">Safety is also what we refuse to build.</p>
+    <ul class="never">
+      <li><strong>Pas de profils.</strong> Tu n'es pas une fiche à parcourir.<span class="en">No profiles. You're not a card to browse.</span></li>
+      <li><strong>Pas de messagerie privée entre inconnus.</strong> On se parle à table.<span class="en">No private DMs between strangers. We talk at the table.</span></li>
+      <li><strong>Pas de swipe.</strong> On choisit une table, jamais une personne.<span class="en">No swiping. You choose a table, never a person.</span></li>
+      <li><strong>Pas de classements.</strong> Le niveau est une bienvenue, jamais un rang. Aucun score de fluidité, aucune popularité.<span class="en">No rankings. Level is a welcome, never a rank. No fluency score, no popularity.</span></li>
+      <li><strong>Pas de photos de gens.</strong> Nulle part dans le produit.<span class="en">No photos of people. Anywhere in the product.</span></li>
+      <li><strong>Pas de « qui vient ».</strong> Une table affiche les places restantes, jamais des noms.<span class="en">No "who's coming." A table shows seats remaining, never names.</span></li>
+    </ul>
+    <blockquote>« Chacune de ces choses, construite, rendrait la table moins sûre. Alors on ne les construit pas. »<span class="en">Each of these, if built, would make the table less safe. So we don't build them.</span></blockquote>
+  </section>
+
+  <footer>
+    <p>« <strong>La Table</strong> — un projet civique de Kurt Goddard (Fredericton, N.-B.). Adultes 18+ (19+ où il y a de l'alcool). Lieux publics seulement. On réserve une table, jamais une personne. »</p>
+    <p class="en"><strong>La Table</strong> — a civic project by Kurt Goddard (Fredericton, NB). Adults 18+ (19+ where alcohol is served). Public places only. You reserve a table, never a person.</p>
+    <p><a href="index.html">Accueil / Home</a> · <a href="rencontres.html">Réserver une place</a> · <a href="hote.html">Devenir Hôte</a> · <a href="pourquoi.html">Pourquoi / Why</a> · <a href="play/">Le jeu / The game</a> · <a href="privacy.html">Vie privée / Privacy</a> · <a href="terms.html">Conditions / Terms</a></p>
+    <p>Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). / On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

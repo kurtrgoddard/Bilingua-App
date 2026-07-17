@@ -237,6 +237,91 @@
   </div>
 </section>
 
+<!-- ============================ TABLES RÉSERVÉES ============================ -->
+<section id="tables-reservees">
+  <div class="eyebrow"><span class="fr">Tables réservées</span><span class="moitie"></span><span>reserved tables → JSON + SQL</span></div>
+  <h2>Tables réservées <span class="gloss">/ compose a reserved table for the live board</span></h2>
+  <div class="panel">
+    <p class="note">Un formulaire, deux sorties : <strong>(a)</strong> le bloc JSON à coller dans <code>site/rendezvous.json</code> — le miroir de repli ; quand le backend dort, le site montre une carte « à venir », <em>jamais</em> une fausse table avec de fausses places — et <strong>(b)</strong> l'<code>insert</code> SQL à coller dans l'éditeur SQL de Supabase (<code>bilingua.tables</code>), la source que le tableau vivant lit via <code>bq-tables</code>. Prénom de l'Hôte seulement, lieu public seulement, 3 à 5 places. <span class="gloss">One form, two outputs: the honest JSON fallback block and the Supabase SQL insert the live board actually reads. Host first name only; public venues only; 3–5 seats.</span></p>
+    <div class="cols">
+      <div>
+        <label for="tr-id">id <span style="text-transform:none">(court, unique, minuscules / short, unique, lowercase)</span></label>
+        <input type="text" id="tr-id" autocomplete="off" spellcheck="false" placeholder="table-2026-08-06-jonnie">
+        <label for="tr-date">date</label>
+        <input type="date" id="tr-date">
+        <label for="tr-heure">heure</label>
+        <input type="text" id="tr-heure" autocomplete="off" placeholder="18:00-19:30">
+        <label for="tr-lieu">lieu <span style="text-transform:none">(lieu public seulement / public venue only)</span></label>
+        <input type="text" id="tr-lieu" placeholder="Jonnie Java Roasters">
+        <label for="tr-quartier">quartier</label>
+        <input type="text" id="tr-quartier" placeholder="Centre-ville / Downtown">
+      </div>
+      <div>
+        <label for="tr-titrefr">titre_fr</label>
+        <input type="text" id="tr-titrefr" placeholder="La table du mercredi soir">
+        <label for="tr-titreen">titre_en</label>
+        <input type="text" id="tr-titreen" placeholder="The Wednesday-evening table">
+        <label for="tr-niveau">niveau <span style="text-transform:none">(un accueil, jamais un rang / a welcome, never a rank)</span></label>
+        <select id="tr-niveau">
+          <option value="tous">tous / all levels</option>
+          <option value="debutant">debutant / beginners welcome</option>
+          <option value="intermediaire">intermediaire</option>
+          <option value="courant">courant / fluent</option>
+        </select>
+        <label for="tr-hote">hote_prenom <span style="text-transform:none">(prénom seulement / first name only)</span></label>
+        <input type="text" id="tr-hote" placeholder="Aurélie">
+        <label for="tr-places">places <span style="text-transform:none">(3 à 5)</span></label>
+        <input type="text" id="tr-places" inputmode="numeric" autocomplete="off" placeholder="4">
+      </div>
+    </div>
+    <div class="controls">
+      <button id="tr-gen">Générer JSON + SQL</button>
+      <button class="ghost" id="tr-copy-json">Copier le JSON</button>
+      <button class="ghost" id="tr-copy-sql">Copier le SQL</button>
+      <span class="note" id="tr-warn"></span>
+    </div>
+    <h3>a) Bloc JSON → <code>site/rendezvous.json</code> <span class="gloss">/ paste into the array, before the closing bracket</span></h3>
+    <pre id="tr-json">{ }</pre>
+    <h3>b) SQL → Supabase <span class="gloss">/ paste into the SQL editor, run once</span></h3>
+    <pre id="tr-sql">--</pre>
+  </div>
+  <div class="panel">
+    <h3>🧰 SQL d'opération <span class="gloss">/ the ops crib — copy, replace TABLE_ID, run</span></h3>
+    <p class="note">Le quotidien d'une table, en cinq requêtes. <code>bq-tables</code> décrémente les places tout seul à chaque réservation — le SQL « ajuster » sert aux corrections à la main (désistement, erreur de saisie). <span class="gloss">A table's daily life in five queries. bq-tables decrements seats on each RSVP by itself; the adjust SQL is for hand corrections (a cancellation, a typo).</span></p>
+    <div class="controls"><button class="ghost" id="tr-copy-crib">Copier le crib</button></div>
+    <pre id="tr-crib">-- Marquer complet / mark full (the board shows the gold « complet » pill)
+update bilingua.tables set statut = 'complet' where id = 'TABLE_ID';
+
+-- Rouvrir / reopen
+update bilingua.tables set statut = 'ouverte' where id = 'TABLE_ID';
+
+-- Annuler / cancel (disparaît du tableau / drops off the board)
+update bilingua.tables set statut = 'annulee' where id = 'TABLE_ID';
+
+-- Marquer passée, après la soirée / mark past, after the evening
+update bilingua.tables set statut = 'passee' where id = 'TABLE_ID';
+
+-- Lister les réservations d'une table / list the RSVPs for one table
+select name, email, parcours, invite_code, created_at
+from bilingua.rsvps
+where table_id = 'TABLE_ID'
+order by created_at;
+
+-- Enlever une place à la main / hand-decrement one seat
+update bilingua.tables
+set places_restantes = greatest(places_restantes - 1, 0)
+where id = 'TABLE_ID';
+
+-- Rendre une place (désistement) / give a seat back (a cancellation)
+update bilingua.tables
+set places_restantes = least(places_restantes + 1, places)
+where id = 'TABLE_ID';
+
+-- Ajuster à un chiffre exact / set the exact remaining count
+update bilingua.tables set places_restantes = 3 where id = 'TABLE_ID';</pre>
+  </div>
+</section>
+
 <!-- ============================ LES TABLEAUX ============================ -->
 <section id="tableaux">
   <div class="eyebrow"><span class="fr">Les Tableaux</span><span class="moitie"></span><span>dashboards</span></div>
@@ -789,6 +874,49 @@ $('can-gen').addEventListener('click', () => {
   $('can-out').textContent = JSON.stringify(ev, null, 2) + ',';
 });
 $('can-copy').addEventListener('click', (e) => copyText($('can-out').textContent, e.target));
+
+/* ----- Tables réservées : compose → JSON (fallback) + SQL (source vivante) ----- */
+function sqlStr(s) {
+  const v = String(s == null ? '' : s).trim();
+  return v ? "'" + v.replace(/'/g, "''") + "'" : 'null';
+}
+$('tr-gen').addEventListener('click', () => {
+  const v = (id) => $(id).value.trim();
+  const places = parseInt(v('tr-places'), 10);
+  const warn = [];
+  if (!v('tr-id')) warn.push('id manquant');
+  if (!v('tr-date')) warn.push('date manquante');
+  if (!Number.isFinite(places)) warn.push('places manquantes');
+  else if (places < 3 || places > 5) warn.push('⚠ hors doctrine : 3 à 5 places');
+  $('tr-warn').textContent = warn.join(' · ');
+  const entry = {
+    id: v('tr-id'),
+    format: 'table-reservee',
+    date: v('tr-date') || null,
+    heure: v('tr-heure') || null,
+    lieu: v('tr-lieu') || null,
+    quartier: v('tr-quartier') || null,
+    titre_fr: v('tr-titrefr') || null,
+    titre_en: v('tr-titreen') || null,
+    niveau: $('tr-niveau').value,
+    hote_prenom: v('tr-hote') || null,
+    places: Number.isFinite(places) ? places : null,
+    places_restantes: Number.isFinite(places) ? places : null,
+    statut: 'ouverte'
+  };
+  $('tr-json').textContent = JSON.stringify(entry, null, 2) + ',';
+  $('tr-sql').textContent =
+    'insert into bilingua.tables\n' +
+    '  (id, date_at, heure, lieu, quartier, titre_fr, titre_en, niveau, hote_prenom, places)\n' +
+    'values\n  (' +
+    [sqlStr(entry.id), sqlStr(entry.date), sqlStr(entry.heure), sqlStr(entry.lieu), sqlStr(entry.quartier),
+     sqlStr(entry.titre_fr), sqlStr(entry.titre_en), sqlStr(entry.niveau), sqlStr(entry.hote_prenom),
+     Number.isFinite(places) ? String(places) : 'null'].join(', ') +
+    ');';
+});
+$('tr-copy-json').addEventListener('click', (e) => copyText($('tr-json').textContent, e.target));
+$('tr-copy-sql').addEventListener('click', (e) => copyText($('tr-sql').textContent, e.target));
+$('tr-copy-crib').addEventListener('click', (e) => copyText($('tr-crib').textContent, e.target));
 
 /* ----- Le Tableau de bord : registre local (localStorage only) ----- */
 const TALLY_KEY = 'regie_tally';
