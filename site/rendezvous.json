@@ -1,5 +1,9 @@
 [
   {
+    "_schema": "Tables réservées (format « table-reservee ») — miroir honnête de bilingua.tables. Champs : id (court, unique) · format: 'table-reservee' · date (YYYY-MM-DD) · heure ('18:00-19:30') · lieu (lieu public seulement) · quartier · titre_fr · titre_en · niveau (tous|debutant|intermediaire|courant — un accueil, jamais un rang) · hote_prenom (prénom seulement) · places (3 à 5) · places_restantes · statut ('ouverte'|'complet'). Le tableau vivant lit d'abord le backend bq-tables ; ce fichier est le repli. En repli, toute entrée table-reservee s'affiche comme carte « à venir » — jamais une fausse table avec de fausses places. L'entrée 'exemple-a-remplacer' (statut 'a-venir') garde la carte visible tant qu'aucune vraie table n'existe. / Reserved tables — honest mirror of bilingua.tables. The live board reads bq-tables first; this file is the fallback, and fallback entries render as a 'coming soon' card, never a fake table.",
+    "format": "_schema"
+  },
+  {
     "id": "rituel-jeudi-dolans",
     "date": null,
     "heure": "18:00-20:00",
@@ -40,5 +44,20 @@
     "places": 6,
     "note_fr": "45 minutes, 4 à 6 personnes, trois lieux du centre-ville. « exemple — remplace-moi via la Régie »",
     "note_en": "45 minutes, 4-6 people, three downtown stops. (Example entry — replace me via the Régie.)"
+  },
+  {
+    "id": "exemple-a-remplacer",
+    "format": "table-reservee",
+    "statut": "a-venir",
+    "date": null,
+    "heure": null,
+    "lieu": null,
+    "quartier": null,
+    "titre_fr": "Les premières tables réservées arrivent",
+    "titre_en": "The first reserved tables are coming",
+    "niveau": null,
+    "hote_prenom": null,
+    "places": null,
+    "places_restantes": null
   }
 ]

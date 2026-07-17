@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bilingua Quest — an SNES game the size of Fredericton</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>✶</text></svg>">
-<meta name="description" content="Douze ans de français. Une vraie conversation. A cozy SNES-style game set in real Fredericton where you practice French — and real people unlock your levels.">
-<meta property="og:title" content="Bilingua Quest — Fredericton">
-<meta property="og:description" content="Douze ans de français. Une vraie conversation. A cozy SNES-style game set in real Fredericton where you practice French — and real people unlock your levels.">
+<title>La Table — Un·e francophone t'attend. Exprès. | Bilingua (Fredericton)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>★</text></svg>">
+<meta name="description" content="La Table réserve une place à une vraie table, à Fredericton : un·e francophone qui veut être là, exprès, et qui ne switchera pas en anglais. / A reserved seat at a real table in Fredericton: a francophone who wants to be there, on purpose, and won't switch to English.">
+<meta property="og:title" content="La Table — Un·e francophone t'attend. Exprès.">
+<meta property="og:description" content="Une place réservée à une vraie table, à Fredericton. Un·e francophone qui veut être là, exprès. / A reserved seat at a real table in Fredericton, on purpose.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bilingua.app/">
 <meta property="og:image" content="https://bilingua.app/shots/1-title.png">
@@ -33,31 +33,47 @@
   p { margin-bottom: 1.1rem; }
   a { color: var(--acadie); }
 
-  /* hero — the game's night-sky world */
+  /* hero — paper-first, editorial, typographic */
   .hero {
-    background: linear-gradient(180deg, #0b0e1a 0%, #16203a 70%, #1a2340 100%);
-    color: var(--cream); text-align: center;
-    padding: 4.5rem 1.25rem 0;
-    overflow: hidden;
+    background: var(--paper); color: var(--ink); text-align: center;
+    padding: 4.6rem 1.25rem 2.8rem;
+    border-bottom: 1px solid var(--line);
   }
-  .hero .pixel-title {
-    font-family: 'Courier New', Courier, monospace; font-weight: bold;
-    font-size: clamp(2rem, 7vw, 3.6rem); letter-spacing: 0.04em;
-    color: var(--gold); text-shadow: 3px 3px 0 #0b0e1a, 6px 6px 0 rgba(31,79,168,0.45);
+  .hero .eyebrow-hero {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 1.4rem;
   }
-  .hero .sub { font-size: clamp(1.05rem, 3vw, 1.35rem); font-style: italic; color: #cfd9f0; margin: 0.8rem 0 0.4rem; }
-  .hero .sub-en { font-size: 0.95rem; color: #8fa3cc; margin-bottom: 2rem; }
+  .hero .promise {
+    font-size: clamp(2.1rem, 7.5vw, 4rem); letter-spacing: -0.01em; line-height: 1.08;
+    margin: 0 auto; max-width: 15em;
+  }
+  .hero .promise-sub { font-size: clamp(1.1rem, 3vw, 1.5rem); font-style: italic; color: var(--stella); margin: 1rem 0 0.3rem; }
+  .hero .promise-sub-en { font-size: 0.95rem; color: var(--muted); margin: 0; }
+  /* whisper of brand: the half-and-half divider, standalone + centered */
+  .moitie-wide { height: 3px; width: 8rem; margin: 1.9rem auto; border-radius: 2px;
+    background: linear-gradient(to right, var(--acadie) 50%, var(--stella) 50%); }
   .play {
-    display: inline-block; margin: 0.6rem 0 1rem;
-    font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.25rem;
+    display: inline-block; margin: 0.4rem 0 0.5rem;
+    font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.2rem;
     background: var(--gold); color: #201a08; text-decoration: none;
-    border: 3px solid var(--cream); border-radius: 10px;
-    box-shadow: 0 6px 0 rgba(0,0,0,0.45);
+    border: 3px solid #d0a72e; border-radius: 10px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.28);
     padding: 0.85rem 2.4rem;
   }
-  .play:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(0,0,0,0.45); }
-  .hero .note { font-size: 0.8rem; color: #8fa3cc; margin-bottom: 2.4rem; }
-  .hero img { display: block; max-width: min(680px, 100%); margin: 0 auto; border-radius: 10px 10px 0 0; border: 3px solid var(--navy2); border-bottom: none; image-rendering: pixelated; }
+  .play em { font-style: italic; font-weight: normal; font-size: 0.82em; opacity: 0.72; }
+  .play:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(0,0,0,0.28); }
+  .hero-secondary { font-size: 0.95rem; color: var(--muted); margin: 1rem 0 0.2rem; }
+  .hero-secondary a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+  .hero-secondary em { font-style: italic; }
+  .hero-note-paper { font-size: 0.82rem; color: var(--muted); margin: 1.4rem 0 0; font-style: italic; }
+
+  /* dynamic "prochaine table" ribbon (only shows if a table exists) */
+  .next-ribbon { display: none; background: var(--soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    text-align: center; padding: 0.6rem 1.25rem; font-size: 0.92rem; }
+  .next-ribbon.on { display: block; }
+  .next-ribbon a { color: var(--acadie); text-decoration: none; font-weight: bold; }
+  .next-ribbon .star { color: var(--stella); }
 
   .ribbon { background: var(--navy); color: var(--cream); text-align: center; padding: 0.55rem 1.25rem 0.65rem; border-top: 1px solid var(--navy2); font-size: 0.95rem; }
   .ribbon p { margin: 0; }
@@ -71,12 +87,16 @@
   }
   .eyebrow .fr { font-style: italic; }
   .moitie { flex: 1; height: 2px; min-width: 3rem; background: linear-gradient(to right, var(--acadie) 50%, var(--stella) 50%); border-radius: 1px; }
-  h2 { font-size: 1.7rem; margin-bottom: 1rem; }
+  h2 { font-size: 1.7rem; margin-bottom: 0.4rem; }
+  .h2-en { font-style: italic; color: var(--muted); font-size: 1.05rem; margin-bottom: 1rem; }
+  .en-line { font-style: italic; color: var(--muted); }
 
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 1.6rem 0; }
   .stat { background: var(--card); padding: 1.1rem 1rem; }
   .stat .n { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: clamp(1.7rem, 4.5vw, 2.4rem); color: var(--acadie); line-height: 1; font-variant-numeric: tabular-nums; }
   .stat .l { font-size: 0.82rem; color: var(--muted); margin-top: 0.45rem; line-height: 1.45; }
+  .stat .l .src { font-style: italic; }
+  .stat .l .en { display: block; margin-top: 0.35rem; font-style: italic; color: var(--muted); opacity: 0.85; }
   @media (max-width: 560px) { .stats { grid-template-columns: 1fr; } }
 
   .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.9rem; margin: 1.6rem 0; }
@@ -89,21 +109,40 @@
   .step { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 1.1rem 1.2rem; }
   .step .ico { font-size: 1.6rem; }
   .step h3 { font-size: 1.05rem; margin: 0.4rem 0 0.3rem; }
-  .step p { font-size: 0.9rem; color: var(--muted); margin: 0; }
+  .step h3 .en { font-style: italic; color: var(--muted); font-weight: normal; font-size: 0.85em; }
+  .step p { font-size: 0.9rem; color: var(--muted); margin: 0 0 0.5rem; }
+  .step p:last-child { margin-bottom: 0; }
+  .step p.en { font-style: italic; }
 
   blockquote {
     margin: 1.8rem 0; padding-left: 1.25rem; border-left: 3px solid var(--stella);
     font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 1.25rem; line-height: 1.5;
   }
+  blockquote .en { display: block; font-size: 0.85rem; font-style: italic; color: var(--muted); margin-top: 0.4rem; }
   .concept-tag { display: inline-block; font-size: 0.68rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.1em; text-transform: uppercase; border: 1.5px solid var(--stella); color: var(--stella); border-radius: 999px; padding: 0.1rem 0.7rem; vertical-align: middle; margin-left: 0.5rem; }
+  .quiet-link { font-size: 0.9rem; }
 
-  .roadmap { display: flex; gap: 0; overflow-x: auto; margin: 1.6rem 0; border: 1px solid var(--line); border-radius: 10px; }
-  .rm { flex: 1; min-width: 150px; background: var(--card); padding: 1rem 1.1rem; border-right: 1px solid var(--line); }
-  .rm:last-child { border-right: none; }
-  .rm .v { font-family: ui-monospace, Menlo, monospace; font-size: 0.68rem; letter-spacing: 0.1em; color: var(--stella); text-transform: uppercase; }
-  .rm h3 { font-size: 0.95rem; margin: 0.3rem 0 0.2rem; }
-  .rm p { font-size: 0.8rem; color: var(--muted); margin: 0; }
-  .rm.now { background: var(--soft); }
+  /* the Hôte recruitment band — a distinct, soft background */
+  .soft-band { background: var(--soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 3rem; }
+  .soft-band section { padding-top: 2.6rem; padding-bottom: 2.6rem; }
+
+  /* the price / honesty split chips */
+  .split { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1.2rem 0 0.6rem; }
+  .chip { flex: 1; min-width: 9rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 0.55rem 1rem; text-align: center; font-size: 0.92rem; }
+  .chip strong { color: var(--acadie); }
+  .split-en { font-size: 0.82rem; font-style: italic; color: var(--muted); margin: 0 0 1rem; }
+  .money-note { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+  .money-note .en { display: block; margin-top: 0.3rem; opacity: 0.85; }
+
+  /* rehearsal room card */
+  .rehearsal { display: flex; gap: 1.3rem; align-items: center; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 1.2rem 1.3rem; margin: 1.6rem 0; }
+  .rehearsal img { width: 220px; height: auto; flex: 0 0 220px; border-radius: 8px; border: 3px solid var(--navy); image-rendering: pixelated; display: block; }
+  .rehearsal h3 { font-size: 1.1rem; margin: 0 0 0.4rem; }
+  .rehearsal .en { font-style: italic; color: var(--muted); }
+  .rehearsal p { font-size: 0.92rem; margin-bottom: 0.5rem; }
+  @media (max-width: 560px) { .rehearsal { flex-direction: column; text-align: center; } .rehearsal img { width: 100%; height: auto; flex: none; } }
 
   form { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem 1.5rem; margin: 1.6rem 0; }
   label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.9rem 0 0.25rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; text-transform: uppercase; }
@@ -117,8 +156,11 @@
     margin-top: 1.1rem; font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 1.05rem;
     background: var(--acadie); color: var(--paper); border: none; border-radius: 8px; padding: 0.7rem 1.8rem; cursor: pointer;
   }
+  button[type="submit"] em { font-style: italic; font-weight: normal; font-size: 0.85em; opacity: 0.85; }
   button[type="submit"]:hover { opacity: 0.92; }
   .hp { position: absolute; left: -9999px; }
+  .form-help { font-size: 0.82rem; color: var(--muted); }
+  .form-help.err { margin-top: 0.6rem; }
 
   /* optional self-ID (parcours) radio group */
   .parcours-group { border: none; padding: 0; margin: 0; }
@@ -130,157 +172,196 @@
   .parcours label span { color: var(--muted); font-style: italic; font-size: 0.85em; }
   .parcours-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
 
-  footer { margin-top: 3.5rem; padding: 2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+  /* safety line band */
+  .safety { background: var(--soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 3rem; }
+  .safety section { padding: 2.4rem 0; }
+  .safety p { margin-bottom: 0.5rem; }
+  .safety .en { font-style: italic; color: var(--muted); }
+
+  footer { margin-top: 0; padding: 2.2rem 0 3rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
   footer p { margin-bottom: 0.6rem; }
+  footer .en { font-style: italic; }
+  footer .links a { color: var(--acadie); }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="pixel-title">BILINGUA QUEST</div>
-  <p class="sub">« Douze ans de français. Une vraie conversation. »</p>
-  <p class="sub-en">Twelve years of school French. Time for one real conversation.</p>
-  <a class="play" href="play/">▶ Jouer / Play</a>
-  <p class="note">Free · plays in your browser · adults 18+ · prototype v0.6 · <strong>invitation only — the founding batch is 100</strong> · <a href="billets.html" style="color:#8fa3cc">billets</a></p>
-  <img src="shots/4-world-spawn.png" alt="SNES-style pixel-art view of the Bill Thorpe Walking Bridge crossing the river into downtown Fredericton" width="1024" height="720">
-</div>
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow-hero">LA TABLE · FREDERICTON · 18+</div>
+    <h1 class="promise">« Un·e francophone t'attend. Exprès. »</h1>
+    <p class="promise-sub">« Iel ne switchera pas en anglais. »</p>
+    <p class="promise-sub-en">"A francophone is waiting for you. On purpose. They will not switch to English."</p>
+    <div class="moitie-wide" aria-hidden="true"></div>
+    <a class="play" href="rencontres.html">« Réserver une place » · <em>Reserve a seat</em></a>
+    <p class="hero-secondary"><a href="hote.html">Tu es francophone ? Devenir Hôte · <em>You're a francophone? Become a Host</em></a></p>
+    <p class="hero-note-paper">« Une place à une vraie table. Jamais une personne. » · A seat at a real table. Never a person.</p>
+  </div>
+</header>
+
+<!-- dynamic: filled by JS from the live backend (or rendezvous.json fallback); stays hidden if none -->
+<div class="next-ribbon" id="nextTable" role="status" aria-live="polite"></div>
 
 <div class="ribbon">
-  <p>🎻 <strong>Rendez-vous du jeudi</strong> — Dolan's Pub, 18 h. Chaque semaine.</p>
-  <p class="en">Thursday rendez-vous — Dolan's Pub, 6 pm. Every week.</p>
-  <p class="en"><a href="rencontres.html" style="color:#8fa3cc">Tous les rendez-vous →</a></p>
+  <p>Fredericton d'abord. Un café public, une heure fixe, 3 à 5 places.</p>
+  <p class="en">Fredericton first. A public café, a set hour, 3 to 5 seats.</p>
 </div>
 
 <div class="wrap">
 
   <section>
-    <div class="eyebrow"><span>The idea</span><span class="moitie"></span><span class="fr">L'idée</span></div>
-    <h2>An SNES game the size of Fredericton</h2>
-    <p><strong>Bilingua Quest is a cozy 16-bit game whose map is the real city.</strong> You make a character and walk out onto the Green. The river is the Wolastoq. The bridges are the Westmorland and the old green walking bridge. Queen Street has Wilser's and the Gahan House; King Street has Dolan's and Flippins; the Boyce Market is on George Street where it belongs, and if you cross to the northside you'll find bubble tea on Main. Every venue opens its door, and inside, someone speaks French to you.</p>
-    <p>And here is the whole trick: <strong>every conversation succeeds.</strong> The bravest reply earns the warmest reaction, but « Pouvez-vous répéter plus lentement ? » is always on the menu and always welcomed. In this town, your terrible French is not a problem to fix. It's the game.</p>
-  </section>
-
-  <section>
-    <div class="eyebrow"><span>Why</span><span class="moitie"></span><span class="fr">Pourquoi</span></div>
-    <h2>The gap was never French</h2>
+    <div class="eyebrow"><span>Le problème</span><span class="moitie"></span><span class="fr">The problem</span></div>
+    <h2>« Le français, tu l'as déjà. »</h2>
+    <p class="h2-en">You already have the French.</p>
+    <p>Douze ans d'immersion, et puis le silence. Le Nouveau-Brunswick apprend le français mieux que n'importe où au Canada — et ensuite ne le parle plus. L'écart n'a jamais été la compétence. C'est la permission.</p>
+    <p class="en-line">Twelve years of immersion, then silence. New Brunswick teaches French better than anywhere in Canada — and then stops speaking it. The gap was never skill. It's permission.</p>
     <div class="stats">
-      <div class="stat"><div class="n">37.3%</div><div class="l">of New Brunswick kids go through French immersion — the highest rate in Canada</div></div>
-      <div class="stat"><div class="n">~16%</div><div class="l">of anglophone New Brunswickers can hold a conversation in French</div></div>
-      <div class="stat"><div class="n">~40%</div><div class="l">of NB adults who did immersion have lost their conversational French to silence</div></div>
+      <div class="stat">
+        <div class="n">37,3&nbsp;%</div>
+        <div class="l">des élèves anglophones du N.-B. passent par l'immersion française — le taux le plus élevé au Canada. <span class="src">(Statistique Canada, 2021)</span>
+          <span class="en">of NB's anglophone students go through French immersion — the highest rate in Canada. (Statistics Canada, 2021)</span></div>
+      </div>
+      <div class="stat">
+        <div class="n">~16&nbsp;%</div>
+        <div class="l">des anglophones du Nouveau-Brunswick tiennent vraiment une conversation dans les deux langues. <span class="src">(Recensement)</span>
+          <span class="en">of anglophone New Brunswickers can actually hold a conversation in both languages. (Census)</span></div>
+      </div>
+      <div class="stat">
+        <div class="n">~40&nbsp;%</div>
+        <div class="l">des adultes passés par l'immersion ne parlent plus le français conversationnel — à peine 60&nbsp;% le gardent. <span class="src">(Statistique Canada)</span>
+          <span class="en">of adults who went through immersion lose conversational French — barely 60% keep it. (Statistics Canada)</span></div>
+      </div>
     </div>
-    <p>New Brunswick teaches French better than anywhere in the country — and then provides nowhere safe to <em>speak</em> it. The barrier isn't vocabulary; it's the social cost of speaking badly in front of a real person. Anxiety kills the willingness to open your mouth, and the skill dies of disuse.</p>
-    <blockquote>Language anxiety dies in play. In a game, a wrong attempt is a turn — not a verdict.</blockquote>
-    <p>That's the product: <strong>a state of play</strong>, where the things that hold learners back simply don't exist in the rules. No grades, no failure states, no embarrassment physics. Just a town that's happy to see you try.</p>
+    <blockquote>« L'écart n'a jamais été le français. C'est la deuxième conversation. »
+      <span class="en">The gap was never French. It's the second conversation.</span></blockquote>
+    <p class="quiet-link"><a href="pourquoi.html">Voir les chiffres et leurs sources · <em>See the data and its sources →</em></a></p>
   </section>
 
   <section>
-    <div class="eyebrow"><span>How it works</span><span class="moitie"></span><span class="fr">Comment ça marche</span></div>
-    <h2>Walk. Talk. Be named.</h2>
+    <div class="eyebrow"><span>Comment ça marche</span><span class="moitie"></span><span class="fr">How a table works</span></div>
+    <h2>« Trois choses, c'est tout. »</h2>
+    <p class="h2-en">Three things, that's all.</p>
     <div class="steps">
-      <div class="step"><span class="ico">🚶</span><h3>Walk the real city</h3><p>Explore downtown and the northside, tile by tile. Real venues, real streets, real bridges — drawn with love, 16 pixels at a time.</p></div>
-      <div class="step"><span class="ico">💬</span><h3>Talk to everyone</h3><p>Short, playful conversations in French with English subtitles. Three choices per turn. All of them work. Confidence — the game's only currency — goes up.</p></div>
-      <div class="step"><span class="ico">⭐</span><h3>Be named by an Hôte</h3><p>Points fill your meter, but only an <strong>Hôte</strong> — a gold-star francophone mentor — can <em>name</em> you to your next level, in a small ceremony. People unlock people.</p></div>
+      <div class="step">
+        <span class="ico" aria-hidden="true">🪑</span>
+        <h3>Réserve une place <span class="en">/ Reserve a seat</span></h3>
+        <p>Tu choisis une table — un lieu public, une heure, un niveau bienvenu. Tu réserves une place, jamais une personne. Personne ne se fait rejeter par un café.</p>
+        <p class="en">You pick a table — a public place, an hour, a welcome-level. You reserve a seat, never a person. Nobody gets rejected by a café.</p>
+      </div>
+      <div class="step">
+        <span class="ico" aria-hidden="true">★</span>
+        <h3>Viens t'asseoir <span class="en">/ Show up</span></h3>
+        <p>La carte à l'étoile est déjà sur la table. Elle dit une chose : ici, on pratique — s'il vous plaît, ne changez pas de langue.</p>
+        <p class="en">The star card is already on the table. It says one thing: we're practicing here — please don't switch languages.</p>
+      </div>
+      <div class="step">
+        <span class="ico" aria-hidden="true">🗣️</span>
+        <h3>L'Hôte garde le français <span class="en">/ The Host keeps it in French</span></h3>
+        <p>Chaleureusement, à ton rythme. On te corrige seulement si tu le demandes — c'est toi qui règles le curseur.</p>
+        <p class="en">Warmly, at your pace. We correct you only if you ask — you set the dial.</p>
+      </div>
     </div>
-    <div class="shots">
-      <figure><img src="shots/7-interior-greeting.png" alt="Inside Jonnie Java Roasters, Chantal the Hôte greets the player in French" width="1024" height="720"><figcaption>Chantal ★, Hôte at Jonnie Java Roasters</figcaption></figure>
-      <figure><img src="shots/13-ceremony.png" alt="A recognition ceremony dialogue where an Hôte names the player to their next level" width="1024" height="720"><figcaption>La Reconnaissance — an Hôte names you</figcaption></figure>
-      <figure><img src="shots/1-title.png" alt="Bilingua Quest title screen with the walking bridge silhouette" width="1024" height="720"><figcaption>The title screen</figcaption></figure>
+  </section>
+
+</div><!-- /wrap -->
+
+<div class="soft-band">
+  <div class="wrap">
+    <section>
+      <div class="eyebrow"><span>Devenir Hôte</span><span class="moitie"></span><span class="fr">Become a Host</span></div>
+      <h2>« Tu es francophone ? Ta fluidité est un cadeau. »</h2>
+      <p class="h2-en">You're a francophone? Your fluency is a gift.</p>
+      <p>Un Hôte, c'est une personne francophone qui décide, exprès, de garder une table en français pour quelqu'un qui apprend — l'étoile ★, offerte volontairement. On bâtit la première promotion : petite, exprès. Ta patience vaut plus que ta pédagogie.</p>
+      <p class="en-line">A Host is a francophone who decides, on purpose, to keep a table in French for someone who's learning — the gold star ★, given willingly. We're building the first cohort: small, on purpose. Your patience matters more than your pedagogy.</p>
+      <p><a class="play" href="hote.html">« Devenir Hôte » · <em>Become a Host</em></a></p>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <div class="eyebrow"><span>Le prix, honnête</span><span class="moitie"></span><span class="fr">The price, honestly</span></div>
+    <h2>« La première table est gratuite. Toujours. »</h2>
+    <p class="h2-en">Your first table is free. Always.</p>
+    <p>Ensuite, une place coûte le prix d'un café : <strong>5&nbsp;$</strong>, rond et honnête. Le vrai produit du prix, ce n'est pas l'argent — c'est de se présenter. Chaque dollar se partage au grand jour :</p>
+    <p class="en-line">After that, a seat costs the price of a coffee: <strong>$5</strong>, round and honest. The real product of the price isn't money — it's showing up. Every dollar splits in the open:</p>
+    <div class="split">
+      <span class="chip"><strong>65&nbsp;%</strong> à l'Hôte</span>
+      <span class="chip"><strong>20&nbsp;%</strong> à Bilingua</span>
+      <span class="chip"><strong>15&nbsp;%</strong> au fonds communautaire</span>
     </div>
-    <p>Even the map obeys the idea: <strong>the bridges to the northside are closed</strong> until an Hôte has named you « Commandeur·e de café ». Your first level-up literally opens more city.</p>
+    <p class="split-en">65% to the Host · 20% to Bilingua · 15% to the community fund</p>
+    <p class="money-note">Les rails sont visibles mais éteints : ils s'allument après les premières tables, pas avant. Aucun vrai dollar ne bouge pour l'instant.
+      <span class="en">The rails are visible but switched off — they turn on after the first tables, not before. No real money moves yet.</span></p>
   </section>
 
   <section>
-    <div class="eyebrow"><span>Les Hôtes</span><span class="moitie"></span><span class="fr">People unlock people</span></div>
-    <h2>Progression is human</h2>
-    <p>Every language app measures you with an algorithm. Bilingua Quest hands that power to <em>people</em>: francophone mentors — in the game today, real volunteers tomorrow — whose recognition is the only way up. A level granted by Chantal over a real counter means something no XP bar can fake. And being an Hôte is designed as an honour: gold star, your name on the venue, capped seats. Francophones aren't "content" in this game. They're the nobility.</p>
-    <p>The endgame is the real city. Every venue has a <strong>rendez-vous board</strong> — conversation nights, bilingual trivia, concerts, la Fête nationale de l'Acadie at Officers' Square. Today those are samples; the plan is real listings, so the game funnels players to actual tables in actual cafés, safely and in public.</p>
-  </section>
-
-  <section>
-    <div class="eyebrow"><span>Next</span><span class="moitie"></span><span class="fr">La suite</span></div>
-    <h2>Bilingua Live <span class="concept-tag">concept</span></h2>
-    <p>The future layer: scheduled, watchable, celebratory live practice — TikTok-live energy where <em>being brave in French is the show</em>. Picture Thursday 7pm at Dolan's, in-game and in-person at once: players cheering a stranger's first full sentence, an Hôte conducting, clips worth sharing. Language practice as an event you'd actually attend.</p>
-    <div class="roadmap">
-      <div class="rm now"><span class="v">v0.4 — now</span><h3>The prototype</h3><p>Playable Fredericton, mentor ceremonies, seasons, this page. Tell us everything.</p></div>
-      <div class="rm now"><span class="v">the pilot</span><h3>Les Expéditions</h3><p>Groups of 4–6, 45 minutes, downtown — <a href="expedition.html">the printable quest kit</a> is ready.</p></div>
-      <div class="rm"><span class="v">v1</span><h3>Real accounts &amp; events</h3><p>Real rendez-vous listings, real Hôte volunteers, RSVP from inside the game.</p></div>
-      <div class="rm"><span class="v">v1.5</span><h3>Real conversations</h3><p>Matched practice with humans behind a safety-first trust ladder; meetups in public venues.</p></div>
-      <div class="rm"><span class="v">v2</span><h3>New Brunswick</h3><p>« When Moncton unlocks… » City by city, a game people visit the province to play.</p></div>
+    <div class="eyebrow"><span>La salle de répétition</span><span class="moitie"></span><span class="fr">The rehearsal room</span></div>
+    <div class="rehearsal">
+      <img src="shots/4-world-spawn.png" alt="Vue pixel-art SNES du pont piétonnier de Fredericton menant au centre-ville dans le jeu Bilingua" width="1024" height="720">
+      <div>
+        <h3>« On t'a construit toute une ville en pixels pour te réchauffer avant. »</h3>
+        <p class="en">We built you a whole pixel town to warm up in.</p>
+        <p>Avant la vraie table, tu peux t'entraîner seul·e, à zéro risque, dans le jeu. Exerce-toi avec un robot pour parler à une personne.</p>
+        <p class="en">Before the real table, you can rehearse alone, at zero stakes, in the game. Practice with a robot so you can talk to a person.</p>
+        <p class="quiet-link"><a href="play/">Entrer dans la ville · <em>Enter the town →</em></a></p>
+      </div>
     </div>
   </section>
 
-  <section id="invitations">
-    <div class="eyebrow"><span>Getting in</span><span class="moitie"></span><span class="fr">Les invitations</span></div>
-    <h2>Fredericton is invitation-only</h2>
-    <p>Like any good dinner party. You can't download your way in — <strong>someone has to hand you an invitation</strong>, and every invitation comes from a real person. The founding batch is exactly <strong>100</strong>: most are held by Hôtes, the francophone mentors, who give them the way they give recognition — one at a time, to people who would try.</p>
-    <p>And the only way to earn invitations of your own? <strong>Be named.</strong> The moment an Hôte names you to your first level, you receive three — because the town should grow exactly the way confidence does: person to person, by recognition. (Every number here is true, always. No fake counters, ever.)</p>
-    <div class="steps">
-      <div class="step"><span class="ico">✉️</span><h3>Get a code</h3><p>From an Hôte, from a friend who was named, or from the waitlist below.</p></div>
-      <div class="step"><span class="ico">🏅</span><h3>Get named</h3><p>Play until an Hôte names you « Commandeur·e de café ».</p></div>
-      <div class="step"><span class="ico">🎁</span><h3>Give three</h3><p>Your Passeport now holds three invitations. Choose well.</p></div>
-    </div>
-    <h3 id="waitlist" style="font-size:1.15rem; margin-top:2rem">No code? Join the waitlist / Pas de code ? La liste d'attente</h3>
+  <section id="liste">
+    <div class="eyebrow"><span>La liste</span><span class="moitie"></span><span class="fr">The list</span></div>
+    <h2>« Pas encore de table près de toi ? »</h2>
+    <p class="h2-en">No table near you yet?</p>
+    <p>Fredericton d'abord. Laisse ton courriel — on t'écrit quand une table s'ouvre. Pas de spam, pas de compte, jamais revendu.</p>
+    <p class="en-line">Fredericton first. Leave your email — we'll write when a table opens. No spam, no account, never sold.</p>
     <form name="waitlist" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field">
       <input type="hidden" name="form-name" value="waitlist">
       <p class="hp"><label>Don't fill this out: <input name="bot-field"></label></p>
-      <label for="w-name">Name</label>
+      <label for="w-name">Nom / Name</label>
       <input type="text" id="w-name" name="name" required autocomplete="name">
-      <label for="w-email">Email</label>
+      <label for="w-email">Courriel / Email</label>
       <input type="email" id="w-email" name="email" required autocomplete="email">
-      <label for="w-fr">Are you francophone, anglophone, or somewhere in between? (optional)</label>
-      <input type="text" id="w-fr" name="language" placeholder="Francophone / anglophone / moitié-moitié…">
       <fieldset class="parcours-group">
-        <legend>Tu es… / You are… <span class="opt-tag">(facultatif / optional)</span></legend>
+        <legend>Ton parcours (optionnel) / Your path (optional) <span class="opt-tag">— ça débloque rien, ça nous aide à équilibrer la table / unlocks nothing, helps us balance the table</span></legend>
         <div class="parcours">
-          <label><input type="radio" name="parcours" value="francophone"> Francophone</label>
-          <label><input type="radio" name="parcours" value="apprenant"> Apprenant·e <span>/ learner</span></label>
-          <label><input type="radio" name="parcours" value="entre-les-deux"> Entre les deux <span>/ in between</span></label>
-          <label><input type="radio" name="parcours" value="prefere-ne-pas-dire"> Je préfère ne pas dire <span>/ prefer not to say</span></label>
+          <label><input type="radio" name="parcours" value="francophone"> Francophone 🌟</label>
+          <label><input type="radio" name="parcours" value="apprenant"> Apprenant·e 🌱 <span>/ Learner</span></label>
+          <label><input type="radio" name="parcours" value="entre-les-deux"> Entre les deux 🌗 <span>/ In between</span></label>
+          <label><input type="radio" name="parcours" value="prefere-ne-pas-dire"> Je préfère ne pas dire 🕊️ <span>/ Prefer not to say</span></label>
         </div>
       </fieldset>
-      <p class="parcours-note">Facultatif — ça nous aide à savoir si on rapproche vraiment francophones et apprenant·es. / Optional — it helps us know if we are truly bringing francophones and learners together.</p>
-      <button type="submit">Join the waitlist / M'inscrire</button>
+      <label for="w-msg">Message (optionnel) / Message (optional)</label>
+      <textarea id="w-msg" name="message" placeholder="Dis-nous ce que tu veux / Anything you'd like us to know"></textarea>
+      <button type="submit">« M'ajouter à la liste » · <em>Add me to the list</em></button>
+      <p class="form-help err">Ça n'a pas passé de notre côté ? Écris-nous directement : <a href="mailto:kurtrgoddard@gmail.com">kurtrgoddard@gmail.com</a><br>
+        <span class="en-line">That didn't go through on our end? Email us directly.</span></p>
     </form>
-    <p style="font-size:0.85rem; color:var(--muted)">Francophones: skip the line — write "Hôte?" in the last field and we'll talk about handing you keys to the city.</p>
   </section>
 
-  <section id="feedback">
-    <div class="eyebrow"><span>Your turn</span><span class="moitie"></span><span class="fr">À vous</span></div>
-    <h2>Tell me what you think</h2>
-    <p>This is a prototype and a vision looking for accomplices — players, francophone mentors, café owners, skeptics. What would make you play? What's wrong? What's missing? En français ou en anglais.</p>
-    <form name="feedback" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field">
-      <input type="hidden" name="form-name" value="feedback">
-      <p class="hp"><label>Don't fill this out: <input name="bot-field"></label></p>
-      <label for="f-name">Name (optional)</label>
-      <input type="text" id="f-name" name="name" autocomplete="name">
-      <label for="f-email">Email (optional — only if you'd like a reply)</label>
-      <input type="email" id="f-email" name="email" autocomplete="email">
-      <label for="f-msg">Your thoughts *</label>
-      <textarea id="f-msg" name="message" required placeholder="J'ai pensé que… / I think…"></textarea>
-      <fieldset class="parcours-group">
-        <legend>Tu es… / You are… <span class="opt-tag">(facultatif / optional)</span></legend>
-        <div class="parcours">
-          <label><input type="radio" name="parcours" value="francophone"> Francophone</label>
-          <label><input type="radio" name="parcours" value="apprenant"> Apprenant·e <span>/ learner</span></label>
-          <label><input type="radio" name="parcours" value="entre-les-deux"> Entre les deux <span>/ in between</span></label>
-          <label><input type="radio" name="parcours" value="prefere-ne-pas-dire"> Je préfère ne pas dire <span>/ prefer not to say</span></label>
-        </div>
-      </fieldset>
-      <p class="parcours-note">Facultatif — ça nous aide à savoir si on rapproche vraiment francophones et apprenant·es. / Optional — it helps us know if we are truly bringing francophones and learners together.</p>
-      <button type="submit">Envoyer / Send</button>
-    </form>
-    <p style="font-size:0.85rem; color:var(--muted)">Prefer email? <a href="mailto:kurtrgoddard@gmail.com?subject=Bilingua%20Quest">kurtrgoddard@gmail.com</a></p>
-  </section>
+</div><!-- /wrap -->
 
+<div class="safety">
+  <div class="wrap">
+    <section>
+      <div class="eyebrow"><span>La sécurité</span><span class="moitie"></span><span class="fr">Safety</span></div>
+      <p>Lieux publics seulement. Des groupes de 3 à 6, jamais en tête-à-tête. 18+. On te corrige seulement si tu le demandes, et « ce soir, j'écoute » est toujours permis.</p>
+      <p class="en">Public places only. Groups of 3 to 6, never one-on-one. 18+. We correct you only if you ask, and "tonight, I just listen" is always allowed.</p>
+      <p class="quiet-link"><a href="securite.html">Comment on protège la table · <em>How we keep the table safe →</em></a></p>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
   <footer>
-    <p><strong>Bilingua Quest</strong> is a free civic prototype by Kurt Goddard (Fredericton, NB). Adults 18+. No accounts, no tracking — the game saves on your own device only.</p>
-    <p>Real Fredericton venues appear with affection and without affiliation. Venue owners: if you'd like anything changed (or want a rendez-vous board of your own), <a href="mailto:kurtrgoddard@gmail.com">say the word</a>.</p>
-    <p>Safety, always: real-world meetups belong in public places — tell a friend, trust your instincts.</p>
-    <p><a href="terms.html">Terms / Conditions</a> · <a href="privacy.html">Privacy / Vie privée</a> · <a href="expedition.html">The expedition kit</a> · <a href="rencontres.html">Rendez-vous</a> · <a href="proposer.html">Proposer une quête</a> · <a href="billets.html">Billets / Tickets</a></p>
+    <p><strong>La Table</strong> est un projet civique de Kurt Goddard (Fredericton, N.-B.). Adultes 18+. On réserve une table, jamais une personne. Pas de profils, pas de messagerie, pas de photos de gens.</p>
+    <p class="en"><strong>La Table</strong> is a civic project by Kurt Goddard (Fredericton, NB). Adults 18+. You reserve a table, never a person. No profiles, no messaging, no photos of people.</p>
+    <p class="links"><a href="rencontres.html">Réserver une place</a> · <a href="hote.html">Devenir Hôte</a> · <a href="securite.html">Sécurité / Safety</a> · <a href="pourquoi.html">Pourquoi / Why</a> · <a href="billets.html">Billets / Tickets</a> · <a href="expedition.html">L'expédition</a> · <a href="proposer.html">Proposer une table</a> · <a href="play/">La salle de répétition</a> · <a href="privacy.html">Vie privée / Privacy</a> · <a href="terms.html">Conditions / Terms</a></p>
     <p>Sur le territoire non cédé des Wolastoqiyik, le long du Wolastoq (fleuve Saint-Jean). / On the unceded territory of the Wolastoqiyik, along the Wolastoq (Saint John River).</p>
   </footer>
-
 </div>
+
 <script>
 /* form-fallback: Netlify Forms only capture on Netlify hosting.
    Everywhere else (GitHub Pages — github.io or the bilingua.app custom domain),
@@ -297,6 +378,76 @@ if (!location.hostname.endsWith('netlify.app')) {
     });
   });
 }
+</script>
+
+<script>
+/* Prochaine table — fetch next upcoming table from the live backend, degrade to
+   rendezvous.json, then to nothing. Never surfaces an error to the user. */
+(function () {
+  var API = 'https://tgzouzrqaqpjyqjbveaz.supabase.co/functions/v1/bq-tables';
+  var el = document.getElementById('nextTable');
+  if (!el) return;
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+
+  function upcoming(items, getDate) {
+    var soonest = null, soonestDate = null;
+    for (var i = 0; i < items.length; i++) {
+      var raw = getDate(items[i]);
+      if (!raw) continue;
+      var d = new Date(raw + 'T00:00:00');
+      if (isNaN(d.getTime()) || d < today) continue;
+      if (!soonestDate || d < soonestDate) { soonestDate = d; soonest = items[i]; }
+    }
+    return soonest;
+  }
+
+  function fmtDate(raw) {
+    var d = new Date(raw + 'T00:00:00');
+    if (isNaN(d.getTime())) return raw;
+    try { return d.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' }); }
+    catch (e) { return raw; }
+  }
+
+  function render(titre, dateRaw, heure, lieu, places) {
+    if (!titre || !lieu) return;
+    var bits = [];
+    if (dateRaw) bits.push(fmtDate(dateRaw));
+    if (heure) bits.push(heure);
+    var when = bits.join(' ');
+    var placesTxt = (places === 0 || places > 0) ? ' · ' + places + ' place' + (places === 1 ? '' : 's') : '';
+    el.innerHTML = '<a href="rencontres.html"><span class="star">★</span> Prochaine table : <strong>' +
+      esc(titre) + '</strong> — ' + esc(when) + (lieu ? ', ' + esc(lieu) : '') + esc(placesTxt) + '</a>';
+    el.classList.add('on');
+  }
+
+  function esc(s) { var d = document.createElement('div'); d.textContent = String(s == null ? '' : s); return d.innerHTML; }
+
+  function fromBackend() {
+    return fetch(API, { headers: { 'accept': 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+      .then(function (j) {
+        if (!j || !j.ok || !Array.isArray(j.tables)) throw new Error('shape');
+        var open = j.tables.filter(function (t) { return t && t.statut !== 'complet'; });
+        var t = upcoming(open.length ? open : j.tables, function (x) { return x.date_at; });
+        if (!t) throw new Error('none');
+        render(t.titre_fr || t.titre_en, t.date_at, t.heure, t.lieu, t.places_restantes);
+      });
+  }
+
+  function fromJson() {
+    return fetch('rendezvous.json', { headers: { 'accept': 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+      .then(function (arr) {
+        if (!Array.isArray(arr)) throw new Error('shape');
+        var tables = arr.filter(function (x) { return x && x.format === 'table' && x.date; });
+        var t = upcoming(tables.length ? tables : arr, function (x) { return x.date; });
+        if (!t) throw new Error('none');
+        render(t.titre_fr || t.titre_en, t.date, t.heure, t.lieu, t.places);
+      });
+  }
+
+  fromBackend().catch(function () { return fromJson(); }).catch(function () { /* show nothing */ });
+})();
 </script>
 </body>
 </html>
